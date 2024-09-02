@@ -30,12 +30,12 @@ Route::group(['prefix' => 'subscribe'], function () {
 
 Route::group(['prefix' => 'projects'], function () {
 
-  Route::post(
+  Route::get(
     '/',
     [\App\Http\Controllers\ProjectController::class, 'index'],
   )->name('projects.index');
 
-  Route::post(
+  Route::get(
     '/{project}',
     [\App\Http\Controllers\ProjectController::class, 'show'],
   )->name('projects.show');
