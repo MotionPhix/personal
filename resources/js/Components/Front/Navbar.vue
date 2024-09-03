@@ -1,7 +1,30 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { IconMenu4, IconX } from '@tabler/icons-vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+import NavLinkMode from '@/Components/NavLinkMode.vue';
+
+const page = usePage();
+
+const navLinks = [
+  {
+    name: 'Home',
+    href: 'home',
+    active: page.component === 'Index'
+  },
+
+  {
+    name: 'Projects',
+    href: 'projects.index',
+    active: page.url.startsWith('/projects')
+  },
+
+  // {
+  //   name: 'Articles',
+  //   href: 'articles.index',
+  //   active: page.url.startsWith('/articles')
+  // },
+]
 </script>
 
 <template>
@@ -48,23 +71,42 @@ import { Link } from '@inertiajs/vue3';
         class="hidden overflow-hidden transition-all duration-300 hs-collapse basis-full grow md:block" aria-labelledby="hs-navbar-header-floating-collapse">
         <div
           class="flex flex-col gap-2 py-2 mt-3 md:flex-row md:items-center md:justify-end md:gap-3 md:mt-0 md:py-0 md:ps-7">
-          <Link
-            class="py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 border-gray-800 font-medium text-gray-800 focus:outline-none dark:border-neutral-200 dark:text-neutral-200"
-            :href="route('home')" aria-current="page">
+
+          <!-- <Link
+            class="py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 text-gray-800 focus:outline-none dark:border-neutral-200 dark:text-neutral-200 transition relative"
+            :class=" ? 'border-gray-800 font-medium' : 'border-transparent'"
+            :href="route('home')">
             Home
-          </Link>
+            <span class="absolute h-px inset-x-1 -bottom-px bg-gradient-to-r from-teal-500/0 via-teal-500/40 to-teal-500/0 dark:from-teal-400/0 dark:via-teal-400/40 dark:to-teal-400/0"></span>
+          </Link> -->
 
-          <Link
-            class="py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 border-transparent text-gray-500 hover:text-gray-800 focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-200"
-            :href="route('projects.index')">
+          <!-- <Link
+            class="py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 hover:text-gray-800 focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-200 transition relative"
+            v-for="path in navLinks" :key="path.name"
+            :class="path.active ? 'border-gray-800 font-medium text-gray-800' : 'border-transparent text-gray-500'"
+            :href="route(path.href)">
+            {{ path.name }}
+          </Link> -->
+
+          <NavLinkMode
+            :href="route('home')"
+            :active="route().current('home')">
+            Home
+          </NavLinkMode>
+
+          <NavLinkMode
+            :href="route('projects.index')"
+            :active="$page.url.startsWith('/projects')">
             Projects
-          </Link>
+          </NavLinkMode>
 
-          <a
-            class="py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 border-transparent text-gray-500 hover:text-gray-800 focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-200"
+          <!-- <a
+            class="py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 text-gray-500 hover:text-gray-800 focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-200"
+            :class="$page.url.startsWith('/articles') ? 'border-gray-800 font-medium' : 'border-transparent'"
             href="#">
             Articles
-          </a>
+          </a> -->
+
         </div>
       </div>
     </nav>
