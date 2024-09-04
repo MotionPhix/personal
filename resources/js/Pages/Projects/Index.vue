@@ -1,8 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import {Head} from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import Card from "@/Components/Front/Card.vue";
 import Package from "@/Components/Front/Package.vue";
+
+interface Project {
+  id: number;
+  pid: string;
+  poster: string;
+}
+
+defineProps<{
+  projects?: Project[];
+}>();
 
 defineOptions({ layout: AppLayout })
 </script>
@@ -44,35 +54,11 @@ defineOptions({ layout: AppLayout })
                 role="list"
                 class="grid grid-cols-2 gap-2 lg:grid-cols-3">
 
-                <li class="relative flex flex-col items-start group">
-
-                  <Card />
-
-                </li>
-
                 <li
-                  class="relative flex flex-col items-start group">
+                  class="relative flex flex-col items-start group"
+                  v-for="project in projects" :key="project.pid">
 
-                  <Card />
-
-                </li>
-
-                <li
-                  class="relative flex flex-col items-start group">
-
-                  <Card />
-
-                </li>
-
-                <li class="relative flex flex-col items-start group">
-
-                  <Card />
-
-                </li>
-
-                <li class="relative flex flex-col items-start group">
-
-                  <Card />
+                  <Card :project="project" />
 
                 </li>
 

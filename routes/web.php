@@ -36,7 +36,7 @@ Route::group(['prefix' => 'projects'], function () {
   )->name('projects.index');
 
   Route::get(
-    '/{project}',
+    '/{project:pid}',
     [\App\Http\Controllers\ProjectController::class, 'show'],
   )->name('projects.show');
 
