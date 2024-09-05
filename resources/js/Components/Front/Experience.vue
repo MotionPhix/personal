@@ -58,7 +58,8 @@
     <!-- Item -->
     <div class="relative flex group gap-x-5">
       <!-- Icon -->
-      <div class="relative group-last:after:hidden after:absolute after:top-8 after:bottom-2 after:start-3 after:w-px after:-translate-x-[0.5px] after:bg-gray-200 dark:after:bg-neutral-700">
+      <div
+        class="relative group-last:after:hidden after:absolute after:top-8 after:bottom-2 after:start-3 after:w-px after:-translate-x-[0.5px] after:bg-gray-200 dark:after:bg-neutral-700">
         <div class="relative z-10 flex items-center justify-center size-6">
           <svg class="text-gray-600 shrink-0 size-6 dark:text-neutral-400" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g clip-path="url(#clip0_11766_122079)">

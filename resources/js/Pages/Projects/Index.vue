@@ -2,7 +2,6 @@
 import {Head} from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import Card from "@/Components/Front/Card.vue";
-import Package from "@/Components/Front/Package.vue";
 
 interface Project {
   id: number;

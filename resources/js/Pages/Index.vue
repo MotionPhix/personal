@@ -77,7 +77,7 @@ defineOptions({ layout: AppLayout })
 
         <ul class="flex flex-col mt-5 gap-y-3">
           <li class="flex items-center gap-x-2.5">
-            <IconMail size="16" />
+            <IconMail size="16" class="dark:text-neutral-500" />
 
             <a
               class="text-[13px] text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
@@ -87,7 +87,7 @@ defineOptions({ layout: AppLayout })
           </li>
 
           <li class="flex items-center gap-x-2.5">
-            <IconBrandX size="16" />
+            <IconBrandX size="16" class="dark:text-neutral-500" />
 
             <a
               class="text-[13px] text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
@@ -97,7 +97,7 @@ defineOptions({ layout: AppLayout })
           </li>
 
           <li class="flex items-center gap-x-2.5">
-            <IconBrandBehance size="16" />
+            <IconBrandBehance size="16" class="dark:text-neutral-500" />
 
             <a
               class="text-[13px] text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
