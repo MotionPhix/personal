@@ -1,34 +1,9 @@
 <script setup lang="ts">
 
 import AppLayout from "@/Layouts/AppLayout.vue";
+import { Project } from "@/types";
 import {Head, Link} from "@inertiajs/vue3";
 import { IconArrowLeft } from "@tabler/icons-vue";
-
-interface Address {
-  city: string;
-  state: string;
-  country: string;
-}
-
-interface Customer {
-  id: number;
-  cid: string;
-  first_name: string;
-  last_name: string;
-  company_name: string;
-  address: string[];
-  customer: Customer;
-}
-
-interface Project {
-  id: number;
-  pid: string;
-  name: string;
-  poster: string;
-  description: string;
-  images: string[];
-  customer: Customer;
-}
 
 defineProps<{
   project: Project;
@@ -90,32 +65,24 @@ defineOptions({
 
               <div class="mt-4">
 
-                <dl class="flex flex-col gap-1">
+                <dl class="flex flex-col gap-2">
 
-                  <dt class="min-w-40">
-                    <span class="block text-sm text-gray-500 dark:text-neutral-500">
+                  <dt>
+                    <span class="text-sm text-gray-500 dark:text-neutral-500">
                       Client
                     </span>
                   </dt>
 
                   <dd>
 
-                    <ul class="flex flex-col">
+                    <ul>
 
-                      <li class="me-1 after:content-[','] inline-flex items-center text-sm text-gray-800 dark:text-neutral-200">
-                        {{ project.customer.name }}
+                      <li class="text-sm font-bold text-gray-800 dark:text-neutral-200">
+                        {{ project?.customer?.first_name + ' ' + project?.customer?.last_name }}
                       </li>
 
-                      <li class="me-1 after:content-[','] inline-flex items-center text-sm text-gray-800 dark:text-neutral-200">
-                        {{ project.customer.company_name }}
-                      </li>
-
-                      <li class="me-1 after:content-[','] inline-flex items-center text-sm text-gray-800 dark:text-neutral-200">
-                        Attention to detail
-                      </li>
-
-                      <li class="me-1 after:content-[','] inline-flex items-center text-sm text-gray-800 dark:text-neutral-200">
-                        Time management
+                      <li class="text-xs text-gray-800 dark:text-neutral-200">
+                        {{ project?.customer?.company_name }}
                       </li>
 
                     </ul>
@@ -124,18 +91,37 @@ defineOptions({
 
                 </dl>
 
-                <span class="block text-sm text-zinc-500 dark:text-zinc-400">
-                  Completed on: {{ 'N/A' }}
-                </span>
+                <dl class="flex flex-col gap-2 mt-6">
+
+                  <dt>
+                    <span class="text-sm text-gray-500 dark:text-neutral-500">
+                      Completed
+                    </span>
+                  </dt>
+
+                  <dd>
+
+                    <ul>
+
+                      <li class="text-sm text-gray-800 dark:text-neutral-200">
+                        {{ project?.production }}
+                      </li>
+
+                    </ul>
+
+                  </dd>
+
+                </dl>
+
               </div>
             </header>
 
             <!-- Project Images -->
             <div class="grid grid-cols-2 gap-4 mb-8">
               <img
-                v-for="(image, index) in project.images"
-                :key="index"
-                :src="image"
+                v-for="image in project.images"
+                :key="image.fid"
+                :src="image.src"
                 alt="Project Image"
                 class="object-cover w-full rounded-lg shadow-lg"
               />

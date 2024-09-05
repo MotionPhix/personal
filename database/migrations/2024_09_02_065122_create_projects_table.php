@@ -25,6 +25,8 @@ return new class extends Migration
 
           $table->longText('description')->nullable();
 
+          $table->foreignId('customer_id')->constrained('customers')->cascadeOnDelete();
+
           $table->timestamps();
 
         });

@@ -23,7 +23,7 @@ class Photo extends Model
   public function fullUrl(): Attribute
   {
     return Attribute::make(
-      get: fn() => url('files/' . $this->user_id . '/' . $this->created_at->format('Y') . '/' . $this->created_at->format('m') . '/' . $this->filename),
+      get: fn() => url('files/' . $this->created_at->format('Y') . '/' . $this->created_at->format('m') . '/' . $this->filename),
     );
   }
 

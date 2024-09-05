@@ -2,12 +2,7 @@
 import {Head} from "@inertiajs/vue3";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import Card from "@/Components/Front/Card.vue";
-
-interface Project {
-  id: number;
-  pid: string;
-  poster: string;
-}
+import { Project } from "@/types";
 
 defineProps<{
   projects?: Project[];

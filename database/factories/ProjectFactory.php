@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,8 +21,9 @@ class ProjectFactory extends Factory
     $faker->addProvider(new \Smknstd\FakerPicsumImages\FakerPicsumImagesProvider($faker));
 
     return [
+      'customer_id' => Customer::factory(),
       'poster' => $faker->imageUrl(640, 480),
-      'production' => fake()->dateTimeBetween('-5 years', 'now')->format('Y'),
+      'production' => fake()->dateTimeBetween('-5 years', 'now')->format('F, Y'),
       'name' => fake()->sentence(3),
       'description' => fake()->paragraph(6),
     ];

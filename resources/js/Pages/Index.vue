@@ -68,13 +68,13 @@ defineOptions({ layout: AppLayout })
 
       <!-- About -->
       <div class="mt-8">
-        <p class="text-sm text-gray-600 dark:text-neutral-400">
+        <p class="text-base text-gray-600 dark:text-neutral-400">
           I am a seasoned graphic designer with over 14 years of experience in creating visually appealing and user-centric designs. My expertise spans across UI design, design systems, and custom illustrations, helping clients bring their digital visions to life.
         </p>
 
-        <p class="mt-3 text-sm text-gray-600 dark:text-neutral-400">
+        <p class="mt-3 text-base text-gray-600 dark:text-neutral-400">
           Currently, I work with <a
-              class="text-[13px] text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
+              class="text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
               href="https://firstmarkmw.com" target="_blank">
               <strong>Firstmark Advertising</strong>
             </a>, where I design artworks, convert them into print-ready artworks, and provide comprehensive support to our customers. I am passionate about crafting elegant and functional designs that enhance user experiences and businesses.
@@ -85,7 +85,7 @@ defineOptions({ layout: AppLayout })
             <IconMail size="16" class="dark:text-neutral-500" />
 
             <a
-              class="text-[13px] text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
+              class="text-base text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
               href="mailto:support@ultrashots.net" target="_blank">
               {{ user?.email }}
             </a>
@@ -95,7 +95,7 @@ defineOptions({ layout: AppLayout })
             <IconBrandX size="16" class="dark:text-neutral-500" />
 
             <a
-              class="text-[13px] text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
+              class="text-base text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
               href="https://x.com/ultrashoots" target="_blank">
               {{ user?.socials?.twitter }}
             </a>
@@ -105,7 +105,7 @@ defineOptions({ layout: AppLayout })
             <IconBrandBehance size="16" class="dark:text-neutral-500" />
 
             <a
-              class="text-[13px] text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
+              class="text-base text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
               href="https://be.net/ultrashots" target="_blank">
               {{ user?.socials?.behance }}
             </a>
