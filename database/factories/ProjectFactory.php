@@ -21,6 +21,7 @@ class ProjectFactory extends Factory
 
     return [
       'poster' => $faker->imageUrl(640, 480),
+      'production' => fake()->dateTimeBetween('-5 years', 'now')->format('Y'),
       'name' => fake()->sentence(3),
       'description' => fake()->paragraph(6),
     ];

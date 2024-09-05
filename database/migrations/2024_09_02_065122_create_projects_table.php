@@ -21,6 +21,8 @@ return new class extends Migration
 
           $table->string('name');
 
+          $table->string('production');
+
           $table->longText('description')->nullable();
 
           $table->timestamps();

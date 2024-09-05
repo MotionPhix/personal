@@ -15,6 +15,7 @@ class Project extends Model
   protected $fillable = [
     'name',
     'description',
+    'production',
     'poster',
   ];
 
@@ -22,6 +23,7 @@ class Project extends Model
   {
     return [
       'description' => PurifyHtmlOnGet::class,
+      'poster' => PurifyHtmlOnGet::class,
       'name' => PurifyHtmlOnGet::class,
     ];
   }

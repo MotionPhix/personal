@@ -4,6 +4,22 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import {Head, Link} from "@inertiajs/vue3";
 import { IconArrowLeft } from "@tabler/icons-vue";
 
+interface Address {
+  city: string;
+  state: string;
+  country: string;
+}
+
+interface Customer {
+  id: number;
+  cid: string;
+  first_name: string;
+  last_name: string;
+  company_name: string;
+  address: string[];
+  customer: Customer;
+}
+
 interface Project {
   id: number;
   pid: string;
@@ -11,6 +27,7 @@ interface Project {
   poster: string;
   description: string;
   images: string[];
+  customer: Customer;
 }
 
 defineProps<{
@@ -83,14 +100,14 @@ defineOptions({
 
                   <dd>
 
-                    <ul>
+                    <ul class="flex flex-col">
 
                       <li class="me-1 after:content-[','] inline-flex items-center text-sm text-gray-800 dark:text-neutral-200">
-                        Strong communication
+                        {{ project.customer.name }}
                       </li>
 
                       <li class="me-1 after:content-[','] inline-flex items-center text-sm text-gray-800 dark:text-neutral-200">
-                        Problem-solving
+                        {{ project.customer.company_name }}
                       </li>
 
                       <li class="me-1 after:content-[','] inline-flex items-center text-sm text-gray-800 dark:text-neutral-200">
