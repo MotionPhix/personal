@@ -2,7 +2,7 @@
 
 import AppLayout from "@/Layouts/AppLayout.vue";
 import {Head, Link} from "@inertiajs/vue3";
-import { onMounted } from "vue";
+import { IconArrowLeft } from "@tabler/icons-vue";
 
 interface Project {
   id: number;
@@ -34,48 +34,31 @@ defineOptions({
             <!-- Back to Projects Button -->
             <Link
               :href="route('projects.index')"
-              class="inline-block text-base text-blue-600 dark:text-blue-400 hover:underline"
+              class="group flex items-center gap-2 text-base text-blue-600 dark:text-blue-400 transition-all duration-300 ease-in-out transform hover:-translate-x-1 hover:text-blue-800 dark:hover:text-blue-600"
             >
-              &larr; Projects
+              <IconArrowLeft size="24" class="hidden group-hover:inline-block" />
+
+              <span class="group-hover:font-bold">Projects</span>
             </Link>
 
-            <!-- Slider -->
-            <div class="py-10">
+            <div
+              class="md:h-[calc(100vh-400px)] group my-10 max-w-full h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
+              :style="{ backgroundImage: `url(${project.poster})` }">
 
-              <div data-hs-carousel='{
-                  "loadingClasses": "opacity-0"
-                }' class="relative">
+              <div class="w-2/3 pb-5 mt-auto md:max-w-lg ps-5 md:ps-10 md:pb-10">
 
-                <div
-                  class="hs-carousel relative overflow-hidden w-full h-[30rem] md:h-[calc(100vh-106px)]  bg-gray-100 rounded-2xl dark:bg-neutral-800">
-                  <div
-                    class="absolute top-0 bottom-0 flex transition-transform duration-700 opacity-0 hs-carousel-body start-0 flex-nowrap">
+                <span class="block text-white">
+                  Nike React
+                </span>
 
-                    <!-- Item -->
-                    <div class="hs-carousel-slide">
-                      <div
-                        :style="{ backgroundImage: `url(${project.poster})` }"
-                        class="h-[30rem] md:h-[calc(100vh-106px)] flex flex-col bg-cover bg-center bg-no-repeat">
-                        <div class="w-2/3 pb-5 mt-auto md:max-w-lg ps-5 md:ps-10 md:pb-10">
-
-                          <span class="block text-white">Nike React</span>
-
-                          <span class="block text-xl text-white md:text-3xl">
-                            Rewriting sport's playbook for billions of athletes
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- End Item -->
-
-                  </div>
-
-                </div>
+                <span
+                  class="block text-xl text-white md:text-3xl">
+                  Rewriting sport's playbook for billions of athletes
+                </span>
 
               </div>
 
             </div>
-            <!-- End Slider -->
 
             <header class="max-w-2xl mb-12">
               <h1

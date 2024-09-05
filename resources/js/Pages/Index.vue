@@ -25,9 +25,14 @@ type User = {
   updatedAt: string;
 };
 
+interface Project {
+  id: number;
+  pid: string | null;
+  poster: string;
+}
+
 defineProps<{
-  canLogin?: boolean;
-  canRegister?: boolean;
+  projects?: Project[];
   user?: User | undefined;
 }>();
 
@@ -110,7 +115,7 @@ defineOptions({ layout: AppLayout })
       <!-- End About -->
 
       <!-- Projects -->
-      <Projects />
+      <Projects :projects />
       <!-- End Projects -->
 
       <!-- Testimonials -->

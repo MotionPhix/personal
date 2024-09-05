@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Project;
 use App\Models\User;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 class HomeController extends Controller
@@ -15,13 +15,11 @@ class HomeController extends Controller
   {
     $user = User::where('email', 'support@ultrashots.net')->first();
 
-    $canLogin = Route::has('login');
-    $canRegister = Route::has('register');
+    $projects = Project::inRandomOrder()->take(6)->select('id', 'pid', 'poster')->get();;
 
     return Inertia::render('Index', [
       'user' => $user,
-      'canLogin' => $canLogin,
-      'canRegister' => $canRegister,
+      'projects' => $projects,
     ]);
   }
 }
