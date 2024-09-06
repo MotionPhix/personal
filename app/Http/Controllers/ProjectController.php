@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -27,6 +26,18 @@ class ProjectController extends Controller
   public function show(Project $project): Response
   {
     return Inertia::render('Projects/Show', [
+      'project' => $project->load('customer', 'images'),
+    ]);
+  }
+
+  /**
+   * Create a new instance of the project.
+   */
+  public function create(): Response
+  {
+    $project = new Project();
+
+    return Inertia::render('Projects/Form', [
       'project' => $project->load('customer', 'images'),
     ]);
   }

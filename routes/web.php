@@ -42,14 +42,72 @@ Route::group(['prefix' => 'projects'], function () {
 
 });
 
-Route::get('/dashboard', function () {
-  return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::group(['prefix' => 'downloads'], function () {
 
-Route::middleware('auth')->group(function () {
+  Route::get(
+    '/',
+    [\App\Http\Controllers\DownloadController::class, 'index'],
+  )->name('downloads.index');
+
+  Route::get(
+    '/{logo:did}',
+    [\App\Http\Controllers\DownloadController::class, 'show'],
+  )->name('downloads.show');
+
+});
+
+Route::group(['prefix' => 'auth'], function () {
+
+  Route::get('/dashboard', function () {
+    return Inertia::render('Admin/Dashboard');
+  })->name('dashboard');
+
+  Route::group(['prefix' => 'customers'], function () {
+
+    Route::get(
+      '/create',
+      [\App\Http\Controllers\CustomerController::class, 'create'],
+    )->name('auth.customer.create');
+
+    Route::post(
+      '/store',
+      [\App\Http\Controllers\CustomerController::class, 'store'],
+    )->name('auth.customer.store');
+
+  });
+
+  Route::group(['prefix' => 'projects'], function () {
+
+    Route::get(
+      '/create',
+      [\App\Http\Controllers\ProjectController::class, 'create'],
+    )->name('auth.projects.create');
+
+    Route::post(
+      '/store',
+      [\App\Http\Controllers\ProjectController::class, 'store'],
+    )->name('auth.projects.store');
+
+  });
+
+  Route::group(['prefix' => 'downloads'], function () {
+
+    Route::get(
+      '/create',
+      [\App\Http\Controllers\DownloadController::class, 'create'],
+    )->name('auth.downloads.create');
+
+    Route::post(
+      '/store',
+      [\App\Http\Controllers\DownloadController::class, 'store'],
+    )->name('auth.downloads.store');
+
+  });
+
   Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
   Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
   Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+
+})->middleware('auth');
 
 require __DIR__ . '/auth.php';

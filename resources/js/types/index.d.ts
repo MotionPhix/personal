@@ -1,6 +1,7 @@
 export interface User {
   id: number;
-  name: string;
+  first_name: string;
+  last_name: string;
   email: string;
   email_verified_at?: string;
 }
@@ -38,6 +39,14 @@ export interface Project {
   description?: string;
   images?: Image[];
   customer?: Customer;
+}
+
+export interface Logo {
+  id: number;
+  did: string;
+  name: string;
+  poster?: string;
+  file_path: string;
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {

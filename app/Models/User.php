@@ -10,7 +10,7 @@ use \Sushi\Sushi;
 
 class User extends Authenticatable
 {
-  use HasFactory, Notifiable, Sushi;
+  use HasFactory, Notifiable;
 
   /**
    * The attributes that are mass assignable.
@@ -22,6 +22,7 @@ class User extends Authenticatable
     'last_name',
     'email',
     'password',
+    'email_verified_at',
     'phone_number',
     'socials'
   ];
@@ -55,7 +56,7 @@ class User extends Authenticatable
    *
    * @return array<int, array<string, mixed>>
    */
-  protected function getRows()
+  /*protected function getRows()
   {
     return [
       [
@@ -70,5 +71,5 @@ class User extends Authenticatable
         ]),
       ],
     ];
-  }
+  }*/
 }

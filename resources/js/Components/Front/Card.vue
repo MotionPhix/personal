@@ -1,15 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-
-interface Project {
-  id: number;
-  pid: string | null; // UUID, nullable
-  poster: string;
-  // name: string;
-  // description?: string | null; // longText, nullable
-  // createdAt: string; // assuming timestamps are stored as ISO strings
-  // updatedAt: string; // assuming timestamps are stored as ISO strings
-}
+import {Project} from "@/types";
 
 defineProps<{
   project: Project;
