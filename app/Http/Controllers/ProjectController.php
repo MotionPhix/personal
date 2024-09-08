@@ -74,8 +74,8 @@ class ProjectController extends Controller
     $project->customer_id = $customerId;
     $project->poster = url($project->poster); // Ensure poster is a full URL
     $project->images = $project->images->map(function ($image) {
-        $image->src = url($image->src); // Ensure image src is a full URL
-        return $image;
+      $image->src = url($image->src); // Ensure image src is a full URL
+      return $image;
     });
 
     return Inertia::render('Admin/Projects/Form', [
@@ -88,6 +88,76 @@ class ProjectController extends Controller
    */
   public function store(Request $request)
   {
+    $customer = Customer::where('cid', $request->customer_id)->first();
+    $request->merge(['customer_id' => $customer->id]);
+
+    $validated = $request->validate([
+      'name' => 'required|string|max:255',
+      'production' => 'required|date',
+      'customer_id' => 'required|exists:customers,id',
+      'description' => 'nullable|string',
+      'poster' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+      'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+    ]);
+
+    // Handle poster upload
+    if ($request->hasFile('poster')) {
+      // $posterPath = $request->file('poster')->store('posters', 'public');
+
+      $poster = $request->file('poster');
+
+      // Generate a unique filename for the poster
+      $posterFileName = uniqid() . '.' . $poster->getClientOriginalExtension();
+
+      // Move the poster to the "public/posters" directory
+      $poster->move(public_path('posters'), $posterFileName);
+
+      // Generate the relative path (without 'public')
+      $relativePosterPath = '/posters/' . $posterFileName;
+    }
+
+    $project = Project::create([
+      'name' => $validated['name'],
+      'production' => $validated['production'],
+      'customer_id' => $customer->id,
+      'description' => $validated['description'] ?? null,
+      'poster' => $relativePosterPath,
+    ]);
+
+    // Handle multiple image uploads
+    if ($request->hasFile('images')) {
+
+      foreach ($request->file('images') as $image) {
+
+        $imageFileName = uniqid() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('project/images'), $imageFileName);
+
+        // Generate the relative path (without 'public')
+        $relativeImagePath = '/project/images/' . $imageFileName;
+
+        // Get the dimensions of each image
+        $imageSize = getimagesize(public_path($relativeImagePath));
+        $imageDimensions = $imageSize ? "{$imageSize[0]}x{$imageSize[1]}" : null;
+
+        // Save the image in the polymorphic relation using morphMany
+        $project->images()->create([
+          'src' => $relativeImagePath,             // Path of the uploaded image
+          'mime_type' => $image->getClientMimeType(), // MIME type of the file
+          'size' => $imageDimensions, // Save image dimensions as widthxheight
+        ]);
+      }
+    }
+
+    return redirect()->route('auth.projects.index');
+  }
+
+  /**
+   * Update the edited project.
+   */
+  public function update(Request $request, Project $project)
+  {
+    dd($request->all());
+
     $customer = Customer::where('cid', $request->customer_id)->first();
     $request->merge(['customer_id' => $customer->id]);
 
@@ -169,7 +239,7 @@ class ProjectController extends Controller
         $imageRecord->delete();
 
         notify()->success(
-          'New customer was added.',
+          'Image was deleted successfully.',
           'Great!'
         );
 
@@ -177,8 +247,8 @@ class ProjectController extends Controller
       }
 
       notify()->error(
-        'New customer was added.',
-        'Mbola!'
+        'Image could not be found.',
+        'Error!'
       );
 
       return redirect()->back();
@@ -192,10 +262,20 @@ class ProjectController extends Controller
       }
     }
 
+    // Delete the project's poster if it exists
+    if ($project->poster && file_exists(public_path($project->poster))) {
+      unlink(public_path($project->poster));
+    }
+
     // Delete the project and its images
     $project->images()->delete();
     $project->delete();
 
-    return response()->json(['message' => 'Project and all associated images deleted successfully.'], 200);
+    notify()->success(
+      'Project and its images were deleted successfully.',
+      'Great!'
+    );
+
+    return redirect()->back();
   }
 }

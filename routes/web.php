@@ -113,6 +113,11 @@ Route::group(['prefix' => 'auth'], function () {
       [\App\Http\Controllers\ProjectController::class, 'edit'],
     )->name('auth.projects.edit');
 
+    Route::patch(
+      '/u/{project:pid}',
+      [\App\Http\Controllers\ProjectController::class, 'update'],
+    )->name('auth.projects.update');
+
     Route::delete(
       '/d/{project}/{image?}',
       [\App\Http\Controllers\ProjectController::class, 'destroy'],

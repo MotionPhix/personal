@@ -3,9 +3,9 @@
         Options -MultiViews -Indexes
     </IfModule>
 
-    <FilesMatch "\.(jpg|jpeg|png|gif|jfif)$">
-      Header set Content-Disposition inline
-    </FilesMatch>
+    # <FilesMatch "\.(jpg|jpeg|png|gif|jfif)$">
+    #   Header set Content-Disposition inline
+    # </FilesMatch>
 
     RewriteEngine On
 
