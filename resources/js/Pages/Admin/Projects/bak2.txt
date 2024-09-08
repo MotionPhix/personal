@@ -1,0 +1,156 @@
+<script setup lang="ts">
+import Navheader from '@/Components/Backend/Navheader.vue';
+import AuthLayout from '@/Layouts/AuthLayout.vue';
+import { Image, Project } from '@/types';
+import { Head, Link } from '@inertiajs/vue3';
+import { IconDeviceProjector } from '@tabler/icons-vue';
+import { computed, ref } from 'vue';
+
+const props = defineProps<{
+  projects: Project[]
+}>()
+
+// Extract images from all projects
+const allImages = computed(() => {
+  return props.projects.flatMap(project => project.images ?? []);
+});
+
+// Function to chunk the images alternating between groups of 3 and 2
+function chunkImages(images: Image[]) {
+
+  const chunked = [];
+
+  let index = 0;
+
+  while (index < images.length) {
+
+    const chunkSize = chunked.length % 2 === 0 ? 2 : 3; // Alternate between 3 and 2
+
+    chunked.push(images.slice(index, index + chunkSize));
+
+    index += chunkSize;
+
+  }
+
+  return chunked;
+
+}
+
+// function chunkImages(images) {
+//   const chunked = [];
+//   let index = 0;
+//   while (index < images.length) {
+//     const chunkSize = chunked.length % 2 === 0 ? 3 : 2; // Alternate between 3 and 2
+//     chunked.push(images.slice(index, index + chunkSize));
+//     index += chunkSize;
+//   }
+//   return chunked;
+// }
+
+// Chunk the images for display
+// const chunkedImages = ref(chunkImages(images));
+
+// Chunk the images for display
+const chunkedImages = computed(() => chunkImages(allImages.value));
+
+defineOptions({
+  layout: AuthLayout
+})
+</script>
+
+<template>
+
+  <Head title="Available Projects" />
+
+  <Navheader>
+
+    <nav
+      class="flex items-center w-full gap-6 dark:text-white dark:border-gray-700">
+
+      <Link
+        as="button"
+        v-if="projects.length"
+        :href="route('auth.projects.create')"
+        class="flex items-center gap-2 py-2 font-semibold transition duration-300 hover:opacity-70">
+        <IconDeviceProjector class="w-5 h-5 stroke-current" /> <span>Add new</span>
+      </Link>
+
+      <h2 v-else class="text-xl font-semibold">
+        Explore projects
+      </h2>
+
+    </nav>
+
+  </Navheader>
+
+  <main class="max-w-2xl px-4 py-10 mx-auto sm:px-6 lg:px-8 lg:py-14">
+
+    <div class="w-full">
+      <div class="grid grid-cols-2 gap-2 sm:grid-cols-4">
+
+        <!-- Iterate over the chunked images -->
+      <div v-for="(chunk, index) in chunkedImages" :key="index" class="space-y-2">
+
+        <!-- Display each image in the chunk -->
+        <img
+          v-for="(image, imgIndex) in chunk"
+          :key="imgIndex"
+          :src="image.src"
+          alt="Gallery Masonry Image"
+          class="object-cover w-full h-auto"
+        />
+
+      </div>
+
+        <!-- <div class="space-y-2">
+          <img
+            class="object-cover w-full h-auto"
+            src="https://images.unsplash.com/photo-1540575861501-7cf05a4b125a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80"
+            alt="Gallery Masonry Image">
+
+          <img
+            class="object-cover w-full h-auto"
+            src="https://images.unsplash.com/photo-1668906093328-99601a1aa584?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80"
+            alt="Gallery Masonry Image">
+
+          <img
+            class="object-cover w-full h-auto"
+            src="https://images.unsplash.com/photo-1567016526105-22da7c13161a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80"
+            alt="Gallery Masonry Image">
+        </div>
+
+        <div class="space-y-2">
+          <img
+            class="object-cover w-full h-auto"
+            src="https://images.unsplash.com/photo-1668584054131-d5721c515211?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80"
+            alt="Gallery Masonry Image">
+
+          <img
+            class="object-cover w-full h-auto"
+            src="https://images.unsplash.com/photo-1664574654529-b60630f33fdb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80"
+            alt="Gallery Masonry Image">
+        </div>
+
+        <div class="space-y-2">
+          <img class="object-cover w-full h-auto" src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80" alt="Gallery Masonry Image">
+          <img class="object-cover w-full h-auto" src="https://images.unsplash.com/photo-1586232702178-f044c5f4d4b7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80" alt="Gallery Masonry Image">
+          <img class="object-cover w-full h-auto" src="https://images.unsplash.com/photo-1542125387-c71274d94f0a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80" alt="Gallery Masonry Image">
+        </div>
+
+        <div class="space-y-2">
+          <img
+            class="object-cover w-full h-auto"
+            src="https://images.unsplash.com/photo-1668869713519-9bcbb0da7171?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80"
+            alt="Gallery Masonry Image">
+
+          <img
+            class="object-cover w-full h-auto"
+            src="https://images.unsplash.com/photo-1668584054035-f5ba7d426401?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=560&q=80"
+            alt="Gallery Masonry Image">
+        </div> -->
+      </div>
+    </div>
+
+  </main>
+
+</template>

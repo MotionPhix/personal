@@ -9,6 +9,7 @@ export interface User {
 export interface Image {
   id: string;
   fid: string;
+  size: string;
   mime_type: string;
   src: string;
 }
@@ -21,23 +22,24 @@ export interface Address {
 }
 
 export interface Customer {
-  id: number;
-  cid: string;
+  id?: number;
+  cid?: string;
   first_name: string;
   last_name: string;
-  company_name: string;
-  address: string[];
-  customer: Customer;
+  job_title?: string;
+  company_name?: string;
+  address?: Address;
 }
 
 export interface Project {
   id: number;
   pid: string;
-  name?: string;
-  poster: string;
-  production?: string;
+  name: string;
+  poster: string|File;
+  production?: Date;
   description?: string;
-  images?: Image[];
+  images?: Image[]|File[];
+  customer_id: number;
   customer?: Customer;
 }
 

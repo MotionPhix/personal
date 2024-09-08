@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +17,7 @@ class Project extends Model
     'name',
     'description',
     'production',
+    'customer_id',
     'poster',
   ];
 
@@ -26,6 +28,13 @@ class Project extends Model
       'poster' => PurifyHtmlOnGet::class,
       'name' => PurifyHtmlOnGet::class,
     ];
+  }
+
+  protected function production(): Attribute
+  {
+    return Attribute::make(
+      get: fn($value) => \Carbon\Carbon::parse($value)->format('F, Y'),
+    );
   }
 
   public function customer(): BelongsTo

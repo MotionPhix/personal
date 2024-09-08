@@ -1,13 +1,28 @@
 <script setup lang="ts">
 
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { Project } from "@/types";
+import { Image, Project } from "@/types";
 import {Head, Link} from "@inertiajs/vue3";
 import { IconArrowLeft } from "@tabler/icons-vue";
+import { computed } from "vue";
 
-defineProps<{
+const props = defineProps<{
   project: Project;
 }>();
+
+// Extract images from all projects
+const allImages = computed(() => {
+  return props.project.images ?? [];
+});
+
+// Function to determine the grid span based on image size (dynamic span)
+function getGridSpan(image: Image) {
+
+  const [width, height] = image.size.split('x').map(Number);
+
+  // Return the number of rows to span based on the image's height
+  return Math.ceil(height / 200);
+}
 
 defineOptions({
   layout: AppLayout
@@ -25,8 +40,9 @@ defineOptions({
           <div class="max-w-2xl mx-auto lg:max-w-5xl">
             <!-- Back to Projects Button -->
             <Link
+              as="button"
               :href="route('projects.index')"
-              class="group flex items-center gap-2 text-base text-blue-600 dark:text-blue-400 transition-all duration-300 ease-in-out transform hover:-translate-x-1 hover:text-blue-800 dark:hover:text-blue-600"
+              class="flex items-center gap-2 text-base text-blue-600 transition-all duration-300 ease-in-out transform group dark:text-blue-400 hover:-translate-x-1 hover:text-blue-800 dark:hover:text-blue-600"
             >
               <IconArrowLeft size="24" class="hidden group-hover:inline-block" />
 
@@ -34,10 +50,10 @@ defineOptions({
             </Link>
 
             <div
-              class="md:h-[calc(100vh-400px)] group my-10 max-w-full h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
+              class="md:h-[calc(100vh-300px)] group my-10 max-w-full h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
               :style="{ backgroundImage: `url(${project.poster})` }">
 
-              <div class="w-2/3 pb-5 mt-auto md:max-w-lg ps-5 md:ps-10 md:pb-10">
+              <!-- <div class="w-2/3 pb-5 mt-auto md:max-w-lg ps-5 md:ps-10 md:pb-10">
 
                 <span class="block text-white">
                   Nike React
@@ -48,7 +64,7 @@ defineOptions({
                   Rewriting sport's playbook for billions of athletes
                 </span>
 
-              </div>
+              </div> -->
 
             </div>
 
@@ -59,9 +75,9 @@ defineOptions({
                 {{ project.name }}
               </h1>
 
-              <p class="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-                {{ project.description }}
-              </p>
+              <section class="mt-6 text-base text-zinc-600 dark:text-zinc-400">
+                <div v-html="project.description"></div>
+              </section>
 
               <div class="mt-4">
 
@@ -117,7 +133,26 @@ defineOptions({
             </header>
 
             <!-- Project Images -->
-            <div class="grid grid-cols-2 gap-4 mb-8">
+             <!-- Grid container with auto-rows for masonry layout -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[1fr]">
+
+              <!-- Iterate over the chunked images -->
+              <div
+                v-for="(image, index) in allImages"
+                :key="index"
+                class="relative overflow-hidden rounded-lg"
+                :style="{ gridRowEnd: `span ${getGridSpan(image)}` }"
+              >
+                <img
+                  :src="image.src"
+                  :alt="'Image ' + index"
+                  class="object-cover w-full h-full"
+                />
+              </div>
+
+            </div>
+
+            <!-- <div class="grid grid-cols-2 gap-4 mb-8">
               <img
                 v-for="image in project.images"
                 :key="image.fid"
@@ -125,11 +160,16 @@ defineOptions({
                 alt="Project Image"
                 class="object-cover w-full rounded-lg shadow-lg"
               />
-            </div>
+            </div> -->
+
           </div>
+
         </div>
+
       </div>
+
     </div>
+
   </main>
 
 

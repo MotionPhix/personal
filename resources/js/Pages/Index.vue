@@ -80,37 +80,43 @@ defineOptions({ layout: AppLayout })
             </a>, where I design artworks, convert them into print-ready artworks, and provide comprehensive support to our customers. I am passionate about crafting elegant and functional designs that enhance user experiences and businesses.
         </p>
 
-        <ul class="flex flex-col mt-5 gap-y-3">
-          <li class="flex items-center gap-x-2.5">
-            <IconMail size="16" class="dark:text-neutral-500" />
+        <ul class="flex gap-2 mt-10 sm:gap-x-4">
+
+          <li>
 
             <a
-              class="text-base text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
+              class="text-base flex items-center gap-2.5 text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
               href="mailto:support@ultrashots.net" target="_blank">
-              {{ user?.email }}
+              <IconMail size="24" class="dark:text-neutral-500" />
+              <span class="hidden sm:inline-flex">{{ user?.email }}</span>
             </a>
+
           </li>
 
-          <li class="flex items-center gap-x-2.5">
-            <IconBrandX size="16" class="dark:text-neutral-500" />
+          <li>
 
             <a
-              class="text-base text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
+              class="text-base flex items-center gap-2.5 text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
               href="https://x.com/ultrashoots" target="_blank">
-              {{ user?.socials?.twitter }}
+              <IconBrandX size="24" class="dark:text-neutral-500" />
+              <span class="hidden sm:inline-flex">{{ user?.socials?.twitter }}</span>
             </a>
+
           </li>
 
-          <li class="flex items-center gap-x-2.5">
-            <IconBrandBehance size="16" class="dark:text-neutral-500" />
+          <li>
 
             <a
-              class="text-base text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
+              class="text-base flex items-center gap-2.5 text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
               href="https://be.net/ultrashots" target="_blank">
-              {{ user?.socials?.behance }}
+              <IconBrandBehance size="24" class="dark:text-neutral-500" />
+              <span class="hidden sm:inline-flex">{{ user?.socials?.behance }}</span>
             </a>
+
           </li>
+
         </ul>
+
       </div>
       <!-- End About -->
 

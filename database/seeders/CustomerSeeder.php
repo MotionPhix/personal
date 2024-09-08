@@ -15,24 +15,16 @@ class CustomerSeeder extends Seeder
    */
   public function run(): void
   {
-    // Customer::factory(5)->create();
-
-    // Customer::factory(5)
-    //   ->hasProjects(rand(2, 5))
-    //   ->create();
-
-    Customer::factory(5)
+    Customer::factory(2)
       ->create()
       ->each(function ($customer) {
-        // For each customer, create 3 to 5 projects
         $customer->projects()->createMany(
-          Project::factory(rand(3, 5))->make()->toArray()
+          Project::factory(rand(1, 3))->make()->toArray()
         )->each(function ($project) {
-          // For each project, create 3 to 5 photos
-          Photo::factory(rand(2, 4))
+          Photo::factory(rand(1, 2))
             ->create([
               'model_id' => $project->id,
-              'model_type' => Project::class,  // Polymorphic type
+              'model_type' => Project::class,
             ]);
         });
       });

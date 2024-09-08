@@ -13,6 +13,6 @@ class LogoSeeder extends Seeder
      */
     public function run(): void
     {
-      Logo::factory(20)->create();
+      Logo::factory(5)->create();
     }
 }

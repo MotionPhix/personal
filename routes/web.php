@@ -65,26 +65,46 @@ Route::group(['prefix' => 'auth'], function () {
   Route::group(['prefix' => 'customers'], function () {
 
     Route::get(
-      '/create',
+      '/',
+      [\App\Http\Controllers\CustomerController::class, 'index'],
+    )->name('auth.customer.index');
+
+    Route::get(
+      '/c',
       [\App\Http\Controllers\CustomerController::class, 'create'],
     )->name('auth.customer.create');
 
     Route::post(
-      '/store',
+      '/u',
+      [\App\Http\Controllers\CustomerController::class, 'update'],
+    )->name('auth.customer.update');
+
+    Route::post(
+      '/s',
       [\App\Http\Controllers\CustomerController::class, 'store'],
     )->name('auth.customer.store');
+
+    Route::get(
+      '/e/{customer:cid}',
+      [\App\Http\Controllers\CustomerController::class, 'edit'],
+    )->name('auth.customer.edit');
 
   });
 
   Route::group(['prefix' => 'projects'], function () {
 
     Route::get(
-      '/create',
+      '/',
+      [\App\Http\Controllers\ProjectController::class, 'listing'],
+    )->name('auth.projects.index');
+
+    Route::get(
+      '/c',
       [\App\Http\Controllers\ProjectController::class, 'create'],
     )->name('auth.projects.create');
 
     Route::post(
-      '/store',
+      '/s',
       [\App\Http\Controllers\ProjectController::class, 'store'],
     )->name('auth.projects.store');
 

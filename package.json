@@ -6,20 +6,40 @@
     "build": "vue-tsc && vite build"
   },
   "devDependencies": {
+    "@headlessui/vue": "^1.7.22",
     "@inertiajs/vue3": "^1.0.0",
+    "@popperjs/core": "^2.11.8",
     "@tabler/icons-vue": "^3.14.0",
     "@tailwindcss/forms": "^0.5.3",
+    "@tiptap/extension-placeholder": "^2.6.6",
+    "@tiptap/extension-text-align": "^2.6.6",
+    "@tiptap/extension-underline": "^2.6.6",
+    "@tiptap/pm": "^2.6.6",
+    "@tiptap/starter-kit": "^2.6.6",
+    "@tiptap/vue-3": "^2.6.6",
+    "@types/lodash": "^4.17.7",
     "@vitejs/plugin-vue": "^5.0.0",
+    "@vueuse/components": "^11.0.3",
     "autoprefixer": "^10.4.12",
     "axios": "^1.6.4",
+    "filepond": "^4.31.2",
+    "filepond-plugin-file-validate-size": "^2.2.8",
+    "filepond-plugin-file-validate-type": "^1.2.9",
+    "filepond-plugin-image-preview": "^4.6.12",
     "laravel-vite-plugin": "^1.0",
+    "pinia": "^2.2.2",
     "postcss": "^8.4.31",
     "preline": "^2.4.1",
     "tailwindcss": "^3.2.1",
     "typescript": "^5.5.3",
     "unplugin-vue-define-options": "^1.4.9",
+    "v-calendar": "^3.1.2",
     "vite": "^5.0",
     "vue": "^3.4.0",
+    "vue-filepond": "^7.0.4",
     "vue-tsc": "^2.0.24"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   }
 }
