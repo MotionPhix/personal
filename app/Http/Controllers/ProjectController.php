@@ -66,6 +66,24 @@ class ProjectController extends Controller
   }
 
   /**
+   * Edit the selected project.
+   */
+  public function edit(Project $project): Response
+  {
+    $customerId = Customer::where('id', $project->customer_id)->first()->cid;
+    $project->customer_id = $customerId;
+    $project->poster = url($project->poster); // Ensure poster is a full URL
+    $project->images = $project->images->map(function ($image) {
+        $image->src = url($image->src); // Ensure image src is a full URL
+        return $image;
+    });
+
+    return Inertia::render('Admin/Projects/Form', [
+      'project' => $project,
+    ]);
+  }
+
+  /**
    * Display the available projects in admin for crud.
    */
   public function store(Request $request)
@@ -131,5 +149,53 @@ class ProjectController extends Controller
     }
 
     return redirect()->route('auth.projects.index');
+  }
+
+  // Method to delete a project or an image
+  public function destroy(Project $project, $image = null)
+  {
+    // Check if the image parameter is provided
+    if ($image) {
+      // If the image is provided, delete the specific image
+      $imageRecord = $project->images()->where('id', $image)->first();
+
+      if ($imageRecord) {
+        // Delete the image file if stored locally
+        if (file_exists(public_path($imageRecord->src))) {
+          unlink(public_path($imageRecord->src));
+        }
+
+        // Delete the image record from the database
+        $imageRecord->delete();
+
+        notify()->success(
+          'New customer was added.',
+          'Great!'
+        );
+
+        return redirect()->back();
+      }
+
+      notify()->error(
+        'New customer was added.',
+        'Mbola!'
+      );
+
+      return redirect()->back();
+    }
+
+    // If no image is provided, delete the entire project along with all its images
+    foreach ($project->images as $imageRecord) {
+      // Delete each image file if stored locally
+      if (file_exists(public_path($imageRecord->src))) {
+        unlink(public_path($imageRecord->src));
+      }
+    }
+
+    // Delete the project and its images
+    $project->images()->delete();
+    $project->delete();
+
+    return response()->json(['message' => 'Project and all associated images deleted successfully.'], 200);
   }
 }

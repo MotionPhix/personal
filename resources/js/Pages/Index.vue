@@ -141,12 +141,11 @@ defineOptions({ layout: AppLayout })
       <!-- End Education -->
 
       <!-- Articles -->
-      <div class="my-10 sm:my-14">
+      <!-- <div class="my-10 sm:my-14">
         <h2 class="mb-5 font-medium text-gray-800 dark:text-neutral-200">
           Articles
         </h2>
 
-        <!-- List -->
         <ul class="space-y-10">
           <li>
             <p class="mb-2 text-sm text-gray-500 dark:text-neutral-500">
@@ -208,8 +207,8 @@ defineOptions({ layout: AppLayout })
             </p>
           </li>
         </ul>
-        <!-- End List -->
-      </div>
+
+      </div> -->
       <!-- End Articles -->
 
       <!-- Subscribe -->

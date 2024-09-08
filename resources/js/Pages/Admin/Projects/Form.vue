@@ -17,7 +17,7 @@ import { UseDark } from "@vueuse/components";
 
 import { DatePicker } from 'v-calendar'
 
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 
 import 'v-calendar/style.css'
 
@@ -51,6 +51,9 @@ const FilePondInput = vueFilePond(
 
 const singlePond = ref<FilePond | null>(null);
 const multiPond = ref<FilePond | null>(null);
+
+const singleFile = ref(null);
+const multiFile = ref(null);
 
 const props = defineProps<{
   project: Project;
@@ -96,7 +99,6 @@ const handleImagesChange = () => {
   }
 
 };
-
 
 function onSubmit() {
 
@@ -151,6 +153,33 @@ const disabledDates = ref([
     },
   },
 ])
+
+onMounted(() => {
+  if (props.project.poster) {
+    singleFile.value = [{
+      source: props.project.poster,
+      options: {
+        type: 'server',
+      },
+    }];
+  }
+
+  if (props.project.images) {
+    multiFile.value = props.project.images.map((image: Image) => ({
+      source: image.src,           // The URL or relative path of the image
+      options: {
+        type: 'server',             // Mark the file as a "local" file, not a new upload
+        file: {
+          name: image.id,          // Optional: Use the image id or name
+          type: image.mime_type,   // The MIME type of the file (e.g., 'image/jpeg')
+        },
+        metadata: {
+          size: image.size,        // Optional: If you have the size information
+        },
+      },
+    }));
+  }
+})
 
 defineOptions({
   layout: AuthLayout,
@@ -218,9 +247,10 @@ defineOptions({
                 name="Project Poster Image"
                 ref="singlePond"
                 maxFileSize="1MB"
+                :files="singleFile"
                 label-idle="Drop your poster here..."
                 v-bind:allow-multiple="false"
-                accepted-file-types="image/jpeg, image/png"
+                accepted-file-types="image/*"
                 @addfile="handlePosterChange"
               />
 
@@ -314,11 +344,12 @@ defineOptions({
             <FilePondInput
               name="Project Images"
               ref="multiPond"
+              :files="multiFile"
               maxFileSize="2MB"
               label-idle="Drop project images here..."
               v-bind:allow-multiple="true"
               v-bind:allowImagePreview="false"
-              accepted-file-types="image/jpeg, image/png"
+              accepted-file-types="image/jpeg, image/png, image/jpg, image/jfif, image/gif"
               @addfile="handleImagesChange"
               @removefile="handleImagesChange"
             />

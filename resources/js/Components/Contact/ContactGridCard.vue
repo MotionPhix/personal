@@ -104,9 +104,9 @@ router.on('navigate', (e) => {
     </Link>
 
     <div
-      class="absolute z-20 items-center justify-end hidden gap-2 px-2 pt-1 bg-gray-500 rounded cursor-pointer dark:bg-neutral-700 group-hover:flex bottom-2 right-2">
+      class="absolute z-20 items-center justify-end hidden gap-2 px-2 pt-1 bg-gray-300 rounded cursor-pointer group-hover:flex dark:bg-neutral-700 bottom-2 right-2">
 
-        <p class="text-sm text-gray-500 dark:text-gray-400">
+        <p class="text-sm text-gray-500 transition duration-300 hover:text-blue-500 dark:text-gray-400">
             <Link
               as="button"
               :href="route('auth.projects.create', props.contact.cid)">
@@ -115,7 +115,7 @@ router.on('navigate', (e) => {
         </p>
 
         <p
-          class="text-sm text-gray-500 dark:text-gray-400">
+          class="text-sm text-gray-500 transition hover:text-blue-500 duration-00 dark:text-gray-400">
           <Link
             as="button"
             :href="route('auth.customer.edit', props.contact.cid)">

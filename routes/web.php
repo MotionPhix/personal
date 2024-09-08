@@ -108,6 +108,16 @@ Route::group(['prefix' => 'auth'], function () {
       [\App\Http\Controllers\ProjectController::class, 'store'],
     )->name('auth.projects.store');
 
+    Route::get(
+      '/e/{project}',
+      [\App\Http\Controllers\ProjectController::class, 'edit'],
+    )->name('auth.projects.edit');
+
+    Route::delete(
+      '/d/{project}/{image?}',
+      [\App\Http\Controllers\ProjectController::class, 'destroy'],
+    )->name('auth.projects.destroy');
+
   });
 
   Route::group(['prefix' => 'downloads'], function () {
