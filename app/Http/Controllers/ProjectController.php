@@ -148,6 +148,11 @@ class ProjectController extends Controller
       }
     }
 
+    session()->flash('notify', [
+      'type' => 'success',
+      'message' => 'Project has been successfully added!'
+    ]);
+
     return redirect()->route('auth.projects.index');
   }
 
@@ -156,8 +161,6 @@ class ProjectController extends Controller
    */
   public function update(Request $request, Project $project)
   {
-    dd($request->all());
-
     $customer = Customer::where('cid', $request->customer_id)->first();
     $request->merge(['customer_id' => $customer->id]);
 
@@ -238,18 +241,20 @@ class ProjectController extends Controller
         // Delete the image record from the database
         $imageRecord->delete();
 
-        notify()->success(
-          'Image was deleted successfully.',
-          'Great!'
-        );
+        session()->flash('notify', [
+          'type' => 'success',
+          'title' => 'Bravo',
+          'message' => 'Image was deleted successfully!'
+        ]);
 
         return redirect()->back();
       }
 
-      notify()->error(
-        'Image could not be found.',
-        'Error!'
-      );
+      session()->flash('notify', [
+        'type' => 'danger',
+        'title' => 'Failed',
+        'message' => 'Image could not be found!'
+      ]);
 
       return redirect()->back();
     }
@@ -269,12 +274,14 @@ class ProjectController extends Controller
 
     // Delete the project and its images
     $project->images()->delete();
+
     $project->delete();
 
-    notify()->success(
-      'Project and its images were deleted successfully.',
-      'Great!'
-    );
+    session()->flash('notify', [
+      'type' => 'success',
+      'title' => 'Done',
+      'message' => 'Project and its images were deleted successfully!'
+    ]);
 
     return redirect()->back();
   }

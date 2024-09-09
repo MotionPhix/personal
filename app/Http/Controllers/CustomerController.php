@@ -51,11 +51,6 @@ class CustomerController extends Controller
       ],
     ];
 
-    notify()->success(
-      'New customer was added.',
-      'Great!'
-    );
-
     return Inertia::render('Admin/Customers/Form', [
       'customer' => $customer,
     ]);
@@ -63,11 +58,11 @@ class CustomerController extends Controller
 
   public function store(Request $request)
   {
-
-    notify()->success(
-      'New customer was added.',
-      'Great!'
-    );
+    session()->flash('notify', [
+      'type' => 'danger',
+      'title' => 'Great',
+      'message' => 'New customer was added!'
+    ]);
 
     $validated = $request->validate([
       'first_name' => 'required|string|max:255',
@@ -88,6 +83,12 @@ class CustomerController extends Controller
     ]);
 
     Customer::create($validated);
+
+    session()->flash('notify', [
+      'type' => 'success',
+      'title' => 'Great',
+      'message' => 'New customer was added!'
+    ]);
 
     return redirect(route('auth.customer.index'));
   }

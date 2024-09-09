@@ -114,7 +114,7 @@ Route::group(['prefix' => 'auth'], function () {
     )->name('auth.projects.edit');
 
     Route::patch(
-      '/u/{project:pid}',
+      '/u/{project}',
       [\App\Http\Controllers\ProjectController::class, 'update'],
     )->name('auth.projects.update');
 

@@ -9,7 +9,7 @@ import TextInput from "@/Components/TextInput.vue";
 
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 
-import { Head, Link, useForm } from "@inertiajs/vue3";
+import {Head, Link, useForm} from "@inertiajs/vue3";
 
 import { IconPlus } from "@tabler/icons-vue";
 
@@ -100,9 +100,9 @@ defineOptions({
 
   <Navheader>
 
-    <h3 class="font-thin dark:text-white">
+    <h2 class="text-xl font-semibold dark:text-gray-300 sm:inline-block">
       {{ props.customer.cid ? `Edit ${customer.first_name} ${customer.last_name}` : 'New customer'}}
-    </h3>
+    </h2>
 
     <span class="flex-1"></span>
 

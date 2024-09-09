@@ -83,7 +83,24 @@ const handlePosterChange = () => {
 };
 
 // Handle file selection for images (multiple)
-const handleImagesChange = () => {
+const handleAddImages = () => {
+
+  const files = multiPond.value?.getFiles(); // Get the array of FilePond files
+
+  if (files && files.length) {
+
+    // Map over the files and return their file objects
+    form.images = files.map(fileItem => fileItem.file as File);
+
+  } else {
+
+    form.images = []
+
+  }
+
+};
+
+const handleRemoveImages = async () => {
 
   const files = multiPond.value?.getFiles(); // Get the array of FilePond files
 
@@ -115,8 +132,8 @@ function onSubmit() {
       formData.description = data.description
     }
 
-    if (data.images?.length && data.images[0] instanceof File) {
-      formData.images = data.images
+    if (data.images?.length) {
+      formData.images = data.images // && data.images[0] instanceof File
     }
 
     return formData;
@@ -200,9 +217,7 @@ defineOptions({
       <nav
       class="flex items-center w-full gap-6 mx-auto dark:text-white dark:border-gray-700"
     >
-      <h2
-        class="hidden font-semibold text-gray-800 dark:text-gray-300 sm:inline-block"
-      >
+      <h2 class="text-xl font-semibold dark:text-gray-300 sm:inline-block">
         New project
       </h2>
 
@@ -248,6 +263,7 @@ defineOptions({
             </label>
 
               <FilePondInput
+                credits="false"
                 name="Project Poster Image"
                 ref="singlePond"
                 maxFileSize="1MB"
@@ -347,17 +363,18 @@ defineOptions({
             </label>
 
             <FilePondInput
+              credits="false"
               name="Project Images"
               ref="multiPond"
-              v-bind:files="multiFile"
+              :files="multiFile"
               maxFileSize="2MB"
               label-idle="Drop project images here..."
-              v-bind:allow-multiple="true"
-              v-bind:allowImagePreview="true"
+              :allow-multiple="true"
+              :allowImagePreview="project.pid"
               accepted-file-types="image/jpeg, image/png"
-              v-on:init="handleImagesInit"
-              @addfile="handleImagesChange"
-              @removefile="handleImagesChange"
+              @init="handleImagesInit"
+              @addfile="handleAddImages"
+              @removefile="handleRemoveImages"
             />
 
             <InputError :message="form.errors.images" />

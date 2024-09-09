@@ -2,7 +2,14 @@
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import Navheader from "@/Components/Backend/Navheader.vue";
-import { IconPlus, IconUser, IconBuildingEstate, IconBalloon } from "@tabler/icons-vue";
+import {Menu, MenuButton, MenuItem, MenuItems} from "@headlessui/vue";
+import {
+  IconPlus,
+  IconUserPlus,
+  IconBuildingEstate,
+  IconBalloon,
+} from "@tabler/icons-vue";
+import Footnote from "@/Components/Front/Footnote.vue";
 
 defineOptions({
   layout: AuthLayout
@@ -10,66 +17,113 @@ defineOptions({
 </script>
 
 <template>
-    <Head title="Dashboard" />
+  <Head title="Dashboard" />
 
-    <Navheader>
-      <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-        Dashboard
-      </h2>
+  <Navheader>
+    <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+      Dashboard
+    </h2>
 
-      <div class="hs-dropdown relative inline-flex">
+    <Menu as="div" class="relative inline-block text-left z-40">
 
-        <button
-          id="hs-dropdown-with-title"
-          type="button"
-          class="hs-dropdown-toggle p-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+      <div>
+        <MenuButton
+          class="inline-flex w-full justify-center rounded-md bg-black/20 p-2 text-sm font-medium text-white hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
+        >
+          <IconPlus
+            class="text-violet-200 hover:text-violet-100"
+            aria-hidden="true"
+            size="24"
+          />
+        </MenuButton>
+      </div>
 
-          <IconPlus stroke-width="3" size="16" />
+      <transition
+        enter-active-class="transition duration-100 ease-out"
+        enter-from-class="transform scale-95 opacity-0"
+        enter-to-class="transform scale-100 opacity-100"
+        leave-active-class="transition duration-75 ease-in"
+        leave-from-class="transform scale-100 opacity-100"
+        leave-to-class="transform scale-95 opacity-0"
+      >
+        <MenuItems
+          class="absolute left-0 mt-2 w-40 divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
+        >
+          <div class="px-1 py-1">
+            <MenuItem v-slot="{ active }">
+              <Link
+                as="button"
+                :class="[
+                  active ? 'bg-violet-500 text-white' : 'text-gray-900',
+                  'group flex gap-2 w-full items-center rounded-md px-2 py-2 text-sm',
+                ]"
+                :href="route('auth.customer.create')"
+              >
+                <IconUserPlus
+                  :active="active"
+                  class="text-violet-400 size-7"
+                  aria-hidden="true"
+                />
 
-        </button>
+                <span>Add customer</span>
+              </Link>
+            </MenuItem>
 
-        <div
-          class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-60 bg-white shadow-md rounded-lg p-1 space-y-0.5 mt-2 divide-y divide-gray-200 dark:bg-neutral-800 dark:border dark:border-neutral-700 dark:divide-neutral-700"
-          role="menu" aria-orientation="vertical" aria-labelledby="hs-dropdown-with-title">
+            <MenuItem v-slot="{ active }">
+              <Link
+                as="button"
+                :class="[
+                  active ? 'bg-violet-500 text-white' : 'text-gray-900',
+                  'group flex gap-2 w-full items-center rounded-md px-2 py-2 text-sm',
+                ]"
+                :href="route('auth.projects.create')"
+              >
+                <IconBuildingEstate
+                  :active="active"
+                  class="text-violet-400 size-7"
+                  aria-hidden="true"
+                />
+                <span>Add project</span>
+              </Link>
+            </MenuItem>
 
-          <div class="py-2 first:pt-0 last:pb-0">
-            <span class="block py-2 px-3 text-xs font-medium uppercase text-gray-400 dark:text-neutral-500">
-              Actions
-            </span>
-
-            <Link
-              class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700"
-              :href="route('auth.customer.create')">
-              <IconUser class="shrink-0 size-4" />
-              Add customer
-            </Link>
-
-            <Link
-              class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700"
-              :href="route('auth.projects.create')">
-              <IconBuildingEstate class="shrink-0 size-4" />
-              Add project
-            </Link>
-
-            <Link
-              class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700"
-              :href="route('auth.downloads.create')">
-              <IconBalloon class="shrink-0 size-4" />
-              Add logo
-            </Link>
+            <MenuItem v-slot="{ active }">
+              <Link
+                as="button"
+                :class="[
+                  active ? 'bg-violet-500 text-white' : 'text-gray-900',
+                  'group flex gap-2 w-full items-center rounded-md px-2 py-2 text-sm',
+                ]"
+                :href="route('auth.downloads.create')"
+              >
+                <IconBalloon
+                  :active="active"
+                  class="text-violet-400 size-7"
+                  aria-hidden="true"
+                />
+                <span>Add logo</span>
+              </Link>
+            </MenuItem>
           </div>
 
+        </MenuItems>
+
+      </transition>
+
+    </Menu>
+
+  </Navheader>
+
+  <main class="w-full max-w-2xl px-4 py-10 mx-auto md:pt-16 sm:px-6 lg:px-8">
+    <div class="w-full mx-auto">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 text-gray-900 dark:text-gray-100">
+              You're logged in!
+            </div>
         </div>
+    </div>
+  </main>
 
-      </div>
+  <Footnote />
 
-    </Navheader>
-
-    <div class="py-12">
-          <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-              <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                  <div class="p-6 text-gray-900 dark:text-gray-100">You're logged in!</div>
-              </div>
-          </div>
-      </div>
 </template>

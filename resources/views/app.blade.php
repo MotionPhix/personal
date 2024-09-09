@@ -21,25 +21,21 @@
   <title inertia>{{ config('app.name', 'Ultrashots') }}</title>
 
   <!-- Theme Check and Update -->
-  <script>
-    const html = document.querySelector('html');
-    const isLightOrAuto = localStorage.getItem('hs_theme') === 'light' || (localStorage.getItem('hs_theme') === 'auto' && !window.matchMedia('(prefers-color-scheme: dark)').matches);
-    const isDarkOrAuto = localStorage.getItem('hs_theme') === 'dark' || (localStorage.getItem('hs_theme') === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+{{--  <script>--}}
+{{--    const html = document.querySelector('html');--}}
+{{--    const isLightOrAuto = localStorage.getItem('hs_theme') === 'light' || (localStorage.getItem('hs_theme') === 'auto' && !window.matchMedia('(prefers-color-scheme: dark)').matches);--}}
+{{--    const isDarkOrAuto = localStorage.getItem('hs_theme') === 'dark' || (localStorage.getItem('hs_theme') === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);--}}
 
-    if (isLightOrAuto && html.classList.contains('dark')) html.classList.remove('dark');
-    else if (isDarkOrAuto && html.classList.contains('light')) html.classList.remove('light');
-    else if (isDarkOrAuto && !html.classList.contains('dark')) html.classList.add('dark');
-    else if (isLightOrAuto && !html.classList.contains('light')) html.classList.add('light');
-  </script>
+{{--    if (isLightOrAuto && html.classList.contains('dark')) html.classList.remove('dark');--}}
+{{--    else if (isDarkOrAuto && html.classList.contains('light')) html.classList.remove('light');--}}
+{{--    else if (isDarkOrAuto && !html.classList.contains('dark')) html.classList.add('dark');--}}
+{{--    else if (isLightOrAuto && !html.classList.contains('light')) html.classList.add('light');--}}
+{{--  </script>--}}
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.bunny.net">
 
   <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
-
-  <style type="text/css"> .notify{ z-index: 1000000; margin-top: 3%; } </style>
-
-  @notifyCss
 
   <!-- Scripts -->
   @routes
@@ -48,9 +44,6 @@
 </head>
 
 <body class="font-sans antialiased dark:bg-neutral-900">
-  @include('notify::components.notify')
-  {{-- <x-notify::notify /> --}}
   @inertia
-  @notifyJs
 </body>
 </html>

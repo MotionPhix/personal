@@ -26,11 +26,17 @@ const {
       as="button"
       v-if="props.contacts.length"
       :href="route('auth.customer.create')"
-      class="flex items-center gap-2 py-2 font-semibold transition duration-300 hover:opacity-70">
-      <IconContactAdd class="w-5 h-5 stroke-current" /> <span>Add new</span>
+      class="py-1.5 font-semibold transition duration-300 hover:opacity-70">
+
+      <h2 class="flex items-center text-xl gap-2 dark:text-gray-300">
+
+        <IconContactAdd class="size-5" /> <span>Add new</span>
+
+      </h2>
+
     </Link>
 
-    <h2 v-else class="text-xl font-semibold">
+    <h2 v-else class="text-xl font-semibold dark:text-gray-300 sm:inline-block">
       Explore customers
     </h2>
 

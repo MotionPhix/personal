@@ -11,7 +11,6 @@
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
-        "mckenziearts/laravel-notify": "^2.5",
         "stevebauman/purify": "^6.2",
         "tightenco/ziggy": "^2.0"
     },

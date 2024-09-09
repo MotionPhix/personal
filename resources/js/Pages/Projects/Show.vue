@@ -77,7 +77,7 @@ defineOptions({
             </Link>
 
             <div
-              class="md:h-[calc(100vh-300px)] group my-10 max-w-full h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
+              class="md:h-[calc(100vh-400px)] group my-10 max-w-full h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
               :style="{ backgroundImage: `url(${project.poster})` }">
 
               <!-- <div class="w-2/3 pb-5 mt-auto md:max-w-lg ps-5 md:ps-10 md:pb-10">
@@ -102,8 +102,8 @@ defineOptions({
                 {{ project.name }}
               </h1>
 
-              <section class="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-                <div v-html="project.description"></div>
+              <section class="my-12 text-base text-zinc-600 dark:text-zinc-400">
+                <div v-html="project.description" class="prose prose-invert"></div>
               </section>
 
               <div class="mt-4">

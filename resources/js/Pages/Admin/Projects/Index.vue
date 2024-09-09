@@ -3,11 +3,13 @@ import Navheader from '@/Components/Backend/Navheader.vue';
 import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { Image, Project } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
-import { IconCapProjecting, IconDeviceProjector, IconDots, IconImageInPicture, IconPencil, IconTrash } from '@tabler/icons-vue';
+import { IconDeviceProjector, IconInbox, IconDots, IconPhotoX, IconPencil, IconTableShortcut } from '@tabler/icons-vue';
 import { computed } from 'vue';
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import Footnote from "@/Components/Front/Footnote.vue";
 
 const props = defineProps<{
-  projects: Project[]
+  projects: Project[],
 }>()
 
 // Extract images from all projects
@@ -50,13 +52,13 @@ defineOptions({
 
       <Link
         as="button"
-        v-if="projects.length"
+        v-if="allImages.length"
         :href="route('auth.projects.create')"
         class="flex items-center gap-2 py-2 font-semibold transition duration-300 hover:opacity-70">
         <IconDeviceProjector class="w-5 h-5 stroke-current" /> <span>Add new</span>
       </Link>
 
-      <h2 v-else class="text-xl font-semibold">
+      <h2 v-else class="text-xl font-semibold py-1.5">
         Explore projects
       </h2>
 
@@ -66,25 +68,7 @@ defineOptions({
 
   <main class="max-w-2xl px-4 py-10 mx-auto sm:px-6 lg:px-8 lg:py-14">
 
-    <div class="w-full">
-
-      <!-- Grid container with auto-rows for masonry layout -->
-      <!-- <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[1fr]">
-
-        <div
-          v-for="(image, index) in allImages"
-          :key="index"
-          class="relative overflow-hidden rounded-lg"
-          :style="{ gridRowEnd: `span ${getGridSpan(image)}` }"
-        >
-          <img
-            :src="image.src"
-            :alt="'Image ' + index"
-            class="object-cover w-full h-full"
-          />
-        </div>
-
-      </div> -->
+    <div v-if="allImages.length" class="w-full">
 
       <div class="gap-4 space-y-4 columns-2 sm:columns-3" :style="allImages.length > 3 ? 'direction: rtl;' : ''">
 
@@ -112,47 +96,74 @@ defineOptions({
               <IconPencil size="24" />
             </Link>
 
-            <div class="relative inline-flex hs-dropdown">
-              <button
-                id="hs-dropdown-with-icons"
-                type="button"
-                class="inline-flex items-center p-1 text-sm font-medium text-gray-800 bg-white border border-gray-200 rounded-lg shadow-sm hs-dropdown-toggle gap-x-2 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
-                <IconDots size="24" />
-                <!-- <svg class="hs-dropdown-open:rotate-180 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg> -->
-              </button>
-
-              <div
-                class="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-20 bg-white shadow-md rounded-lg p-1 space-y-0.5 mt-2 divide-y divide-gray-200 dark:bg-neutral-800 dark:border dark:border-neutral-700 z-50 dark:divide-neutral-700" role="menu" aria-orientation="vertical" aria-labelledby="hs-dropdown-with-icons">
-
-                <div class="py-2 first:pt-0 last:pb-0">
-
-                  <Link
-                    as="button"
-                    method="delete"
-                    preserve-scroll
-                    :href="route('auth.projects.destroy', { project: image.model_id })"
-                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700">
-
-                    <IconCapProjecting class="shrink-0 size-5" />
-                    Project
-
-                  </Link>
-
-                  <Link
-                    as="button"
-                    method="delete"
-                    preserve-scroll
-                    :href="route('auth.projects.destroy', { project: image.model_id, image: image.id})"
-                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700">
-                    <IconImageInPicture class="shrink-0 size-5" />
-                    Image
-                  </Link>
-
-                </div>
-
+            <Menu as="div" class="relative inline-block text-left z-40">
+              <div>
+                <MenuButton
+                  class="inline-flex w-full justify-center rounded-md bg-black/20 p-2 text-sm font-medium text-white hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
+                >
+                  <IconDots
+                    class="h-5 w-5 text-violet-200 hover:text-violet-100"
+                    aria-hidden="true"
+                  />
+                </MenuButton>
               </div>
 
-            </div>
+              <transition
+                enter-active-class="transition duration-100 ease-out"
+                enter-from-class="transform scale-95 opacity-0"
+                enter-to-class="transform scale-100 opacity-100"
+                leave-active-class="transition duration-75 ease-in"
+                leave-from-class="transform scale-100 opacity-100"
+                leave-to-class="transform scale-95 opacity-0"
+              >
+                <MenuItems
+                  class="absolute right-0 mt-2 w-24 origin-bottom-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
+                >
+                  <div class="px-1 py-1">
+                    <MenuItem v-slot="{ active }">
+                      <Link
+                        as="button"
+                        method="delete"
+                        :class="[
+                          active ? 'bg-violet-500 text-white' : 'text-gray-900',
+                          'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                        ]"
+                        :href="route('auth.projects.destroy', image.model_id)"
+                      >
+                        <IconTableShortcut
+                          :active="active"
+                          class="mr-2 h-5 w-5 text-violet-400"
+                          aria-hidden="true"
+                        />
+                        Project
+                      </Link>
+                    </MenuItem>
+
+                    <MenuItem v-slot="{ active }">
+                      <Link
+                        as="button"
+                        method="delete"
+                        :class="[
+                          active ? 'bg-violet-500 text-white' : 'text-gray-900',
+                          'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                        ]"
+                        :href="route('auth.projects.destroy', { project: image.model_id, image: image.id })"
+                      >
+                        <IconPhotoX
+                          :active="active"
+                          class="mr-2 h-5 w-5 text-violet-400"
+                          aria-hidden="true"
+                        />
+                        Image
+                      </Link>
+                    </MenuItem>
+                  </div>
+
+                </MenuItems>
+
+              </transition>
+
+            </Menu>
 
           </div>
 
@@ -162,6 +173,27 @@ defineOptions({
 
     </div>
 
+    <!-- No Projects Found Section -->
+    <div v-else class="flex flex-col items-center justify-center text-center dark:text-gray-400">
+
+      <IconInbox class="w-24 h-24 mb-6 text-gray-400 dark:text-gray-600" />
+
+      <h2 class="text-2xl font-semibold mb-2">No Projects Found</h2>
+
+      <p class="text-lg text-gray-600 dark:text-gray-400">
+        It seems like there are no projects available at the moment.
+      </p>
+
+      <Link
+        as="button"
+        :href="route('auth.projects.create')"
+        class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+        <IconDeviceProjector class="w-5 h-5 inline-block mr-2" /> Add New Project
+      </Link>
+    </div>
+
   </main>
+
+  <Footnote />
 
 </template>
