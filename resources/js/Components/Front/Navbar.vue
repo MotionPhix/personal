@@ -1,49 +1,26 @@
 <script setup>
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import { IconMenu4, IconX } from '@tabler/icons-vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link } from '@inertiajs/vue3';
 import NavLinkMode from '@/Components/NavLinkMode.vue';
 
-const page = usePage();
-
-const navLinks = [
-  {
-    name: 'Home',
-    href: 'home',
-    active: page.component === 'Index'
-  },
-
-  {
-    name: 'Projects',
-    href: 'projects.index',
-    active: page.url.startsWith('/projects')
-  },
-
-  // {
-  //   name: 'Articles',
-  //   href: 'articles.index',
-  //   active: page.url.startsWith('/articles')
-  // },
-]
 </script>
 
 <template>
-
   <!-- ========== HEADER ========== -->
-  <header class="sticky inset-x-0 top-0 z-50 flex flex-wrap w-full text-sm md:justify-start md:flex-nowrap">
+  <header
+    class="sticky top-0 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full text-sm">
 
     <nav
       class="mt-4 relative max-w-2xl w-full bg-white border border-gray-200 rounded-[2rem] mx-2 py-2.5 md:flex md:items-center md:justify-between md:py-0 md:px-4 md:mx-auto dark:bg-neutral-900 dark:border-neutral-700">
-      <div class="flex items-center justify-between px-4 md:px-0">
+
+      <div class="px-4 md:px-0 flex justify-between items-center">
         <!-- Logo -->
         <div>
           <Link
             class="flex items-center gap-1 text-xl font-semibold rounded-md dark:text-gray-300 focus:outline-none focus:opacity-80" :href="route('home')" aria-label="Ultrashots">
-
             <ApplicationLogo class="w-7" />
-
             <span class="text-2xl">ultrashots</span>
-
           </Link>
         </div>
         <!-- End Logo -->
@@ -52,14 +29,12 @@ const navLinks = [
           <!-- Toggle Button -->
           <button
             type="button"
-            class="flex items-center justify-center text-gray-500 border border-gray-200 rounded-full hs-collapse-toggle size-8 hover:bg-gray-200 focus:outline-none focus:bg-gray-200 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" id="hs-navbar-header-floating-collapse" aria-expanded="false"
-            aria-controls="hs-navbar-header-floating"
-            aria-label="Toggle navigation"
-            data-hs-collapse="#hs-navbar-header-floating">
+            class="p-4 hs-collapse-toggle flex justify-center items-center size-6 border border-gray-200 text-gray-500 rounded-full hover:bg-gray-200 focus:outline-none focus:bg-gray-200 dark:border-neutral-700 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" id="hs-navbar-header-floating-collapse"
+            aria-expanded="false" aria-controls="hs-navbar-header-floating" aria-label="Toggle navigation" data-hs-collapse="#hs-navbar-header-floating">
 
-            <IconMenu4 :size="16" stroke="3" class="hs-collapse-open:hidden shrink-0" />
+            <IconMenu4 stroke="2.5" class="hs-collapse-open:hidden shrink-0 size-6" />
 
-            <IconX :size="16" stroke="3" class="hidden hs-collapse-open:block shrink-0" />
+            <IconX stroke="2.5" class="hs-collapse-open:block hidden shrink-0 size-5" />
 
           </button>
           <!-- End Toggle Button -->
@@ -68,25 +43,10 @@ const navLinks = [
 
       <div
         id="hs-navbar-header-floating"
-        class="hidden overflow-hidden transition-all duration-300 hs-collapse basis-full grow md:block" aria-labelledby="hs-navbar-header-floating-collapse">
+        class="hidden hs-collapse overflow-hidden transition-all duration-300 basis-full grow md:block" aria-labelledby="hs-navbar-header-floating-collapse">
+
         <div
-          class="flex flex-col gap-2 py-2 mt-3 md:flex-row md:items-center md:justify-end md:gap-3 md:mt-0 md:py-0 md:ps-7">
-
-          <!-- <Link
-            class="py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 text-gray-800 focus:outline-none dark:border-neutral-200 dark:text-neutral-200 transition relative"
-            :class=" ? 'border-gray-800 font-medium' : 'border-transparent'"
-            :href="route('home')">
-            Home
-            <span class="absolute h-px inset-x-1 -bottom-px bg-gradient-to-r from-teal-500/0 via-teal-500/40 to-teal-500/0 dark:from-teal-400/0 dark:via-teal-400/40 dark:to-teal-400/0"></span>
-          </Link> -->
-
-          <!-- <Link
-            class="py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 hover:text-gray-800 focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-200 transition relative"
-            v-for="path in navLinks" :key="path.name"
-            :class="path.active ? 'border-gray-800 font-medium text-gray-800' : 'border-transparent text-gray-500'"
-            :href="route(path.href)">
-            {{ path.name }}
-          </Link> -->
+          class="flex flex-col md:flex-row md:items-center md:justify-end gap-2 md:gap-3 mt-3 md:mt-0 py-2 md:py-0 md:ps-7">
 
           <NavLinkMode
             :href="route('home')"
@@ -101,14 +61,17 @@ const navLinks = [
           </NavLinkMode>
 
           <NavLinkMode
-            :active="route().current('downloads.index')"
-            :href="route('downloads.index')">
+            :href="route('downloads.index')"
+            :active="route().current('downloads.index')">
             Downloads
           </NavLinkMode>
 
         </div>
+
       </div>
+
     </nav>
+
   </header>
   <!-- ========== END HEADER ========== -->
 

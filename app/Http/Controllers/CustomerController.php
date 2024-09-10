@@ -58,12 +58,6 @@ class CustomerController extends Controller
 
   public function store(Request $request)
   {
-    session()->flash('notify', [
-      'type' => 'danger',
-      'title' => 'Great',
-      'message' => 'New customer was added!'
-    ]);
-
     $validated = $request->validate([
       'first_name' => 'required|string|max:255',
       'last_name' => 'required|string|max:255',
@@ -91,5 +85,78 @@ class CustomerController extends Controller
     ]);
 
     return redirect(route('auth.customer.index'));
+  }
+
+  public function update(Request $request, Customer $customer)
+  {
+    $validated = $request->validate([
+      'first_name' => 'required|string|max:255',
+      'last_name' => 'required|string|max:255',
+      'job_title' => 'required|string|max:255',
+      'company_name' => 'nullable|string|max:255',
+      'address.street' => 'required|string|max:255',
+      'address.city' => 'required|string|max:255',
+      'address.state' => 'nullable|string|max:255',
+      'address.country' => 'required|string|max:255',
+    ], [
+      'job_title.required' => 'Provide customer\'s position',
+      'first_name.required' => 'Provide customer\'s first name',
+      'last_name.required' => 'Provide customer\'s last name',
+      'address.street.required' => 'Enter customer address\' street name',
+      'address.city.required' => 'Enter customer address\' city name',
+      'address.country.required' => 'Enter customer address\' country name',
+    ]);
+
+    $customer->update($validated);
+
+    session()->flash('notify', [
+      'type' => 'success',
+      'title' => 'Super',
+      'message' => 'Customer was updated successfully!'
+    ]);
+
+    return redirect(route('auth.customer.index'));
+  }
+
+  /**
+   * Remove the specified customer from database.
+   */
+  public function destroy(Customer $customer)
+  {
+    foreach ($customer->projects as $project) {
+
+      foreach ($project->images as $image) {
+
+        if (file_exists(public_path($image->src))) {
+
+          unlink(public_path($image->src));
+        }
+
+        $image->delete();
+
+      }
+
+      if ($project->poster && file_exists(public_path($project->poster))) {
+
+        unlink(public_path($project->poster));
+
+      }
+
+      // Delete the project itself
+      $project->delete();
+    }
+
+    // Deleting the customer
+    $customer->delete();
+
+    // Flash success message
+    session()->flash('notify', [
+      'type' => 'success',
+      'title' => 'Deleted',
+      'message' => 'Customer and their related projects were successfully deleted!',
+    ]);
+
+    // Redirect to the customer index page
+    return redirect()->route('auth.customer.index');
   }
 }

@@ -1,9 +1,16 @@
+export interface Socials {
+  twitter?: string;
+  facebook?: string;
+  behance?: string;
+}
+
 export interface User {
   id: number;
   first_name: string;
   last_name: string;
   email: string;
   email_verified_at?: string;
+  socials?: Socials;
 }
 
 export interface Image {
@@ -11,6 +18,7 @@ export interface Image {
   fid: string;
   size: string;
   mime_type: string;
+  model_id?: number;
   src: string;
 }
 
@@ -38,7 +46,7 @@ export interface Project {
   poster: string|File;
   production?: Date;
   description?: string;
-  images?: Image[]|File[];
+  images?: Image[];
   customer_id: number;
   customer?: Customer;
 }

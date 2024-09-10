@@ -1,15 +1,27 @@
 import './bootstrap';
 import '../css/app.css';
 
-import { createApp, h, DefineComponent } from 'vue';
+import { createApp, h, DefineComponent, onMounted } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
-import 'preline'
+import "preline/preline";
 
 import { createPinia } from 'pinia'
 
 const appName = import.meta.env.VITE_APP_NAME || 'Ultrahots';
+
+import { type IStaticMethods } from "preline/preline";
+
+declare global {
+  interface Window {
+    HSStaticMethods: IStaticMethods;
+  }
+}
+
+setTimeout(() => {
+  window.HSStaticMethods.autoInit();
+}, 100)
 
 createInertiaApp({
   title: (title) => `${title} - ${appName}`,

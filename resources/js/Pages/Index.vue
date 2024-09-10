@@ -6,34 +6,11 @@ import Projects from '@/Components/Front/Projects.vue';
 import Skills from '@/Components/Front/Skills.vue';
 import Expertise from '@/Components/Front/Expertise.vue';
 import Subscription from '@/Components/Front/Subscription.vue';
-
-type SocialMediaHandles = {
-  twitter?: string;
-  facebook?: string;
-  instagram?: string;
-  [key: string]: string | undefined; // Allows for additional social media platforms
-};
-
-type User = {
-  id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  phoneNumber?: string;
-  socials?: SocialMediaHandles;
-  createdAt: string;
-  updatedAt: string;
-};
-
-interface Project {
-  id: number;
-  pid: string | null;
-  poster: string;
-}
+import { Project, User } from '@/types';
 
 defineProps<{
   projects?: Project[];
-  user?: User | undefined;
+  user?: User;
 }>();
 
 defineOptions({ layout: AppLayout })
@@ -121,7 +98,7 @@ defineOptions({ layout: AppLayout })
       <!-- End About -->
 
       <!-- Projects -->
-      <Projects :projects />
+      <Projects :projects v-if="projects?.length" />
       <!-- End Projects -->
 
       <!-- Testimonials -->

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useContactStore } from '@/Stores/contactStore';
 import { Link, router } from '@inertiajs/vue3';
-import { IconFileExport, IconPencil } from '@tabler/icons-vue';
+import { IconFileExport, IconPencil, IconTrash } from '@tabler/icons-vue';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import Checkbox from '@/Components/Checkbox.vue';
@@ -25,13 +25,13 @@ const {
 
 const { selectContact, unselectContact, resetSelectedContacts } = contactStore
 
-function isSelected(contactId?: string) {
+function isSelected(contactId: string) {
 
-  return (selectedContacts.value.includes(contactId));
+  return selectedContacts.value.includes(contactId);
 
 }
 
-function onContactSelect(contactId?: string) {
+function onContactSelect(contactId: string) {
 
   if (isSelected(contactId)) {
 
@@ -73,8 +73,8 @@ router.on('navigate', (e) => {
         class="transition duration-300 group-hover:inline-flex"
         :class="selectedContacts.length ? 'inline-flex' : 'hidden'">
         <Checkbox
-          @click="onContactSelect(props.contact.cid)"
-          :checked="isSelected(props.contact.cid)" />
+          @click="onContactSelect(props.contact.cid as string)"
+          :checked="isSelected(props.contact.cid as string)" />
       </span>
     </div>
 
@@ -121,6 +121,18 @@ router.on('navigate', (e) => {
             :href="route('auth.customer.edit', props.contact.cid)">
 
             <IconPencil stroke="2.5" class="w-6 h-6" />
+
+          </Link>
+        </p>
+
+        <p
+          class="flex items-center rounded-lg p-0.5 text-gray-500 transition hover:bg-blue-500 duration-00 dark:text-gray-400">
+          <Link
+            as="button"
+            method="delete"
+            :href="route('auth.customer.destroy', props.contact.cid)">
+
+            <IconTrash stroke="2.5" class="size-5" />
 
           </Link>
         </p>

@@ -74,8 +74,8 @@ Route::group(['prefix' => 'auth'], function () {
       [\App\Http\Controllers\CustomerController::class, 'create'],
     )->name('auth.customer.create');
 
-    Route::post(
-      '/u',
+    Route::patch(
+      '/u/{customer:cid}',
       [\App\Http\Controllers\CustomerController::class, 'update'],
     )->name('auth.customer.update');
 
@@ -88,6 +88,11 @@ Route::group(['prefix' => 'auth'], function () {
       '/e/{customer:cid}',
       [\App\Http\Controllers\CustomerController::class, 'edit'],
     )->name('auth.customer.edit');
+
+    Route::delete(
+      '/d/{customer:cid}',
+      [\App\Http\Controllers\CustomerController::class, 'destroy'],
+    )->name('auth.customer.destroy');
 
   });
 

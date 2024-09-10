@@ -14,7 +14,7 @@ defineProps<{
 
     <img
       class="object-cover w-full bg-gray-100 rounded-lg size-40 dark:bg-neutral-800"
-      :src="project.poster" alt="Project">
+      :src="project.poster as string" alt="Project">
 
     <div
       class="absolute transition opacity-0 bottom-1 end-1 group-hover:opacity-100">

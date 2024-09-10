@@ -161,7 +161,7 @@ class ProjectController extends Controller
    */
   public function update(Request $request, Project $project)
   {
-    dd($request->file('poster'));
+    dd($request->all());
 
     $customer = Customer::where('cid', $request->customer_id)->first();
     $request->merge(['customer_id' => $customer->id]);

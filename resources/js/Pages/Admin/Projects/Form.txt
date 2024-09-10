@@ -17,43 +17,27 @@ import { UseDark } from "@vueuse/components";
 
 import { DatePicker } from 'v-calendar'
 
-import { ref } from "vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
 
 import 'v-calendar/style.css'
 
 import TipTap from "@/Components/TipTap.vue";
 
-import { Image, Project } from "@/types";
+import { Project } from "@/types";
 
 import Navheader from "@/Components/Backend/Navheader.vue";
 
-// Import Vue FilePond
-import vueFilePond from "vue-filepond";
+import Uppy from "@uppy/core";
 
-// Import FilePond styles
-import "filepond/dist/filepond.min.css";
+import { Dashboard } from "@uppy/vue";
+import Compressor from '@uppy/compressor';
+import DragDrop from '@uppy/drag-drop';
 
-// Import image preview plugin styles
-import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
-
-import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
-import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
-import FilePondPluginImagePreview from "filepond-plugin-image-preview";
-
-import type { FilePond } from "filepond";
-
-// Create component
-const FilePondInput = vueFilePond(
-  FilePondPluginFileValidateType,
-  FilePondPluginFileValidateSize,
-  FilePondPluginImagePreview
-);
-
-const singlePond = ref<FilePond | null>(null);
-const multiPond = ref<FilePond | null>(null);
-
-const singleFile = ref([]);
-const multiFile = ref([]);
+import '@uppy/core/dist/style.css';
+import '@uppy/dashboard/dist/style.css';
+// import '@uppy/webcam/dist/style.css';
+// import '@uppy/url/dist/style.min.css';
+import '@uppy/drag-drop/dist/style.min.css';
 
 const props = defineProps<{
   project: Project;
@@ -68,68 +52,21 @@ const form = useForm({
   images: props.project.images
 });
 
-// Handle file selection for poster
-const handleAddPoster = () => {
+const uppy = new Uppy({
 
-  const fileItem = singlePond.value?.getFile(); // Check if there's a file
+  autoProceed: true,
 
-  if (fileItem && fileItem.file) {
-    // Only assign if the file exists
-    form.poster = fileItem.file as File;
-  } else {
-    form.poster = ''
-  }
+  restrictions: {
+    maxFileSize: 1000000, // 1 MB
+    allowedFileTypes: ["image/*"],
+    maxNumberOfFiles: 1,
+  },
 
-};
-
-// Handle file selection for poster
-const handleRemovePoster = async () => {
-
-  const fileItem = singlePond.value?.getFile(); // Check if there's a file
-
-  if (fileItem && fileItem.file) {
-    // Only assign if the file exists
-    form.poster = fileItem.file as File;
-  } else {
-    form.poster = ''
-  }
-
-};
-
-// Handle file selection for images (multiple)
-const handleAddImages = () => {
-
-  const files = multiPond.value?.getFiles(); // Get the array of FilePond files
-
-  if (files && files.length) {
-
-    // Map over the files and return their file objects
-    form.images = files.map(fileItem => fileItem.file as File) as any;
-
-  } else {
-
-    form.images = []
-
-  }
-
-};
-
-const handleRemoveImages = async () => {
-
-  const files = multiPond.value?.getFiles(); // Get the array of FilePond files
-
-  if (files && files.length) {
-
-    // Map over the files and return their file objects
-    form.images = files.map(fileItem => fileItem.file as File) as any;
-
-  } else {
-
-    form.images = []
-
-  }
-
-};
+})
+.use(Compressor)
+.use(DragDrop, {
+  hideUploadButton: true,
+})
 
 function onSubmit() {
 
@@ -185,36 +122,18 @@ const disabledDates = ref([
   },
 ])
 
-const handlePosterInit = () => {
+// Clean up Uppy instance before the component is destroyed
+onBeforeUnmount(() => {
+  uppy.clear();
+});
 
-  if (props.project.poster) {
+// Handle successful uploads and attach them to Inertia form data
+uppy.on('complete', (result) => {
+  console.log(result);
 
-    singleFile.value = [{
-      source: props.project.poster,
-      options: {
-        type: 'local',
-      },
-    }] as any;
-
-  }
-}
-
-const handleImagesInit = () => {
-
-  if (props.project.images) {
-
-    multiFile.value = props.project.images.map((image) => ({
-      source: image.src,
-
-      options: {
-        type: 'server',
-      },
-
-    })) as any;
-
-  }
-
-}
+  const uploadedFiles = result?.successful?.map(file => file.data); // Get file objects
+  form.images = uploadedFiles as any; // Add to form data
+});
 
 defineOptions({
   layout: AuthLayout,
@@ -276,19 +195,15 @@ defineOptions({
               Project poster
             </label>
 
-              <FilePondInput
-                credits="false"
-                name="Project Poster Image"
-                ref="singlePond"
-                maxFileSize="1MB"
-                v-bind:files="singleFile"
-                label-idle="Drop your poster here..."
-                v-bind:allow-multiple="false"
-                accepted-file-types="image/png, image/jpeg"
-                v-on:init="handlePosterInit"
-                @addfile="handleAddPoster"
-                @removefile="handleRemovePoster"
-              />
+            <Dashboard
+              :uppy="uppy"
+              theme="dark"
+              inline="true"
+              :props="{
+                proudlyDisplayPoweredByUppy: false,
+                hideUploadButton: true,
+                height: '15rem',
+              }" />
 
             <InputError :message="form.errors.poster" />
           </div>
@@ -377,7 +292,7 @@ defineOptions({
               Project Images
             </label>
 
-            <FilePondInput
+            <!-- <FilePondInput
               credits="false"
               name="Project Images"
               ref="multiPond"
@@ -390,7 +305,7 @@ defineOptions({
               @init="handleImagesInit"
               @addfile="handleAddImages"
               @removefile="handleRemoveImages"
-            />
+            /> -->
 
             <InputError :message="form.errors.images" />
           </div>
@@ -403,3 +318,7 @@ defineOptions({
 
   </main>
 </template>
+
+<style>
+  @import "@uppy/dashboard/dist/style.css";
+</style>

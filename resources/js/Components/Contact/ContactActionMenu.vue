@@ -48,7 +48,7 @@ const {
 
     <Link
       as="button"
-      :href="route('auth.customer.edit', selectedContacts[0])"
+      :href="route('auth.customer.edit', selectedContacts[0] as string)"
       v-if="selectedContacts.length === 1 && $page.url === '/auth/customers'"
       class="flex items-center gap-2 py-2 font-semibold transition duration-300 hover:opacity-70">
       <IconPencil class="w-5 h-5 stroke-current" /> <span class="hidden md:inline-flex">Edit</span>
