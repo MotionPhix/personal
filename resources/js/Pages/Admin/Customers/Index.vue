@@ -28,18 +28,23 @@ defineOptions({
 
   <Navheader>
 
-    <ContactActionMenu :contacts="props.customers" />
+    <ContactActionMenu :contacts="customers" v-if="customers.length" />
+
+
+    <h2 class="text-xl font-semibold dark:text-gray-300 sm:inline-block" v-else>
+      Explore customers
+    </h2>
 
   </Navheader>
 
   <main class="max-w-2xl px-6 py-12 mx-auto">
 
-    <section v-if="props.customers.length">
+    <section v-if="customers.length">
 
       <ul role="list" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
         <ContactGridCard
-          v-for="contact in props.customers"
+          v-for="contact in customers"
           :key="contact.cid"
           :contact="contact"
         />

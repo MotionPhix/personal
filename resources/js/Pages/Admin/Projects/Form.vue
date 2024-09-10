@@ -69,7 +69,7 @@ const form = useForm({
 });
 
 // Handle file selection for poster
-const handlePosterChange = () => {
+const handleAddPoster = () => {
 
   const fileItem = singlePond.value?.getFile(); // Check if there's a file
 
@@ -77,7 +77,21 @@ const handlePosterChange = () => {
     // Only assign if the file exists
     form.poster = fileItem.file as File;
   } else {
-    console.error('No file found in FilePond');
+    form.poster = ''
+  }
+
+};
+
+// Handle file selection for poster
+const handleRemovePoster = async () => {
+
+  const fileItem = singlePond.value?.getFile(); // Check if there's a file
+
+  if (fileItem && fileItem.file) {
+    // Only assign if the file exists
+    form.poster = fileItem.file as File;
+  } else {
+    form.poster = ''
   }
 
 };
@@ -119,7 +133,7 @@ const handleRemoveImages = async () => {
 
 function onSubmit() {
 
-  form.transform((data) => {
+  /*form.transform((data) => {
 
     let formData: Partial<Project> = {
       name: data.name,
@@ -138,11 +152,11 @@ function onSubmit() {
 
     return formData;
 
-  })
+  })*/
 
   if (props.project.pid) {
 
-    form.patch(route('auth.projects.update', props.project.pid), {
+    form.patch(route('auth.projects.update', { project: props.project.id }), {
       preserveScroll: true,
 
       onSuccess: () => {
@@ -178,7 +192,7 @@ const handlePosterInit = () => {
     singleFile.value = [{
       source: props.project.poster,
       options: {
-        type: 'server',
+        type: 'local',
       },
     }] as any;
 
@@ -272,7 +286,8 @@ defineOptions({
                 v-bind:allow-multiple="false"
                 accepted-file-types="image/png, image/jpeg"
                 v-on:init="handlePosterInit"
-                @addfile="handlePosterChange"
+                @addfile="handleAddPoster"
+                @removefile="handleRemovePoster"
               />
 
             <InputError :message="form.errors.poster" />
@@ -362,7 +377,7 @@ defineOptions({
               Project Images
             </label>
 
-            <FilePondInput
+            <!-- <FilePondInput
               credits="false"
               name="Project Images"
               ref="multiPond"
@@ -375,12 +390,13 @@ defineOptions({
               @init="handleImagesInit"
               @addfile="handleAddImages"
               @removefile="handleRemoveImages"
-            />
+            /> -->
 
             <InputError :message="form.errors.images" />
           </div>
 
         </div>
+
       </form>
 
     </section>
