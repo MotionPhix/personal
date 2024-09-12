@@ -104,29 +104,29 @@ router.on('navigate', (e) => {
     </Link>
 
     <div
-      class="absolute z-20 items-center justify-end hidden gap-2 px-2 pt-1 bg-gray-300 rounded cursor-pointer group-hover:flex dark:bg-neutral-700 bottom-2 right-2">
+      class="absolute z-20 items-center justify-end hidden gap-2 px-2 py-1 bg-gray-300 rounded cursor-pointer group-hover:flex dark:bg-neutral-700 bottom-2 right-2">
 
-        <p class="text-sm text-gray-500 transition duration-300 hover:text-blue-500 dark:text-gray-400">
+        <p class="items-center p-0.5 flex text-gray-500 transition duration-300 hover:text-green-500 dark:text-gray-400">
             <Link
               as="button"
-              :href="route('auth.projects.create', props.contact.cid)">
-              <IconFileExport stroke="2.5" class="w-6 h-6" />
+              :href="route('auth.projects.create', { customer: props.contact.cid })">
+              <IconFileExport stroke="2.5" class="size-5" />
             </Link>
         </p>
 
         <p
-          class="text-sm text-gray-500 transition hover:text-blue-500 duration-00 dark:text-gray-400">
+          class="flex items-center p-0.5 text-gray-500 transition hover:text-green-500 duration-00 dark:text-gray-400">
           <Link
             as="button"
             :href="route('auth.customer.edit', props.contact.cid)">
 
-            <IconPencil stroke="2.5" class="w-6 h-6" />
+            <IconPencil stroke="2.5" class="size-5" />
 
           </Link>
         </p>
 
         <p
-          class="flex items-center rounded-lg p-0.5 text-gray-500 transition hover:bg-blue-500 duration-00 dark:text-gray-400">
+          class="flex items-center rounded-lg p-0.5 text-gray-500 transition hover:text-green-500 duration-00 dark:text-gray-400">
           <Link
             as="button"
             method="delete"

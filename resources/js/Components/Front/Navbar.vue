@@ -9,7 +9,7 @@ import NavLinkMode from '@/Components/NavLinkMode.vue';
 <template>
   <!-- ========== HEADER ========== -->
   <header
-    class="sticky top-0 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full text-sm">
+    class="sticky top-0 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full sm:text-sm">
 
     <nav
       class="mt-4 relative max-w-2xl w-full bg-white border border-gray-200 rounded-[2rem] mx-2 py-2.5 md:flex md:items-center md:justify-between md:py-0 md:px-4 md:mx-auto dark:bg-neutral-900 dark:border-neutral-700">
@@ -18,9 +18,9 @@ import NavLinkMode from '@/Components/NavLinkMode.vue';
         <!-- Logo -->
         <div>
           <Link
-            class="flex items-center gap-1 text-xl font-semibold rounded-md dark:text-gray-300 focus:outline-none focus:opacity-80" :href="route('home')" aria-label="Ultrashots">
+            class="flex items-center gap-2 text-xl font-semibold rounded-md dark:text-gray-300 focus:outline-none focus:opacity-80" :href="route('home')" aria-label="Ultrashots">
             <ApplicationLogo class="w-7" />
-            <span class="text-2xl">ultrashots</span>
+            <span class="text-2xl ">ultrashots</span>
           </Link>
         </div>
         <!-- End Logo -->
@@ -64,6 +64,12 @@ import NavLinkMode from '@/Components/NavLinkMode.vue';
             :href="route('downloads.index')"
             :active="route().current('downloads.index')">
             Downloads
+          </NavLinkMode>
+
+          <NavLinkMode
+            :href="route('contact.index')"
+            :active="route().current('contact.index')">
+            Contact Me
           </NavLinkMode>
 
         </div>

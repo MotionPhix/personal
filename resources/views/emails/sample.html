@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <title>
+    Thank fou for contacting me
+  </title>
+
+  <style>
+    @import url('https://fonts.bunny.net/css?family=roboto:400,500,600,700&display=swap');
+    @import url('https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap');
+
+    body {
+      font-family: Roboto, Helvetica, Inter, sans-serif;
+      margin: 0;
+      padding: 0;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    .header {
+      max-width: 500px;
+      margin: 30px auto;
+      text-align: left;
+      margin-top: 60px;
+    }
+
+    .header img {
+      max-width: 60px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+      background-color: #ffffff;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .button {
+      background-color: #007BFF;
+      color: #ffffff;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 5px;
+      display: inline-block;
+    }
+
+    .rounded-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      /* Rounded corners for the table */
+    }
+
+    .rounded-table th,
+    .rounded-table td {
+      padding: 8px;
+      /* Padding for cells */
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+      /* Border for cells */
+    }
+
+    .rounded-table tr:last-child th,
+    .rounded-table tr:last-child td {
+      border-bottom: none;
+      /* Remove bottom border for the last row */
+    }
+
+    .rounded-table tr:last-child td:first-child {
+      border-bottom-left-radius: 10px;
+      /* Bottom left radius for the last row, first cell */
+    }
+
+    .rounded-table tr:last-child td:last-child {
+      border-bottom-right-radius: 10px;
+      /* Bottom right radius for the last row, last cell */
+    }
+
+    .footer {
+      font-size: 12px;
+      color: #666666;
+      text-align: left;
+      margin-top: 20px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="header">
+    <img
+      alt="Ultrashots Logo"
+      src="{{ $message->embed($logo) }}" />
+  </div>
+
+  <div
+    class="container">
+
+    <h1>Thank you for contacting me!</h1>
+
+    <p>Hi {{ $name }},</p>
+
+    <p>
+      Thank you for getting in touch with me. I have received your message
+      and would like to thank you for writing to me. I will reply by email
+      or phone as soon as possible, usually within 24 hours.
+    </p>
+
+    <h2>Please verify your information</h2>
+
+    <p>
+      If any of the below information is incorrect, please contact me immediately
+      so that you can get my response.
+    </p>
+
+    <table
+      class="table rounded-table"
+      style="border-spacing: 0; width: 100%; border: 1px solid #ddd;">
+      <tr>
+        <th>Information</th>
+        <th>Details</th>
+      </tr>
+
+      <tr>
+        <td>Name</td>
+        <td>{{ $name }}</td>
+      </tr>
+
+      <tr>
+        <td>Email</td>
+        <td>{{ $email }}</td>
+      </tr>
+
+      <tr>
+        <td>Phone</td>
+        <td>{{ $phone }}</td>
+      </tr>
+    </table>
+
+    <p>
+      If you need to adjust any information or have any further questions,
+      please do not hesitate to contact me via <a href="mailto:support@ultrashots.net">email</a>.
+    </p>
+
+    <p
+      class="footer">
+      © {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+    </p>
+
+  </div>
+
+    <p
+      style="
+      font-size: 12px;
+      color: #666666;
+      text-align: left;
+      width: 100%;
+      max-width: 500px;
+      margin: auto;
+      margin-top: 20px;
+      margin-bottom: 60px;
+      ">
+      You are receiving this email because you contacted me from <a href="https://ultrashots.net">
+      <strong>{{ config('app.name') }}</strong></a>. If you didn't, you can ignore and delete this email.
+    </p>
+
+</body>
+
+</html>

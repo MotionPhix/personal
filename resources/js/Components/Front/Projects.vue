@@ -3,7 +3,8 @@ import { Project } from '@/types';
 import { Link } from '@inertiajs/vue3';
 
 defineProps<{
-  projects?: Project[]
+  projects?: Project[],
+  smallColumns: boolean
 }>()
 </script>
 
@@ -15,7 +16,9 @@ defineProps<{
     </h2>
 
     <!-- Image Grid -->
-    <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+    <div
+      class="grid gap-2"
+      :class="smallColumns ? 'grid-cols-3' : 'grid-cols-2'">
 
       <Link
         class="relative block overflow-hidden rounded-lg group"

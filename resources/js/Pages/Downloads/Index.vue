@@ -39,7 +39,7 @@ defineOptions({
               </h1>
 
               <p
-                class="mt-6 text-base text-zinc-600 dark:text-zinc-400">
+                class="mt-6 text-lg text-zinc-600 dark:text-zinc-400">
                 Explore my collection of high-quality, vectorized logos from top companies and organisations
                 across Malawi. These logos are optimized for various design and branding needs, ensuring scalability
                 and clarity across all media.

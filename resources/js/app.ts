@@ -5,6 +5,8 @@ import { createApp, h, DefineComponent, onMounted } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import VueTelInput from 'vue-tel-input';
+import 'vue-tel-input/vue-tel-input.css';
 import "preline/preline";
 
 import { createPinia } from 'pinia'
@@ -30,6 +32,7 @@ createInertiaApp({
     createApp({ render: () => h(App, props) })
       .use(plugin)
       .use(ZiggyVue)
+      .use(VueTelInput)
       .use(createPinia())
       .mount(el);
   },

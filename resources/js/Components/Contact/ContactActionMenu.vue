@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import IconContactAdd from '@/Components/Icon/IconContactAdd.vue';
 import { useContactStore } from '@/Stores/contactStore';
 import { Customer } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import { IconPencil, IconTrash } from '@tabler/icons-vue';
 import { storeToRefs } from 'pinia';
+import IconContacts from "@/Components/Icon/IconContacts.vue";
 
 const props = defineProps<{
   contacts: Customer[]
@@ -30,7 +30,7 @@ const {
 
       <h2 class="flex items-center text-xl gap-2 dark:text-gray-300">
 
-        <IconContactAdd class="size-5" /> <span>Add new</span>
+        <IconContacts class="size-6" /> <span>Add new</span>
 
       </h2>
 

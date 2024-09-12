@@ -24,15 +24,18 @@ defineOptions({
       Dashboard
     </h2>
 
+    <span class="flex-1"></span>
+
     <Menu as="div" class="relative inline-block text-left z-40">
 
       <div>
         <MenuButton
-          class="inline-flex w-full justify-center rounded-md bg-black/20 p-2 text-sm font-medium text-white hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
+          class="inline-flex w-full justify-center rounded-lg dark:bg-black/90 bg-black/20 p-1 text-sm font-medium text-white hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
         >
           <IconPlus
-            class="text-violet-200 hover:text-violet-100"
+            class="text-gray-600 transition duration-200"
             aria-hidden="true"
+            stroke="3"
             size="24"
           />
         </MenuButton>
@@ -47,7 +50,7 @@ defineOptions({
         leave-to-class="transform scale-95 opacity-0"
       >
         <MenuItems
-          class="absolute left-0 mt-2 w-40 divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
+          class="absolute right-0 mt-2 w-40 divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
         >
           <div class="px-1 py-1">
             <MenuItem v-slot="{ active }">

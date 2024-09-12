@@ -39,28 +39,28 @@ import {
           2023 - Present
         </h3> -->
 
-        <p class="text-sm font-semibold text-gray-800 dark:text-neutral-200">
+        <p class="font-semibold text-gray-800 dark:text-neutral-200">
           Print Design
         </p>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-neutral-400">
+        <p class="mt-1 text-gray-600 dark:text-neutral-400">
           Developing brochures, business cards, posters, and packaging design for both physical and digital distribution, e.g.
         </p>
 
         <ul class="list-disc ms-6 mt-3 space-y-1.5">
-          <li class="text-sm text-gray-600 ps-1 dark:text-neutral-400">
+          <li class="text-gray-600 ps-1 dark:text-neutral-400">
             Folded pamphlets or booklets that provide detailed information about products, services, or events, often used for marketing purposes.
           </li>
-          <li class="text-sm text-gray-600 ps-1 dark:text-neutral-400">
+          <li class="text-gray-600 ps-1 dark:text-neutral-400">
             Large-format prints designed to be displayed in public spaces, often used for advertising events, movies, or products.
           </li>
-          <li class="text-sm text-gray-600 ps-1 dark:text-neutral-400">
+          <li class="text-gray-600 ps-1 dark:text-neutral-400">
             Creative design for product packaging, including boxes, bags, labels, and wrappers that visually appeal to consumers while conveying brand identity.
           </li>
-          <li class="text-sm text-gray-600 ps-1 dark:text-neutral-400">
+          <li class="text-gray-600 ps-1 dark:text-neutral-400">
             Custom-designed invitations for weddings, parties, corporate events, and other occasions, often featuring elegant typography and imagery.
           </li>
-          <li class="text-sm text-gray-600 ps-1 dark:text-neutral-400">
+          <li class="text-gray-600 ps-1 dark:text-neutral-400">
             Large outdoor advertising prints designed to catch the attention of drivers and pedestrians, typically located in high-traffic areas.
           </li>
         </ul>
@@ -91,11 +91,11 @@ import {
           2021 - 2023
         </h3> -->
 
-        <p class="text-sm font-semibold text-gray-800 dark:text-neutral-200">
+        <p class="font-semibold text-gray-800 dark:text-neutral-200">
           Branding and Identity
         </p>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-neutral-400">
+        <p class="mt-1 text-gray-600 dark:text-neutral-400">
           Crafting cohesive brand identities, including logos, color schemes, and typography,
           for companies to establish a strong market presence.
         </p>
@@ -112,10 +112,10 @@ import {
 
               <div class="p-4 grow ms-32 sm:ms-48">
                 <div class="flex flex-col justify-center min-h-24">
-                  <h3 class="text-sm font-semibold text-gray-800 dark:text-neutral-300">
+                  <h3 class="font-semibold text-gray-800 dark:text-neutral-300">
                     Studio by Mailchimp
                   </h3>
-                  <p class="mt-1 text-sm text-gray-500 dark:text-neutral-500">
+                  <p class="mt-1 text-gray-500 dark:text-neutral-500">
                     Produce professional, reliable streams easily leveraging Mailchimp's innovative broadcast studio.
                   </p>
                 </div>
@@ -149,11 +149,11 @@ import {
           2011 - 2021
         </h3> -->
 
-        <p class="text-sm font-semibold text-gray-800 dark:text-neutral-200">
+        <p class="font-semibold text-gray-800 dark:text-neutral-200">
           UI Design
         </p>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-neutral-400">
+        <p class="mt-1 text-gray-600 dark:text-neutral-400">
           Specializing in creating intuitive and visually appealing interfaces for websites and mobile apps to enhance user experience.
         </p>
       </div>
@@ -179,25 +179,25 @@ import {
           2010 - 2011
         </h3> -->
 
-        <p class="text-sm font-semibold text-gray-800 dark:text-neutral-200">
+        <p class="font-semibold text-gray-800 dark:text-neutral-200">
           Motion Graphics
         </p>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-neutral-400">
+        <p class="mt-1 text-gray-600 dark:text-neutral-400">
           Incorporating animated elements in web design, promotional materials, or UI elements to create dynamic and engaging user interactions.
         </p>
 
         <!-- <ul class="list-disc ms-6 mt-3 space-y-1.5">
-          <li class="text-sm text-gray-600 ps-1 dark:text-neutral-400">
+          <li class="text-gray-600 ps-1 dark:text-neutral-400">
             Worked with a diverse range of clients, delivering tailored design solutions.
           </li>
 
-          <li class="text-sm text-gray-600 ps-1 dark:text-neutral-400">
-            Developed and maintained strong client relationships through effective communication and project management.
+          <li class="text-gray-600 ps-1 dark:text-neutral-400">
+            Developed and maintained strong client relationships through effective communication and bucket management.
           </li>
 
-          <li class="text-sm text-gray-600 ps-1 dark:text-neutral-400">
-            Utilized tools such as Notion for project tracking, Mailchimp for email marketing designs, Slack for team collaboration, and GitHub for version control and project sharing.
+          <li class="text-gray-600 ps-1 dark:text-neutral-400">
+            Utilized tools such as Notion for bucket tracking, Mailchimp for email marketing designs, Slack for team collaboration, and GitHub for version control and bucket sharing.
           </li>
         </ul> -->
 

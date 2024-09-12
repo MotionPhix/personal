@@ -98,7 +98,10 @@ defineOptions({ layout: AppLayout })
       <!-- End About -->
 
       <!-- Projects -->
-      <Projects :projects v-if="projects?.length" />
+      <Projects
+        :projects v-if="projects?.length"
+        :small-columns="false"
+      />
       <!-- End Projects -->
 
       <!-- Testimonials -->

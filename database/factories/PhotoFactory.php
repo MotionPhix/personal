@@ -35,9 +35,9 @@ class PhotoFactory extends Factory
     // Randomly select a size for each generated image
     [$width, $height] = fake()->randomElement($sizes);
 
-    $imagePath = $faker->image('public/project/images', $width, $height); // Image generation
+    $imagePath = $faker->image('public/bucket/images', $width, $height); // Image generation
 
-    $relativePath = '/project/images/' . basename($imagePath);
+    $relativePath = '/bucket/images/' . basename($imagePath);
 
     return [
       'src' => $relativePath, // File path for the generated image

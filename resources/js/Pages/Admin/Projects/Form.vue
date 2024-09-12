@@ -229,13 +229,13 @@ defineOptions({
     <Navheader>
 
       <nav
-      class="flex items-center w-full gap-6 mx-auto dark:text-white dark:border-gray-700"
+      class="flex items-center w-full gap-1 mx-auto dark:text-white dark:border-gray-700"
     >
       <h2 class="text-xl font-semibold dark:text-gray-300 sm:inline-block">
         New project
       </h2>
 
-      <span class="flex-1 hidden sm:inline-block"></span>
+      <span class="flex-1"></span>
 
       <button
         type="submit"
@@ -344,7 +344,6 @@ defineOptions({
                 :disabled-dates="disabledDates"
                 :is-dark="isDark"
                 title-position="left"
-                view="weekly"
                 expanded
                 :masks="{
                   input: 'DD-MM-YYYY',

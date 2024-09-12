@@ -9,6 +9,16 @@ Route::get(
   \App\Http\Controllers\HomeController::class
 )->name('home');
 
+Route::get(
+  '/contact-me',
+  [\App\Http\Controllers\ContactController::class, 'index'],
+)->name('contact.index');
+
+Route::post(
+  '/contact-me',
+  [\App\Http\Controllers\ContactController::class, 'send'],
+)->name('contact.send');
+
 Route::group(['prefix' => 'subscribe'], function () {
 
   Route::post(
@@ -104,7 +114,7 @@ Route::group(['prefix' => 'auth'], function () {
     )->name('auth.projects.index');
 
     Route::get(
-      '/c',
+      '/c/{customer:cid?}',
       [\App\Http\Controllers\ProjectController::class, 'create'],
     )->name('auth.projects.create');
 
@@ -114,9 +124,14 @@ Route::group(['prefix' => 'auth'], function () {
     )->name('auth.projects.store');
 
     Route::get(
-      '/e/{project}',
+      '/e/{project:pid}',
       [\App\Http\Controllers\ProjectController::class, 'edit'],
     )->name('auth.projects.edit');
+
+    Route::get(
+      '/i/{project:pid}',
+      [\App\Http\Controllers\ProjectController::class, 'detail'],
+    )->name('auth.projects.detail');
 
     Route::patch(
       '/u/{project}',

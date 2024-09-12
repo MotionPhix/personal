@@ -49,6 +49,7 @@
     "vite": "^5.0",
     "vue": "^3.4.0",
     "vue-filepond": "^7.0.4",
+    "vue-tel-input": "^9.1.4",
     "vue-tsc": "^2.0.24"
   },
   "dependencies": {

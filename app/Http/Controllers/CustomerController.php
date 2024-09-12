@@ -142,7 +142,7 @@ class CustomerController extends Controller
 
       }
 
-      // Delete the project itself
+      // Delete the bucket itself
       $project->delete();
     }
 

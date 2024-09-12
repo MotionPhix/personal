@@ -35,7 +35,7 @@ defineOptions({ layout: AppLayout })
               </h1>
 
               <p
-                class="mt-6 text-base text-zinc-600 dark:text-zinc-400">
+                class="mt-6 text-lg text-zinc-600 dark:text-zinc-400">
                 I've worked on tons of little projects over the years but these are the ones that I'm most proud of.
                 Many of them are just simple artworks, not an entire case-study.
               </p>

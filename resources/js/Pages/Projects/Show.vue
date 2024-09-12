@@ -62,8 +62,8 @@ defineOptions({
                 {{ project.name }}
               </h1>
 
-              <section class="my-12 text-base text-zinc-600 dark:text-zinc-400">
-                <div v-html="project.description" class="prose prose-invert"></div>
+              <section class="my-12 text-base prose-lg text-zinc-600 dark:text-zinc-400 prose">
+                <div v-html="project.description" />
               </section>
 
               <div class="mt-4">

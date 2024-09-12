@@ -27,7 +27,7 @@ class ProjectController extends Controller
    */
   public function listing(): Response
   {
-    $projects = Project::with('images')->get();
+    $projects = Project::with('images', 'customer')->get();
 
     return Inertia::render('Admin/Projects/Index', [
       'projects' => $projects,
@@ -35,7 +35,7 @@ class ProjectController extends Controller
   }
 
   /**
-   * Display the selected project.
+   * Display the selected bucket.
    */
   public function show(Project $project): Response
   {
@@ -45,7 +45,17 @@ class ProjectController extends Controller
   }
 
   /**
-   * Create a new instance of the project.
+   * Display the selected bucket.
+   */
+  public function detail(Project $project): Response
+  {
+    return Inertia::render('Admin/Projects/Show', [
+      'project' => $project->load('customer', 'images'),
+    ]);
+  }
+
+  /**
+   * Create a new instance of the bucket.
    */
   public function create(Customer $customer = null): Response
   {
@@ -56,7 +66,7 @@ class ProjectController extends Controller
       'description' => '',
       'production' => '',
       'poster' => '',
-      'customer_id' => $customer->id ?? '',
+      'customer_id' => $customer->cid ?? '',
       'images' => [],
     ];
 
@@ -66,7 +76,7 @@ class ProjectController extends Controller
   }
 
   /**
-   * Edit the selected project.
+   * Edit the selected bucket.
    */
   public function edit(Project $project): Response
   {
@@ -102,18 +112,17 @@ class ProjectController extends Controller
 
     // Handle poster upload
     if ($request->hasFile('poster')) {
-      // $posterPath = $request->file('poster')->store('posters', 'public');
 
       $poster = $request->file('poster');
 
       // Generate a unique filename for the poster
       $posterFileName = uniqid() . '.' . $poster->getClientOriginalExtension();
 
-      // Move the poster to the "public/posters" directory
-      $poster->move(public_path('posters'), $posterFileName);
+      // Move the poster to the "public/poster" directory
+      $poster->move(public_path('poster'), $posterFileName);
 
       // Generate the relative path (without 'public')
-      $relativePosterPath = '/posters/' . $posterFileName;
+      $relativePosterPath = '/poster/' . $posterFileName;
     }
 
     $project = Project::create([
@@ -130,10 +139,10 @@ class ProjectController extends Controller
       foreach ($request->file('images') as $image) {
 
         $imageFileName = uniqid() . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('project/images'), $imageFileName);
+        $image->move(public_path('bucket'), $imageFileName);
 
         // Generate the relative path (without 'public')
-        $relativeImagePath = '/project/images/' . $imageFileName;
+        $relativeImagePath = '/bucket/' . $imageFileName;
 
         // Get the dimensions of each image
         $imageSize = getimagesize(public_path($relativeImagePath));
@@ -141,7 +150,7 @@ class ProjectController extends Controller
 
         // Save the image in the polymorphic relation using morphMany
         $project->images()->create([
-          'src' => $relativeImagePath,             // Path of the uploaded image
+          'src' => $relativeImagePath, // Path of the uploaded image
           'mime_type' => $image->getClientMimeType(), // MIME type of the file
           'size' => $imageDimensions, // Save image dimensions as widthxheight
         ]);
@@ -157,12 +166,10 @@ class ProjectController extends Controller
   }
 
   /**
-   * Update the edited project.
+   * Update the edited bucket.
    */
   public function update(Request $request, Project $project)
   {
-    dd($request->all());
-
     $customer = Customer::where('cid', $request->customer_id)->first();
     $request->merge(['customer_id' => $customer->id]);
 
@@ -177,18 +184,18 @@ class ProjectController extends Controller
 
     // Handle poster upload
     if ($request->hasFile('poster')) {
-      // $posterPath = $request->file('poster')->store('posters', 'public');
+      // $posterPath = $request->file('poster')->store('poster', 'public');
 
       $poster = $request->file('poster');
 
       // Generate a unique filename for the poster
       $posterFileName = uniqid() . '.' . $poster->getClientOriginalExtension();
 
-      // Move the poster to the "public/posters" directory
-      $poster->move(public_path('posters'), $posterFileName);
+      // Move the poster to the "public/poster" directory
+      $poster->move(public_path('poster'), $posterFileName);
 
       // Generate the relative path (without 'public')
-      $relativePosterPath = '/posters/' . $posterFileName;
+      $relativePosterPath = '/poster/' . $posterFileName;
     }
 
     $project = Project::create([
@@ -205,10 +212,10 @@ class ProjectController extends Controller
       foreach ($request->file('images') as $image) {
 
         $imageFileName = uniqid() . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('project/images'), $imageFileName);
+        $image->move(public_path('bucket'), $imageFileName);
 
         // Generate the relative path (without 'public')
-        $relativeImagePath = '/project/images/' . $imageFileName;
+        $relativeImagePath = '/bucket/' . $imageFileName;
 
         // Get the dimensions of each image
         $imageSize = getimagesize(public_path($relativeImagePath));
@@ -226,7 +233,7 @@ class ProjectController extends Controller
     return redirect()->route('auth.projects.index');
   }
 
-  // Method to delete a project or an image
+  // Method to delete a bucket or an image
   public function destroy(Project $project, $image = null)
   {
     // Check if the image parameter is provided
@@ -261,7 +268,7 @@ class ProjectController extends Controller
       return redirect()->back();
     }
 
-    // If no image is provided, delete the entire project along with all its images
+    // If no image is provided, delete the entire bucket along with all its images
     foreach ($project->images as $imageRecord) {
       // Delete each image file if stored locally
       if (file_exists(public_path($imageRecord->src))) {
@@ -269,12 +276,12 @@ class ProjectController extends Controller
       }
     }
 
-    // Delete the project's poster if it exists
+    // Delete the bucket's poster if it exists
     if ($project->poster && file_exists(public_path($project->poster))) {
       unlink(public_path($project->poster));
     }
 
-    // Delete the project and its images
+    // Delete the bucket and its images
     $project->images()->delete();
 
     $project->delete();
@@ -285,6 +292,6 @@ class ProjectController extends Controller
       'message' => 'Project and its images were deleted successfully!'
     ]);
 
-    return redirect()->back();
+    return redirect()->route('auth.projects.index');
   }
 }
