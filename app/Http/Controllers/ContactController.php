@@ -24,7 +24,7 @@ class ContactController extends Controller
       'name' => 'required|string',
       'email' => 'required|email',
       'phone' => 'required',
-      'message' => 'required|string',
+      // 'message' => 'required|string',
     ]);
 
     $data = [
@@ -34,7 +34,7 @@ class ContactController extends Controller
     ];
 
     // Send email
-    if (Mail::to('kingscrib1@gmail.com', 'Kingsley')->send(new ContactMe($data))) {
+    if (Mail::to('kwikdev@ultrashots.net', 'Kingsley')->send(new ContactMe($data))) {
 
       session()->flash('notify', [
         'type' => 'success',
@@ -52,6 +52,6 @@ class ContactController extends Controller
       'message' => 'Message could not be sent.'
     ]);
 
-    return redirect->back();
+    return redirect()->back();
   }
 }

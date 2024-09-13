@@ -1,125 +1,187 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <head>
-    <title>Thank You for Contacting Me</title>
-    <style>
-      body {
-        font-family: Roboto, Helvetica, Inter, sans-serif;
-        margin: 0;
-        padding: 0;
-      }
+  <title>Thank You for Contacting Me</title>
 
-      .container {
-        width: 100%;
-        max-width: 500px;
-        margin: auto;
-        background-color: #ffffff;
-        padding: 20px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        margin-top: 5rem;
-      }
+  <style type="text/css">
+    @import url('https://fonts.bunny.net/css?family=roboto:400,500,600,700&display=swap');
+    @import url('https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap');
 
-      .button {
-        background-color: #007BFF;
-        color: #ffffff;
-        padding: 10px 20px;
-        text-decoration: none;
-        border-radius: 5px;
-        display: inline-block;
-      }
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100% !important;
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+    }
+    table {
+      border-collapse: collapse;
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+    }
 
-      .table {
-        width: 100%;
-        border-collapse: collapse;
-        border-spacing: 0;
-        border: 1px solid #ddd;
-      }
+    img {
+      border: 0;
+      height: auto;
+      line-height: 100%;
+      outline: none;
+      text-decoration: none;
+    }
 
-      .table th,
-      .table td {
-        padding: 8px;
-        border-bottom: 1px solid #ddd;
-      }
+    .header p {
+      max-width: 600px;
+      margin: auto;
+      text-align: left;
+      margin-bottom: 10px;
+      margin-top: 20px;
+    }
 
-      .table tr:last-child td {
-        border-bottom: none;
-      }
+    .header img {
+      max-width: 60px;
+    }
 
-      .footer {
-        font-size: 12px;
-        color: #666666;
-        text-align: left;
-        margin-top: 20px;
-      }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      border: 1px solid #9d1111;
+      border-radius: 10px;
+    }
 
-      /* Responsive styles */
-      @media only screen and (max-width: 600px) {
+    .footer {
+      font-size: 12px;
+      color: #666666;
+      text-align: left;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body style="margin: 0; padding: 0;">
 
-        .table,
-        .table th,
-        .table td {
-          display: block;
-          width: 100%;
-        }
+  <table
+    width="100%"
+    cellpadding="0"
+    cellspacing="0"
+    border="0">
 
-        .table th {
-          display: none;
-        }
+    <tr>
+      <td align="left" class="header">
+      <p>
+        <img
+          alt="Ultrashots Logo"
+          src="{{ $message->embed($logo) }}" />
+          </p>
+      </td>
+    </tr>
 
-        .table td {
-          position: relative;
-          /* padding-left: 50%; */
-          text-align: left;
-        }
+    <tr>
 
-        .table td::before {
-          content: attr(data-label);
-          /* position: absolute; */
-          left: 0;
-          /* width: 50%; */
-          padding-left: 8px;
-          text-align: left;
-          font-weight: bold;
-        }
+      <td align="center" style="padding: 20px 0;">
 
-        .container {
-          box-shadow: none;
-        }
-      }
+        <table
+          width="600"
+          cellpadding="0"
+          cellspacing="0"
+          border="0"
+          style="border-radius: 10px; overflow: hidden; background-color: #f1f1f1;">
 
-    </style>
-  </head>
+          <tr>
 
-  <body>
-    <div class="container">
-      <h1>Thank you for contacting me!</h1>
-      <p>Hi {{ $name }},</p>
-      <p>Thank you for getting in touch with us. We have received your message and would like to thank you for writing to us. We will reply by email as soon as possible, within 24 hours.</p>
-      <h2>Please verify your information</h2>
-      <p>If any of the below information is incorrect, please contact us immediately.</p>
-      <table class="table">
-        <tr>
-          <th>Information</th>
-          <th>Details</th>
-        </tr>
-        <tr>
-          <td data-label="Name">Name</td>
-          <td>{{ $name }}</td>
-        </tr>
-        <tr>
-          <td data-label="Email">Email</td>
-          <td>{{ $email }}</td>
-        </tr>
-        <tr>
-          <td data-label="Phone">Phone</td>
-          <td>{{ $phone }}</td>
-        </tr>
-      </table>
-      <p>If you need to adjust any information or have any further questions, please do not hesitate to contact us at <a href="mailto:support@example.com">support@example.com</a>.</p>
-      <p class="footer">© {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
-    </div>
-    <p style="font-size: 12px; color: #666666; text-align: left; width: 100%; max-width: 500px; margin: auto; margin-top: 20px;">You are receiving this email because you contacted me from <a href="https://ultrashots.net"><strong>{{ config('app.name') }}</strong></a>. If you didn't, you can ignore and delete this email.</p>
-  </body>
+            <td style="padding: 20px; font-family: Roboto, Inter, Helvetica, sans-serif;">
 
+              <h1 style="font-family: Roboto, Inter, Helvetica, sans-serif;">Thank you for <br>contacting me!</h1>
+
+              <p style="font-family: Roboto, Inter, Helvetica, sans-serif;">Hi {{ $name }},</p>
+
+              <p style="font-family: Roboto, Inter, Helvetica, sans-serif;">
+                Thank you for getting in touch with me. I have received your message and
+                would like to thank you for writing to me. I will reply by either email, or a phone call as soon
+                as possible, usually within 24 hours.
+              </p>
+
+              <h2 style="font-family: Roboto, Inter, Helvetica, sans-serif;">Verify your information</h2>
+
+              <p
+                style="font-family: Roboto, Inter, Helvetica, sans-serif;">
+                If any of the below information is incorrect, please contact me immediately.
+              </p>
+
+              <table
+                width="100%"
+                cellpadding="0"
+                cellspacing="0"
+                border="0"
+                style="
+                  border-collapse: separate;
+                  border-spacing: 0;
+                  border-radius: 10px;
+                  overflow: hidden;
+                  width: 100%;
+                  max-width: 600px;
+                  border: 1px solid #3ad85d;
+                  margin: 0 auto;
+                  font-family: Roboto, Helvetica, Inter, sans-serif;
+                  font-size: 14px;
+                  color: #333;">
+
+                <tr>
+                  <th
+                    align="left"
+                    colspan="2"
+                    style="background-color: #f2f2f2; padding: 10px; border-bottom: 1px solid #3ad85d;">
+                    Contact information
+                  </th>
+                </tr>
+
+                <tr>
+                  <td style="padding: 10px; border-bottom: 1px solid #3ad85d;">Full Name</td>
+                  <td style="padding: 10px; border-bottom: 1px solid #3ad85d;">{{ $name }}</td>
+                </tr>
+
+                <tr>
+                  <td style="padding: 10px; border-bottom: 1px solid #3ad85d;">Email Address</td>
+                  <td style="padding: 10px; border-bottom: 1px solid #3ad85d;">{{ $email }}</td>
+                </tr>
+
+                <tr>
+                  <td style="padding: 10px;">Mobile Number</td>
+                  <td style="padding: 10px;">{{ $phone }}</td>
+                </tr>
+
+              </table>
+
+              <p style="font-family: Roboto, Inter, Helvetica, sans-serif;">
+                If you need to adjust any information or have any further questions,
+                please do not hesitate to contact me via <a href="mailto:support@ultrashots.net">Email</a>.
+              </p>
+
+              <p
+                class="footer"
+                style="font-family: Roboto, Inter, Helvetica, sans-serif; font-size: 12px; color: #666666; text-align: left; margin-top: 20px;">
+                © {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+              </p>
+
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+
+    </tr>
+
+  </table>
+
+  <p
+    style="font-size: 12px; color: #666666; text-align: left; width: 100%; max-width: 500px; margin: 20px auto; font-family: Roboto, Inter, Helvetica, sans-serif;">
+    You are receiving this email because you contacted me from
+    <a href="https://ultrashots.net"><strong>{{ config('app.name') }}</strong></a>.
+    <br>If you didn't initiate it, you can ignore and delete this email.
+  </p>
+
+</body>
 </html>
