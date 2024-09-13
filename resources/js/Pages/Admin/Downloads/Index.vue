@@ -1,17 +1,18 @@
 <script setup lang="ts">
 
-import AppLayout from "@/Layouts/AppLayout.vue";
-import { Head } from "@inertiajs/vue3"
+import { Head, Link } from "@inertiajs/vue3"
 import { Logo } from "@/types";
 import LogoCard from "@/Components/Front/LogoCard.vue";
-import { IconAlertCircle } from "@tabler/icons-vue";
+import AuthLayout from "@/Layouts/AuthLayout.vue";
+import Navheader from "@/Components/Backend/Navheader.vue";
+import { IconAlertCircle, IconUpload } from "@tabler/icons-vue";
 
 defineProps<{
   downloads: Logo[]
 }>()
 
 defineOptions({
-  layout: AppLayout
+  layout: AuthLayout
 })
 
 </script>
@@ -19,6 +20,28 @@ defineOptions({
 <template>
 
   <Head title="Downloads" />
+
+  <Navheader>
+
+    <nav
+      class="flex items-center w-full gap-1 mx-auto dark:text-white dark:border-gray-700">
+
+      <h2 class="text-xl font-semibold dark:text-gray-300 sm:inline-block">
+        Explore logos
+      </h2>
+
+      <span class="flex-1"></span>
+
+      <Link
+        as="button"
+        :href="route('auth.downloads.create')"
+        class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-800 border border-transparent rounded-lg gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
+        <IconUpload class="size-5" /> New
+      </Link>
+
+    </nav>
+
+  </Navheader>
 
   <main
     class="flex-auto mb-10 sm:mb-14">
@@ -36,12 +59,12 @@ defineOptions({
 
               <h1
                 class="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
-                Download vectorized logos of leading companies in Malawi
+                Available logos
               </h1>
 
               <p
                 class="mt-6 text-lg text-zinc-600 dark:text-zinc-400">
-                Explore my collection of high-quality, vectorized logos from top companies and organisations
+                Explore a collection of high-quality, vectorized logos from top companies and organisations
                 across Malawi. These logos are optimized for various design and branding needs, ensuring scalability
                 and clarity across all media.
               </p>
@@ -66,9 +89,7 @@ defineOptions({
               </ul>
 
               <!-- Display this section if no logos are available -->
-              <div
-                v-else
-                class="flex flex-col items-center justify-center text-center text-zinc-600 dark:text-zinc-400 mt-10 space-y-4">
+              <div v-else class="flex flex-col items-center justify-center text-center text-zinc-600 dark:text-zinc-400 mt-10 space-y-4">
 
                 <IconAlertCircle class="size-16 text-gray-400 dark:text-gray-500" />
 
@@ -77,9 +98,15 @@ defineOptions({
                 </p>
 
                 <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                  Please check back later.
+                  Please check back later or click the button below to upload a new logo.
                 </p>
 
+                <Link
+                  as="button"
+                  :href="route('auth.downloads.create')"
+                  class="inline-flex items-center px-4 py-2 mt-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:ring-offset-gray-900">
+                  <IconUpload class="size-5 mr-2" /> Upload New Logo
+                </Link>
               </div>
 
             </div>

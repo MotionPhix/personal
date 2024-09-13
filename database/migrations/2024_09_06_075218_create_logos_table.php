@@ -6,26 +6,27 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::create('logos', function (Blueprint $table) {
-          $table->id();
-          $table->uuid('did')->nullable();
-          $table->string('name');
-          $table->string('poster')->nullable();
-          $table->string('file_path');
-          $table->timestamps();
-        });
-    }
+  /**
+   * Run the migrations.
+   */
+  public function up(): void
+  {
+    Schema::create('logos', function (Blueprint $table) {
+      $table->id();
+      $table->uuid('lid')->nullable();
+      $table->string('name');
+      $table->string('poster')->nullable();
+      $table->string('file_path');
+      $table->string('mime_type');
+      $table->timestamps();
+    });
+  }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('logos');
-    }
+  /**
+   * Reverse the migrations.
+   */
+  public function down(): void
+  {
+    Schema::dropIfExists('logos');
+  }
 };

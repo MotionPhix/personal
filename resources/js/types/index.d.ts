@@ -53,10 +53,11 @@ export interface Project {
 
 export interface Logo {
   id: number;
-  did: string;
+  lid: string;
   name: string;
-  poster?: string;
+  poster: string;
   file_path: string;
+  mime_type: string;
 }
 
 export type PageProps<T extends Record<string, unknown> = Record<string, unknown>> = T & {

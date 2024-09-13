@@ -50,6 +50,11 @@ const isDark = useDark()
                          :active="$page.url.startsWith('/auth/projects')">
                   Projects
                 </NavLink>
+
+                <NavLink :href="route('auth.downloads.index')"
+                        :active="$page.url.startsWith('/auth/downloads')">
+                  Downloads
+                </NavLink>
               </div>
             </div>
 

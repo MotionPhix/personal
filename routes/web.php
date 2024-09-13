@@ -148,6 +148,11 @@ Route::group(['prefix' => 'auth'], function () {
   Route::group(['prefix' => 'downloads'], function () {
 
     Route::get(
+      '/',
+      [\App\Http\Controllers\DownloadController::class, 'listing'],
+    )->name('auth.downloads.index');
+
+    Route::get(
       '/create',
       [\App\Http\Controllers\DownloadController::class, 'create'],
     )->name('auth.downloads.create');
