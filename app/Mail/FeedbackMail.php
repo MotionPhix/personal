@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class ContactMe extends Mailable
+class FeedbackMail extends Mailable
 {
   use Queueable, SerializesModels;
 
@@ -17,10 +17,7 @@ class ContactMe extends Mailable
    * Create a new message instance.
    */
   public function __construct(
-    private string $name,
-    private string $email,
-    private string $phone,
-    private string $user_query,
+    public $data
   ) {}
 
   /**
@@ -29,7 +26,9 @@ class ContactMe extends Mailable
   public function envelope(): Envelope
   {
     return new Envelope(
-      subject: 'You have a new query',
+
+      subject: 'Thank you for contacting me!',
+
     );
   }
 
@@ -42,16 +41,14 @@ class ContactMe extends Mailable
     $logo = public_path('ultrashots_logo.png');
 
     return new Content(
-      view: 'emails.feedback-mail',
+      view: 'emails.contact-me',
 
       with: [
-        'name' => $this->name,
+        'name' => $this->data['name'],
 
-        'phone' => $this->phone,
+        'phone' => $this->data['phone'],
 
-        'email' => $this->email,
-
-        'user_query' => $this->user_query,
+        'email' => $this->data['email'],
 
         'logo' => $logo,
       ],

@@ -48,3 +48,20 @@
 .dark [data-filepond-item-state='processing-complete'] .filepond--item-panel {
   background-color: #55ff55; /* Darker green for success */
 }
+
+.tiptap ul p,
+.tiptap ol p {
+  display: inline;
+}
+
+.tiptap p.is-editor-empty:first-child::before {
+  font-size: 14px;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}

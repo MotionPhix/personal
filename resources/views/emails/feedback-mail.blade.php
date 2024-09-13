@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Thank you for contacting me</title>
+  <title>Thank you {{ $name }}</title>
 
   <style type="text/css">
     @import url('https://fonts.bunny.net/css?family=roboto:400,500,600,700&display=swap');
@@ -86,21 +86,18 @@
 
             <td style="padding: 20px; font-family: Roboto, Inter, Helvetica, sans-serif;">
 
-              <h1 style="font-family: Roboto, Inter, Helvetica, sans-serif;">Thank you for <br>contacting me!</h1>
-
-              <p style="font-family: Roboto, Inter, Helvetica, sans-serif;">Hi {{ $name }},</p>
+              <h1
+                style="font-family: Roboto, Inter, Helvetica, sans-serif;">
+                Feedback from <br> {{ $name }}
+              </h1>
 
               <p style="font-family: Roboto, Inter, Helvetica, sans-serif;">
-                Thank you for getting in touch with me. I have received your message and
-                would like to thank you for writing to me. I will reply by either email, or a phone call as soon
-                as possible, usually within 24 hours.
+                {!! $user_query !!}
               </p>
 
-              <h2 style="font-family: Roboto, Inter, Helvetica, sans-serif;">Verify your information</h2>
-
               <p
-                style="font-family: Roboto, Inter, Helvetica, sans-serif;">
-                If any of the below information is incorrect, please contact me immediately.
+                style="font-family: Roboto, Inter, Helvetica, sans-serif; font-weight: bold">
+                {{ $name }}'s information
               </p>
 
               <table
@@ -147,11 +144,6 @@
 
               </table>
 
-              <p style="font-family: Roboto, Inter, Helvetica, sans-serif;">
-                If you need to adjust any information or have any further questions,
-                please do not hesitate to contact me via <a href="mailto:support@ultrashots.net">Email</a>.
-              </p>
-
               <p
                 class="footer"
                 style="font-family: Roboto, Inter, Helvetica, sans-serif; font-size: 12px; color: #666666; text-align: left; margin-top: 20px;">
@@ -168,13 +160,6 @@
     </tr>
 
   </table>
-
-  <p
-    style="font-size: 12px; color: #666666; text-align: left; width: 100%; max-width: 500px; margin: 20px auto; font-family: Roboto, Inter, Helvetica, sans-serif;">
-    You are receiving this email because you contacted me from
-    <a href="https://ultrashots.net"><strong>{{ config('app.name') }}</strong></a>.
-    <br>If you didn't initiate it, you can ignore and delete this email.
-  </p>
 
 </body>
 </html>
