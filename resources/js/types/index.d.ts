@@ -22,6 +22,31 @@ export interface Image {
   src: string;
 }
 
+export interface MediaItem {
+  id: number;
+  model_type: string;
+  model_id: number;
+  uuid: string;
+  collection_name: string;
+  name: string;
+  file_name: string;
+  mime_type: string;
+  disk: string;
+  conversions_disk: string;
+  size: number;
+  manipulations: Record<string, any>[];
+  custom_properties: Record<string, any>[];
+  generated_conversions: {
+    thumb: boolean;
+  };
+  responsive_images: Record<string, any>[];
+  order_column: number;
+  created_at: string;
+  updated_at: string;
+  original_url: string;
+  preview_url: string;
+};
+
 export interface Address {
   street: string;
   city: string;
@@ -43,10 +68,10 @@ export interface Project {
   id: number;
   pid: string;
   name: string;
-  poster: string|File;
+  poster_url: string|File;
   production?: Date;
   description?: string;
-  images?: Image[];
+  media?: MediaItem[];
   customer_id: number;
   customer?: Customer;
 }
@@ -54,9 +79,9 @@ export interface Project {
 export interface Logo {
   id: number;
   lid: string;
-  name: string;
-  poster: string;
-  file_path: string;
+  brand: string;
+  poster_url: string;
+  file_url: string;
   mime_type: string;
 }
 

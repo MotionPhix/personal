@@ -1,34 +1,22 @@
 <script setup lang="ts">
 
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { Image, Project } from "@/types";
+import { Project } from "@/types";
 import {Head, Link} from "@inertiajs/vue3";
 import { IconArrowLeft } from "@tabler/icons-vue";
-import { computed, onMounted, ref } from "vue";
 
 const props = defineProps<{
   project: Project;
 }>();
 
-const masonryItems = ref([]);
-
-const loadImages = () => {
-  return props.project.images;
-};
-
-const processedImages = computed(() => {
-  return props.project.images?.map(image => {
-    const [width, height] = image.size.split('x').map(Number);
-    return {
-      ...image,
-      aspectRatio: `${width} / ${height}`
-    };
-  });
-});
-
 defineOptions({
   layout: AppLayout
 })
+
+// Function to find a specific image by ID
+const getImageById = (id: number) => {
+  return props.project.media?.find(media => media.id === id)?.original_url || '';
+};
 </script>
 
 <template>
@@ -53,7 +41,7 @@ defineOptions({
 
             <div
               class="md:h-[calc(100vh-400px)] group my-10 max-w-full h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
-              :style="{ backgroundImage: `url(${project.poster})` }" />
+              :style="{ backgroundImage: `url(${getImageById(4)})` }" />
 
             <header class="max-w-2xl mb-12">
               <h1
@@ -62,7 +50,7 @@ defineOptions({
                 {{ project.name }}
               </h1>
 
-              <section class="my-12 text-base prose-lg text-zinc-600 dark:text-zinc-400 prose">
+              <section class="my-12 text-base prose sm:prose-md dark:prose-invert">
                 <div v-html="project.description" />
               </section>
 
@@ -121,12 +109,12 @@ defineOptions({
 
             <div
               class="gap-4 space-y-4 columns-2 sm:columns-3"
-              :style="project?.images && project.images.length > 3 ? 'direction: rtl;' : ''">
+              :style="project?.media && project.media.length > 3 ? 'direction: ltr;' : 'rtl'">
               <div
-                v-for="(image, index) in project?.images"
+                v-for="(image, index) in project?.media"
                 :key="index" class="break-inside-avoid">
                 <img
-                  :src="image?.src"
+                  :src="image?.original_url"
                   @contextmenu.prevent
                   :alt="'Project image ' + index + 1"
                   class="w-full rounded-lg shadow-lg">

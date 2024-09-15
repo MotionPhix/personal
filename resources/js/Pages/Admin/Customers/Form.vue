@@ -17,8 +17,6 @@ import { Customer } from "@/types";
 
 import Navheader from "@/Components/Backend/Navheader.vue";
 
-import Footnote from "@/Components/Front/Footnote.vue";
-
 const props = defineProps<{
 
   customer: Customer;
@@ -131,7 +129,7 @@ defineOptions({
 
   </Navheader>
 
-  <main class="w-full max-w-2xl px-4 py-10 mx-auto md:pt-16 sm:px-6 lg:px-8">
+  <article class="w-full max-w-2xl px-4 py-10 mx-auto md:pt-16 sm:px-6 lg:px-8">
 
     <form
       class="flex flex-col w-full gap-6 px-4 md:mx-auto">
@@ -226,8 +224,6 @@ defineOptions({
       </section>
     </form>
 
-  </main>
-
-  <Footnote />
+  </article>
 
 </template>

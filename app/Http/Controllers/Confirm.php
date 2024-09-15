@@ -19,16 +19,19 @@ class Confirm extends Controller
       $subscriber_data->subscribed = true;
       $subscriber_data->update();
 
-      notify()->success(
-        'You are successfully subscribed.',
-        'Welcome'
-      );
+      return redirect()->back()->with('notify', [
+        'type' => 'info',
+        'title' => 'Welcome to Ultrashots',
+        'message' => 'You are successfully subscribed.',
+      ]);
 
-      return redirect()->back();
-    } else {
-
-      return redirect()->route('home');
     }
+
+    return redirect()->route('home')->with('notify', [
+      'type' => 'warning',
+      'title' => 'Invalid subscriber data',
+      'message' => 'Either the link has expired or you it has been modified',
+    ]);
 
   }
 }

@@ -5,7 +5,15 @@ import Placeholder from "@tiptap/extension-placeholder"
 
 import { useEditor, EditorContent } from "@tiptap/vue-3"
 
-import StarterKit from "@tiptap/starter-kit"
+// import StarterKit from "@tiptap/starter-kit"
+
+import Document from "@tiptap/extension-document"
+
+import Heading from '@tiptap/extension-heading'
+
+import Paragraph from "@tiptap/extension-paragraph"
+
+import Text from "@tiptap/extension-text"
 
 import HorizontalRule from '@tiptap/extension-horizontal-rule'
 
@@ -15,17 +23,14 @@ import OrderedList from "@tiptap/extension-ordered-list"
 
 import Blockquote from "@tiptap/extension-blockquote"
 
-import Paragraph from "@tiptap/extension-paragraph"
-
 import Bold from "@tiptap/extension-bold"
 
 import Underline from "@tiptap/extension-underline"
 
-import { onBeforeUnmount, watch } from 'vue'
+import { onBeforeUnmount, onMounted, watch } from 'vue'
 
-const model = defineModel()
+const model = defineModel({ default: '' })
 
-// Define props for v-model and placeholder
 const props = defineProps({
   placeholder: {
     type: String,
@@ -34,17 +39,36 @@ const props = defineProps({
 })
 
 const editor = useEditor({
+  editorProps: {
+    attributes: {
+      class: 'prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl my-3 focus:outline-none',
+    },
+  },
+
+  content: model.value as any,
+
   extensions: [
     Placeholder.configure({
       placeholder: props.placeholder as any,
       emptyNodeClass: 'text-gray-800 dark:text-neutral-200'
     }),
 
-    StarterKit,
+    // StarterKit,
+
+    Document,
+
+    Text,
+
+    Heading.configure({
+      levels: [1, 2, 3],
+      HTMLAttributes: {
+        class: 'text-gray-800 dark:text-gray-200'
+      }
+    }),
 
     Paragraph.configure({
       HTMLAttributes: {
-        class: 'text-gray-800 dark:text-neutral-200'
+        class: 'text-gray-800 dark:text-gray-200'
       }
     }),
 
@@ -81,6 +105,7 @@ const editor = useEditor({
 })
 
 // Toolbar actions using editor commands
+const toggleHeading = (heading: any)=> editor.value?.chain().focus().toggleHeading({ level: heading }).run()
 const toggleBold = () => editor.value?.chain().focus().toggleBold().run()
 const toggleItalic = () => editor.value?.chain().focus().toggleItalic().run()
 const toggleUnderline = () => editor.value?.chain().focus().toggleUnderline().run()
@@ -97,7 +122,7 @@ onBeforeUnmount(() => {
 
 // Watch the editor's content and sync it with v-model
 watch(() => editor.value?.getHTML(), (newValue) => {
-  model.value = newValue // Update the modelValue when editor content changes
+  model.value = newValue as any
 })
 </script>
 
@@ -105,17 +130,47 @@ watch(() => editor.value?.getHTML(), (newValue) => {
 
  <!-- Tiptap Editor -->
   <div
-    class="bg-white border border-gray-200 rounded-xl overflow-hidden dark:bg-neutral-800 dark:border-neutral-700">
+    class="overflow-hidden bg-white border border-gray-200 rounded-xl dark:bg-neutral-800 dark:border-neutral-700">
 
     <div id="hs-editor-tiptap">
 
       <div class="flex align-middle gap-x-0.5 border-b border-gray-200 p-2 dark:border-neutral-700">
 
         <!-- Toolbar buttons with Vue event binding -->
+        <!-- <button
+          type="button"
+          @click="toggleHeading(2)"
+          :class="{ 'is-active': editor?.isActive('heading', { level: 2 }) }"
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="shrink-0 size-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 19.5H16.5v-1.609a2.25 2.25 0 0 1 1.244-2.012l2.89-1.445c.651-.326 1.116-.955 1.116-1.683 0-.498-.04-.987-.118-1.463-.135-.825-.835-1.422-1.668-1.489a15.202 15.202 0 0 0-3.464.12M2.243 4.492v7.5m0 0v7.502m0-7.501h10.5m0-7.5v7.5m0 0v7.501" />
+          </svg>
+
+        </button>
+
+        <button
+          type="button"
+          @click="toggleHeading(3)"
+          :class="{
+            'is-active': editor?.isActive('heading', { level: 3 })
+          }"
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="shrink-0 size-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.905 14.626a4.52 4.52 0 0 1 .738 3.603c-.154.695-.794 1.143-1.504 1.208a15.194 15.194 0 0 1-3.639-.104m4.405-4.707a4.52 4.52 0 0 0 .738-3.603c-.154-.696-.794-1.144-1.504-1.209a15.19 15.19 0 0 0-3.639.104m4.405 4.708H18M2.243 4.493v7.5m0 0v7.502m0-7.501h10.5m0-7.5v7.5m0 0v7.501" />
+          </svg>
+
+        </button> -->
+
         <button
           type="button"
           @click="toggleBold"
-          class="size-8 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-bold="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-bold="">
           <svg
             class="shrink-0 size-4"
             xmlns="http://www.w3.org/2000/svg"
@@ -130,7 +185,7 @@ watch(() => editor.value?.getHTML(), (newValue) => {
         <button
           type="button"
           @click="toggleItalic"
-          class="size-8 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-italic="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-italic="">
           <svg
             class="shrink-0 size-4"
             xmlns="http://www.w3.org/2000/svg"
@@ -146,7 +201,7 @@ watch(() => editor.value?.getHTML(), (newValue) => {
         <button
           type="button"
           @click="toggleUnderline"
-          class="size-8 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-underline="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-underline="">
           <svg
             fill="currentColor"
             class="shrink-0 size-3.5"
@@ -160,7 +215,7 @@ watch(() => editor.value?.getHTML(), (newValue) => {
         <button
           type="button"
           @click="toggleStrike"
-          class="size-8 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-strike="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-strike="">
           <svg
             class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg"
             width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -175,7 +230,7 @@ watch(() => editor.value?.getHTML(), (newValue) => {
         <button
           type="button"
           @click="toggleOrderedList"
-          class="size-8 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-ol="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-ol="">
           <svg
             class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg"
             width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -193,7 +248,7 @@ watch(() => editor.value?.getHTML(), (newValue) => {
         <button
           type="button"
           @click="toggleBulletList"
-          class="size-8 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-ul="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-ul="">
           <svg
             class="shrink-0 size-4"
             xmlns="http://www.w3.org/2000/svg"
@@ -212,7 +267,7 @@ watch(() => editor.value?.getHTML(), (newValue) => {
         <button
           type="button"
           @click="toggleBlockquote"
-          class="size-8 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-blockquote="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-blockquote="">
           <svg
             class="shrink-0 size-4"
             xmlns="http://www.w3.org/2000/svg"
@@ -229,7 +284,7 @@ watch(() => editor.value?.getHTML(), (newValue) => {
         <button
           type="button"
           @click="toggleCode"
-          class="size-8 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-code="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-code="">
           <svg class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="m18 16 4-4-4-4"></path>
             <path d="m6 8-4 4 4 4"></path>
@@ -240,7 +295,7 @@ watch(() => editor.value?.getHTML(), (newValue) => {
         <button
           type="button"
           @click="setHorizontalRule"
-          class="size-8 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-full border border-transparent text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-code="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-code>
 
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
             <path fill-rule="evenodd" d="M4.25 12a.75.75 0 0 1 .75-.75h14a.75.75 0 0 1 0 1.5H5a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
@@ -254,8 +309,8 @@ watch(() => editor.value?.getHTML(), (newValue) => {
       <EditorContent
         id="hs-editor-tiptap"
         :editor="editor"
-        class="h-[10rem] overflow-auto px-4 pt-1 dark:text-neutral-200"
-        data-hs-editor-field="" />
+        class="h-[20rem] scroll-smooth scrollbar-none overflow-auto px-4 dark:text-gray-200 text-gray-800"
+        data-hs-editor-field />
     </div>
 
   </div>
@@ -263,6 +318,10 @@ watch(() => editor.value?.getHTML(), (newValue) => {
 </template>
 
 <style lang="scss">
+.ProseMirror.tiptap {
+  @apply h-full;
+}
+
 /* Basic editor styles */
 .tiptap {
   :first-child {
@@ -283,6 +342,98 @@ watch(() => editor.value?.getHTML(), (newValue) => {
     &.ProseMirror-selectednode {
       border-top: 1px solid red;
     }
+  }
+
+  /* List styles */
+  ul,
+  ol {
+    padding: 0 1rem;
+    margin: 1.25rem 1rem 1.25rem 0.4rem;
+
+    li p {
+      margin-top: 0.25em;
+      margin-bottom: 0.25em;
+    }
+  }
+
+  /* Heading styles */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    line-height: 1.1;
+    margin-top: 2.5rem;
+    text-wrap: pretty;
+  }
+
+  h1,
+  h2 {
+    margin-top: 3.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+  }
+
+  h2 {
+    font-size: 1.2rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  h4,
+  h5,
+  h6 {
+    font-size: 1rem;
+  }
+
+  /* Code and preformatted text styles */
+  code {
+    background-color: var(--purple-light);
+    border-radius: 0.4rem;
+    color: var(--black);
+    font-size: 0.85rem;
+    padding: 0.25em 0.3em;
+  }
+
+  pre {
+    background: var(--black);
+    border-radius: 0.5rem;
+    color: var(--white);
+    font-family: 'JetBrainsMono', monospace;
+    margin: 1.5rem 0;
+    padding: 0.75rem 1rem;
+
+    code {
+      background: none;
+      color: inherit;
+      font-size: 0.8rem;
+      padding: 0;
+    }
+  }
+
+  mark {
+    background-color: #FAF594;
+    border-radius: 0.4rem;
+    box-decoration-break: clone;
+    padding: 0.1rem 0.3rem;
+  }
+
+  blockquote {
+    border-left: 3px solid var(--gray-3);
+    margin: 1.5rem 0;
+    padding-left: 1rem;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--gray-2);
+    margin: 2rem 0;
   }
 }
 </style>

@@ -9,7 +9,6 @@ import {
   IconBuildingEstate,
   IconBalloon,
 } from "@tabler/icons-vue";
-import Footnote from "@/Components/Front/Footnote.vue";
 
 defineOptions({
   layout: AuthLayout
@@ -117,7 +116,8 @@ defineOptions({
 
   </Navheader>
 
-  <main class="w-full max-w-2xl px-4 py-10 mx-auto md:pt-16 sm:px-6 lg:px-8">
+  <article class="w-full max-w-2xl px-4 py-10 mx-auto md:pt-16 sm:px-6 lg:px-8">
+
     <div class="w-full mx-auto">
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 text-gray-900 dark:text-gray-100">
@@ -125,8 +125,7 @@ defineOptions({
             </div>
         </div>
     </div>
-  </main>
 
-  <Footnote />
+  </article>
 
 </template>

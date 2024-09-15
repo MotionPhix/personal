@@ -8,7 +8,7 @@ import Navheader from "@/Components/Backend/Navheader.vue";
 import { IconAlertCircle, IconUpload } from "@tabler/icons-vue";
 
 defineProps<{
-  downloads: Logo[]
+  logoFiles: Logo[]
 }>()
 
 defineOptions({
@@ -64,8 +64,7 @@ defineOptions({
 
               <p
                 class="mt-6 text-lg text-zinc-600 dark:text-zinc-400">
-                Explore a collection of high-quality, vectorized logos from top companies and organisations
-                across Malawi. These logos are optimized for various design and branding needs, ensuring scalability
+                Explore a collection of high-quality, vectorized logos from top companies and organisations across Malawi. These logos are optimized for various design and branding needs, ensuring scalability
                 and clarity across all media.
               </p>
 
@@ -75,23 +74,23 @@ defineOptions({
 
               <ul
                 role="list"
-                v-if="downloads.length"
+                v-if="logoFiles.length"
                 class="grid grid-cols-3 gap-2 lg:grid-cols-4">
 
                 <li
                   class="relative flex flex-col items-start group"
-                  v-for="logo in downloads" :key="logo.lid">
+                  v-for="logo in logoFiles" :key="logo.lid">
 
-                  <LogoCard :logo />
+                  <LogoCard :logo-file="logo" />
 
                 </li>
 
               </ul>
 
               <!-- Display this section if no logos are available -->
-              <div v-else class="flex flex-col items-center justify-center text-center text-zinc-600 dark:text-zinc-400 mt-10 space-y-4">
+              <div v-else class="flex flex-col items-center justify-center mt-10 space-y-4 text-center text-zinc-600 dark:text-zinc-400">
 
-                <IconAlertCircle class="size-16 text-gray-400 dark:text-gray-500" />
+                <IconAlertCircle class="text-gray-400 size-16 dark:text-gray-500" />
 
                 <p class="text-lg font-semibold text-zinc-800 dark:text-zinc-100">
                   No logos available at the moment
@@ -105,7 +104,7 @@ defineOptions({
                   as="button"
                   :href="route('auth.downloads.create')"
                   class="inline-flex items-center px-4 py-2 mt-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:ring-offset-gray-900">
-                  <IconUpload class="size-5 mr-2" /> Upload New Logo
+                  <IconUpload class="mr-2 size-5" /> Upload New Logo
                 </Link>
               </div>
 

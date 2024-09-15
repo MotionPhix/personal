@@ -3,13 +3,12 @@
 import { Head, Link } from '@inertiajs/vue3';
 import Navheader from '@/Components/Backend/Navheader.vue';
 import AuthLayout from "@/Layouts/AuthLayout.vue";
-import Footnote from "@/Components/Front/Footnote.vue";
-import { IconDeviceProjector, IconInbox, IconDots, IconPhotoX, IconPencil, IconTableShortcut } from '@tabler/icons-vue';
+import { IconDeviceProjector, IconDots, IconPhotoX, IconPencil } from '@tabler/icons-vue';
 import {Project} from "@/types";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import IconContacts from "@/Components/Icon/IconContacts.vue";
 
-const props = defineProps<{
+defineProps<{
   projects: Project[],
 }>()
 
@@ -31,7 +30,7 @@ defineOptions({
         as="button"
         v-if="projects.length"
         :href="route('auth.projects.create')"
-        class="flex font-semibold items-center text-xl gap-2 py-1 transition duration-300 hover:opacity-70 dark:text-gray-300"
+        class="flex items-center gap-2 py-1 text-xl font-semibold transition duration-300 hover:opacity-70 dark:text-gray-300"
       >
         <IconDeviceProjector class="w-8 h-8 stroke-current" /> <span>Add new</span>
 
@@ -45,20 +44,35 @@ defineOptions({
 
   </Navheader>
 
-  <main class="max-w-2xl px-4 py-10 mx-auto sm:px-6 lg:px-8 lg:py-14">
+  <article class="max-w-2xl px-4 py-10 mx-auto sm:px-6 lg:px-8 lg:py-14">
+
+    <!-- Conditional Section if no projects are available -->
+    <div v-if="!projects.length" class="text-center">
+      <IconPhotoX class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500" />
+      <h2 class="mt-4 text-2xl font-semibold text-gray-800 dark:text-neutral-200">No Projects Available</h2>
+      <p class="mt-2 text-gray-600 dark:text-neutral-400">It seems there are no projects yet. Add new projects to get started!</p>
+      <Link
+        as="button"
+        :href="route('auth.projects.create')"
+        class="inline-flex items-center px-5 py-3 mt-6 text-sm font-medium text-white bg-indigo-600 rounded-md shadow hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-indigo-700 dark:hover:bg-indigo-600"
+      >
+        <IconDeviceProjector class="w-5 h-5 mr-2" />
+        Add a Project
+      </Link>
+    </div>
 
     <!-- Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2">
 
       <!-- Card -->
       <section
-        class="group flex flex-col h-full border border-gray-200 hover:border-transparent hover:shadow-lg focus:outline-none focus:border-transparent focus:shadow-lg transition duration-300 rounded-xl p-5 dark:border-neutral-700 dark:hover:border-transparent dark:hover:shadow-black/40 dark:focus:border-transparent dark:focus:shadow-black/40"
+        class="flex flex-col h-full py-2 transition duration-300 border border-gray-200 group hover:border-transparent hover:shadow-lg focus:outline-none focus:border-transparent focus:shadow-lg rounded-xl dark:border-neutral-700 dark:hover:border-transparent dark:hover:shadow-black/40 dark:focus:border-transparent dark:focus:shadow-black/40"
         v-for="project in projects"
         :key="project.pid"
       >
-        <div class="mt-auto flex items-center gap-x-3 px-2 pb-4">
+        <div class="flex items-center px-2 pb-4 mt-auto gap-x-3">
 
-          <div class="rounded-full bg-gray-300 p-2">
+          <div class="p-2 bg-gray-300 rounded-full">
             <IconContacts
               class="size-5" />
           </div>
@@ -73,13 +87,13 @@ defineOptions({
 
           <Menu
             as="div"
-            class="relative text-left rounded-full z-40">
+            class="relative z-40 text-left rounded-full">
 
             <MenuButton
-              class="inline-flex w-full justify-center"
+              class="inline-flex justify-center w-full"
             >
               <IconDots
-                class="size-5 text-gray-700 dark:text-gray-300"
+                class="text-gray-700 size-5 dark:text-gray-300"
                 aria-hidden="true"
               />
             </MenuButton>
@@ -93,7 +107,7 @@ defineOptions({
               leave-to-class="transform scale-95 opacity-0"
             >
               <MenuItems
-                class="absolute -right-2 -mt-1 w-24 origin-bottom-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
+                class="absolute w-24 -mt-1 origin-bottom-right bg-white divide-y divide-gray-100 rounded-md shadow-lg -right-2 ring-1 ring-black/5 focus:outline-none"
               >
                 <div class="px-1 py-1">
                   <MenuItem v-slot="{ active }">
@@ -107,7 +121,7 @@ defineOptions({
                     >
                       <IconPencil
                         :active="active"
-                        class="mr-2 h-5 w-5 text-violet-400"
+                        class="w-5 h-5 mr-2 text-violet-400"
                         aria-hidden="true"
                       />
                       Edit
@@ -126,7 +140,7 @@ defineOptions({
                     >
                       <IconPhotoX
                         :active="active"
-                        class="mr-2 h-5 w-5 text-violet-400"
+                        class="w-5 h-5 mr-2 text-violet-400"
                         aria-hidden="true"
                       />
                       Delete
@@ -148,14 +162,14 @@ defineOptions({
           class="aspect-w-16 aspect-h-11"
           :href="route('auth.projects.detail', project.pid)">
           <img
-            class="w-full object-cover rounded-xl"
-            :src="project.poster as any" alt="Project Image">
+            class="object-cover w-full rounded-xl"
+            :src="project.poster_url as any" alt="Project Image">
         </Link>
 
         <Link
-          class="px-2 pt-4"
+          class="px-2 pt-2"
           :href="route('auth.projects.detail', project.pid)">
-          <p class="mt-5 text-gray-600 leading-tight dark:text-neutral-400">
+          <p class="leading-tight text-gray-600 dark:text-neutral-400">
             {{ project.name }}
           </p>
         </Link>
@@ -166,7 +180,6 @@ defineOptions({
     </div>
     <!-- End Grid -->
 
-  </main>
+  </article>
 
-  <Footnote />
 </template>

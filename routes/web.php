@@ -59,11 +59,6 @@ Route::group(['prefix' => 'downloads'], function () {
     [\App\Http\Controllers\DownloadController::class, 'index'],
   )->name('downloads.index');
 
-  Route::get(
-    '/{logo:did}',
-    [\App\Http\Controllers\DownloadController::class, 'show'],
-  )->name('downloads.show');
-
 });
 
 Route::group(['prefix' => 'auth'], function () {
@@ -134,8 +129,8 @@ Route::group(['prefix' => 'auth'], function () {
     )->name('auth.projects.detail');
 
     Route::patch(
-      '/u/{project}',
-      [\App\Http\Controllers\ProjectController::class, 'update'],
+      '/u/{project:pid}',
+      App\Http\Controllers\UpdateProject::class,
     )->name('auth.projects.update');
 
     Route::delete(
@@ -153,14 +148,24 @@ Route::group(['prefix' => 'auth'], function () {
     )->name('auth.downloads.index');
 
     Route::get(
-      '/create',
+      '/n/logo',
       [\App\Http\Controllers\DownloadController::class, 'create'],
     )->name('auth.downloads.create');
 
     Route::post(
-      '/store',
+      '/s',
       [\App\Http\Controllers\DownloadController::class, 'store'],
     )->name('auth.downloads.store');
+
+    Route::delete(
+      '/r/{logo:lid}',
+      [\App\Http\Controllers\DownloadController::class, 'destroy'],
+    )->name('auth.downloads.destroy');
+
+    Route::get(
+      '/d/{logo:lid}',
+      [\App\Http\Controllers\DownloadController::class, 'show'],
+    )->name('auth.downloads.show');
 
   });
 

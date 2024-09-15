@@ -4,35 +4,23 @@ import Navheader from '@/Components/Backend/Navheader.vue';
 import { Project } from "@/types";
 import {Head, Link} from "@inertiajs/vue3";
 import { IconArrowLeft } from "@tabler/icons-vue";
-import { computed, ref } from "vue";
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 import { IconDeviceProjector, IconDots, IconPhotoX, IconPencil, IconTableShortcut } from '@tabler/icons-vue';
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
-import Footnote from "@/Components/Front/Footnote.vue";
+import { random } from 'lodash';
 
 const props = defineProps<{
-  project: Project;
+  project: Project,
 }>();
-
-const masonryItems = ref([]);
-
-const loadImages = () => {
-  return props.project.images;
-};
-
-const processedImages = computed(() => {
-  return props.project.images?.map(image => {
-    const [width, height] = image.size.split('x').map(Number);
-    return {
-      ...image,
-      aspectRatio: `${width} / ${height}`
-    };
-  });
-});
 
 defineOptions({
   layout: AuthLayout
 })
+
+// Function to find a specific image by ID
+const getImageById = (id: number) => {
+  return props.project.media?.find(media => media.id === id)?.original_url || '';
+};
 </script>
 
 <template>
@@ -46,12 +34,12 @@ defineOptions({
       <!-- Back to Projects Button -->
       <Link
         as="button"
-        :href="route('projects.index')"
+        :href="route('auth.projects.index')"
         class="flex items-center gap-2 text-2xl text-blue-600 transition-all duration-300 ease-in-out transform group dark:text-blue-400 hover:-translate-x-1 hover:text-blue-800 dark:hover:text-blue-600"
       >
-        <IconArrowLeft class="size-8 hidden group-hover:inline-block" />
+        <IconArrowLeft class="hidden size-8 group-hover:inline-block" />
 
-        <IconDeviceProjector class="size-8 inline-block group-hover:hidden" />
+        <IconDeviceProjector class="inline-block size-8 group-hover:hidden" />
 
         <span class="group-hover:font-bold">All</span>
       </Link>
@@ -60,7 +48,7 @@ defineOptions({
 
       <Link
         as="button"
-        :href="route('auth.projects.create')"
+        :href="route('auth.projects.edit', project.pid)"
         class="flex text-2xl items-center gap-2 py-0.5 font-semibold transition duration-300 hover:opacity-70">
         <IconPencil class="w-8 stroke-current" /> <span>Edit</span>
       </Link>
@@ -69,7 +57,7 @@ defineOptions({
 
   </Navheader>
 
-  <main class="flex-auto mb-10 sm:mb-14">
+  <article class="flex-auto mb-10 sm:mb-14">
 
     <div class="mt-8 sm:px-8 sm:mt-16">
 
@@ -81,16 +69,17 @@ defineOptions({
 
             <div
               class="md:h-[calc(100vh-400px)] group my-10 max-w-full h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
-              :style="{ backgroundImage: `url(${project.poster})` }" />
+              :style="{ backgroundImage: `url(${getImageById(random(1, 3))})` }" />
 
             <header class="max-w-2xl mb-12">
               <h1
-                class="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100"
+                class="text-4xl font-bold tracking-tight prose sm:text-5xl dark:prose-invert"
               >
                 {{ project.name }}
               </h1>
 
-              <section class="my-12 text-zinc-800 text-base prose prose-lg dark:text-zinc-100">
+              <section
+                class="my-12 prose prose-md dark:prose-invert">
                 <div v-html="project.description" />
               </section>
 
@@ -99,7 +88,7 @@ defineOptions({
                 <dl class="flex flex-col gap-2">
 
                   <dt>
-                    <span class="text-sm text-gray-500 dark:text-neutral-500">
+                    <span class="text-gray-500 dark:text-neutral-500">
                       Client
                     </span>
                   </dt>
@@ -108,11 +97,11 @@ defineOptions({
 
                     <ul>
 
-                      <li class="text-sm font-bold text-gray-800 dark:text-neutral-200">
+                      <li class="font-bold text-gray-800 dark:text-neutral-200">
                         {{ project?.customer?.first_name + ' ' + project?.customer?.last_name }}
                       </li>
 
-                      <li class="text-xs text-gray-800 dark:text-neutral-200">
+                      <li class="text-sm text-gray-800 dark:text-neutral-200">
                         {{ project?.customer?.company_name }}
                       </li>
 
@@ -125,7 +114,7 @@ defineOptions({
                 <dl class="flex flex-col gap-2 mt-6">
 
                   <dt>
-                    <span class="text-sm text-gray-500 dark:text-neutral-500">
+                    <span class="text-gray-500 dark:text-neutral-500">
                       Completed
                     </span>
                   </dt>
@@ -134,7 +123,7 @@ defineOptions({
 
                     <ul>
 
-                      <li class="text-sm text-gray-800 dark:text-neutral-200">
+                      <li class="text-gray-800 dark:text-neutral-200">
                         {{ project?.production }}
                       </li>
 
@@ -149,14 +138,14 @@ defineOptions({
 
             <div
               class="gap-4 space-y-4 columns-2 sm:columns-3"
-              :style="project?.images && project.images.length > 3 ? 'direction: rtl;' : ''">
+              :style="project.media && project.media?.length > 3 ? 'direction: rtl;' : ''">
 
               <div
-                v-for="(image, index) in project?.images"
-                :key="index" class="break-inside-avoid relative group">
+                v-for="(media, index) in project.media"
+                :key="index" class="relative break-inside-avoid group">
 
                 <img
-                  :src="image?.src"
+                  :src="media.original_url"
                   @contextmenu.prevent
                   :alt="'Project image ' + index + 1"
                   class="w-full rounded-lg shadow-lg">
@@ -164,10 +153,10 @@ defineOptions({
                 <div
                   class="absolute top-1.5 right-1.5">
 
-                  <Menu as="div" class="relative text-left z-40 hidden group-hover:inline-block">
+                  <Menu as="div" class="relative z-40 hidden text-left group-hover:inline-block">
                     <div>
                       <MenuButton
-                        class="inline-flex w-full justify-center rounded-md bg-black/20 p-1 text-sm font-medium text-white hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
+                        class="inline-flex justify-center w-full p-1 text-sm font-medium text-white rounded-md bg-black/20 hover:bg-black/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75"
                       >
                         <IconDots
                           class="size-6 text-violet-200 hover:text-violet-100"
@@ -185,7 +174,7 @@ defineOptions({
                       leave-to-class="transform scale-95 opacity-0"
                     >
                       <MenuItems
-                        class="absolute right-0 -mt-8 w-24 origin-bottom-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
+                        class="absolute right-0 w-24 -mt-8 origin-bottom-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none"
                         style="direction: ltr"
                       >
                         <div class="px-1 py-1">
@@ -194,14 +183,17 @@ defineOptions({
                               as="button"
                               method="delete"
                               :class="[
-                          active ? 'bg-violet-500 text-white' : 'text-gray-900',
-                          'group flex w-full items-center rounded-md px-2 py-2 text-sm',
-                        ]"
-                              :href="route('auth.projects.destroy', image.model_id)"
+                                active ? 'bg-violet-500 text-white' : 'text-gray-900',
+                                'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                              ]"
+                              :href="route(
+                                'auth.projects.destroy',
+                                project.pid
+                              )"
                             >
                               <IconTableShortcut
                                 :active="active"
-                                class="mr-2 h-5 w-5 text-violet-400"
+                                class="w-5 h-5 mr-2 text-violet-400"
                                 aria-hidden="true"
                               />
                               Project
@@ -213,14 +205,17 @@ defineOptions({
                               as="button"
                               method="delete"
                               :class="[
-                          active ? 'bg-violet-500 text-white' : 'text-gray-900',
-                          'group flex w-full items-center rounded-md px-2 py-2 text-sm',
-                        ]"
-                              :href="route('auth.projects.destroy', { project: image.model_id, image: image.id })"
+                                active ? 'bg-violet-500 text-white' : 'text-gray-900',
+                                'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                              ]"
+                              :href="route(
+                                'auth.projects.destroy',
+                                { project: project.pid, media: media.uuid }
+                              )"
                             >
                               <IconPhotoX
                                 :active="active"
-                                class="mr-2 h-5 w-5 text-violet-400"
+                                class="w-5 h-5 mr-2 text-violet-400"
                                 aria-hidden="true"
                               />
                               Image
@@ -247,8 +242,6 @@ defineOptions({
 
     </div>
 
-  </main>
-
-  <Footnote />
+  </article>
 
 </template>

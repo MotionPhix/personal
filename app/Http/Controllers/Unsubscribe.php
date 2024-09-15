@@ -21,15 +21,17 @@ class Unsubscribe extends Controller
     if ($subscriber) {
       $subscriber->update(['subscribed' => false]);
 
-      return notify()->success(
-        'You have unsubscribed successfully',
-        'Thank you'
-      );
+      return redirect()->route('home')->with('notify', [
+        'type' => 'success',
+        'title' => 'Subscription cancelled',
+        'message' => 'You have unsubscribed successfully',
+      ]);
     }
 
-    return notify()->error(
-      'We couldn\'t find the email you provided',
-      'Something went wrong'
-    );
+    return redirect()->back()->with('notify', [
+      'type' => 'danger',
+      'title' => 'Something went wrong',
+      'message' => 'We couldn\'t find the email you provided',
+    ]);
   }
 }

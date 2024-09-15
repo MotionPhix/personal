@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-import {Project} from "@/types";
+import { Project } from "@/types";
 
-defineProps<{
+const props = defineProps<{
   project: Project;
 }>();
+
+// Function to find a specific image by ID
+const getImageById = (id: number) => {
+  return props.project.media?.find(media => media.id === id)?.original_url || '';
+};
 </script>
 
 <template>
@@ -14,7 +19,7 @@ defineProps<{
 
     <img
       class="object-cover w-full bg-gray-100 rounded-lg size-40 dark:bg-neutral-800"
-      :src="project.poster as string" alt="Project">
+      :src="getImageById(4)" alt="Project image">
 
     <div
       class="absolute transition opacity-0 bottom-1 end-1 group-hover:opacity-100">

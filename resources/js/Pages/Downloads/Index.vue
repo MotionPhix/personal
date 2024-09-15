@@ -7,7 +7,7 @@ import LogoCard from "@/Components/Front/LogoCard.vue";
 import { IconAlertCircle } from "@tabler/icons-vue";
 
 defineProps<{
-  downloads: Logo[]
+  logoFiles: Logo[]
 }>()
 
 defineOptions({
@@ -18,7 +18,7 @@ defineOptions({
 
 <template>
 
-  <Head title="Downloads" />
+  <Head title="Polished up logos" />
 
   <main
     class="flex-auto mb-10 sm:mb-14">
@@ -52,14 +52,14 @@ defineOptions({
 
               <ul
                 role="list"
-                v-if="downloads.length"
+                v-if="logoFiles.length"
                 class="grid grid-cols-3 gap-2 lg:grid-cols-4">
 
                 <li
                   class="relative flex flex-col items-start group"
-                  v-for="logo in downloads" :key="logo.lid">
+                  v-for="logo in logoFiles" :key="logo.lid">
 
-                  <LogoCard :logo />
+                  <LogoCard :logo-file="logo" />
 
                 </li>
 
@@ -68,9 +68,9 @@ defineOptions({
               <!-- Display this section if no logos are available -->
               <div
                 v-else
-                class="flex flex-col items-center justify-center text-center text-zinc-600 dark:text-zinc-400 mt-10 space-y-4">
+                class="flex flex-col items-center justify-center mt-10 space-y-4 text-center text-zinc-600 dark:text-zinc-400">
 
-                <IconAlertCircle class="size-16 text-gray-400 dark:text-gray-500" />
+                <IconAlertCircle class="text-gray-400 size-16 dark:text-gray-500" />
 
                 <p class="text-lg font-semibold text-zinc-800 dark:text-zinc-100">
                   No logos available at the moment

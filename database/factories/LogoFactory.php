@@ -10,24 +10,22 @@ use Illuminate\Support\Str;
  */
 class LogoFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-      $faker = \Faker\Factory::create();
+  /**
+   * Define the model's default state.
+   *
+   * @return array<string, mixed>
+   */
+  public function definition(): array
+  {
+    /*$faker = \Faker\Factory::create();
       $faker->addProvider(new \Smknstd\FakerPicsumImages\FakerPicsumImagesProvider($faker));
 
       $imagePath = $faker->image('public/logos', 480, 480); // Image generation
 
-      $relativePath = '/logos/' . basename($imagePath);
+      $relativePath = '/logos/' . basename($imagePath);*/
 
-        return [
-          'name' => fake('MW')->company . ' Logo',
-          'poster' => $relativePath,
-          'file_path' => $relativePath,
-        ];
-    }
+    return [
+      'brand' => fake('MW')->company . ' Logo',
+    ];
+  }
 }

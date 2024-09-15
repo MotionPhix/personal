@@ -15,7 +15,7 @@ class ProjectController extends Controller
    */
   public function index(): Response
   {
-    $projects = Project::all();
+    $projects = Project::with('media')->get(['id', 'pid']);
 
     return Inertia::render('Projects/Index', [
       'projects' => $projects,
@@ -27,7 +27,19 @@ class ProjectController extends Controller
    */
   public function listing(): Response
   {
-    $projects = Project::with('images', 'customer')->get();
+    // Fetch all projects and append media URLs
+    $projects = Project::with('customer')->get()->map(function ($project) {
+      return [
+        'id' => $project->id,
+        'pid' => $project->pid,
+        'name' => $project->name,
+        'customer' => $project->customer,
+        'poster_url' => $project->getMedia('bucket')->random()->getUrl('thumb')
+        // getFirstMediaUrl('bucket', 'thumb'),
+      ];
+    });
+
+    // $projects = Project::with('customer')->get();
 
     return Inertia::render('Admin/Projects/Index', [
       'projects' => $projects,
@@ -40,7 +52,7 @@ class ProjectController extends Controller
   public function show(Project $project): Response
   {
     return Inertia::render('Projects/Show', [
-      'project' => $project->load('customer', 'images'),
+      'project' => $project->load('customer', 'media'),
     ]);
   }
 
@@ -50,7 +62,7 @@ class ProjectController extends Controller
   public function detail(Project $project): Response
   {
     return Inertia::render('Admin/Projects/Show', [
-      'project' => $project->load('customer', 'images'),
+      'project' => $project->load('customer', 'media')
     ]);
   }
 
@@ -65,9 +77,8 @@ class ProjectController extends Controller
       'name' => '',
       'description' => '',
       'production' => '',
-      'poster' => '',
       'customer_id' => $customer->cid ?? '',
-      'images' => [],
+      'media' => [],
     ];
 
     return Inertia::render('Admin/Projects/Form', [
@@ -82,11 +93,8 @@ class ProjectController extends Controller
   {
     $customerId = Customer::where('id', $project->customer_id)->first()->cid;
     $project->customer_id = $customerId;
-    $project->poster = url($project->poster); // Ensure poster is a full URL
-    $project->images = $project->images->map(function ($image) {
-      $image->src = url($image->src); // Ensure image src is a full URL
-      return $image;
-    });
+
+    $project->load('media');
 
     return Inertia::render('Admin/Projects/Form', [
       'project' => $project,
@@ -94,7 +102,7 @@ class ProjectController extends Controller
   }
 
   /**
-   * Display the available projects in admin for crud.
+   * Store a project
    */
   public function store(Request $request)
   {
@@ -106,131 +114,30 @@ class ProjectController extends Controller
       'production' => 'required|date',
       'customer_id' => 'required|exists:customers,id',
       'description' => 'nullable|string',
-      'poster' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-      'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+      'media.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
     ]);
-
-    // Handle poster upload
-    if ($request->hasFile('poster')) {
-
-      $poster = $request->file('poster');
-
-      // Generate a unique filename for the poster
-      $posterFileName = uniqid() . '.' . $poster->getClientOriginalExtension();
-
-      // Move the poster to the "public/poster" directory
-      $poster->move(public_path('poster'), $posterFileName);
-
-      // Generate the relative path (without 'public')
-      $relativePosterPath = '/poster/' . $posterFileName;
-    }
 
     $project = Project::create([
       'name' => $validated['name'],
       'production' => $validated['production'],
       'customer_id' => $customer->id,
       'description' => $validated['description'] ?? null,
-      'poster' => $relativePosterPath,
     ]);
 
-    // Handle multiple image uploads
-    if ($request->hasFile('images')) {
+    if ($request->hasFile('media')) {
 
-      foreach ($request->file('images') as $image) {
+      foreach ($request->file('media') as $image) {
 
-        $imageFileName = uniqid() . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('bucket'), $imageFileName);
+        $project->addMedia($image)->toMediaCollection('bucket');
 
-        // Generate the relative path (without 'public')
-        $relativeImagePath = '/bucket/' . $imageFileName;
-
-        // Get the dimensions of each image
-        $imageSize = getimagesize(public_path($relativeImagePath));
-        $imageDimensions = $imageSize ? "{$imageSize[0]}x{$imageSize[1]}" : null;
-
-        // Save the image in the polymorphic relation using morphMany
-        $project->images()->create([
-          'src' => $relativeImagePath, // Path of the uploaded image
-          'mime_type' => $image->getClientMimeType(), // MIME type of the file
-          'size' => $imageDimensions, // Save image dimensions as widthxheight
-        ]);
       }
     }
 
-    session()->flash('notify', [
+    return redirect()->route('auth.projects.index')->with('notify', [
       'type' => 'success',
+      'title' => 'New project',
       'message' => 'Project has been successfully added!'
     ]);
-
-    return redirect()->route('auth.projects.index');
-  }
-
-  /**
-   * Update the edited bucket.
-   */
-  public function update(Request $request, Project $project)
-  {
-    $customer = Customer::where('cid', $request->customer_id)->first();
-    $request->merge(['customer_id' => $customer->id]);
-
-    $validated = $request->validate([
-      'name' => 'required|string|max:255',
-      'production' => 'required|date',
-      'customer_id' => 'required|exists:customers,id',
-      'description' => 'nullable|string',
-      'poster' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-      'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    ]);
-
-    // Handle poster upload
-    if ($request->hasFile('poster')) {
-      // $posterPath = $request->file('poster')->store('poster', 'public');
-
-      $poster = $request->file('poster');
-
-      // Generate a unique filename for the poster
-      $posterFileName = uniqid() . '.' . $poster->getClientOriginalExtension();
-
-      // Move the poster to the "public/poster" directory
-      $poster->move(public_path('poster'), $posterFileName);
-
-      // Generate the relative path (without 'public')
-      $relativePosterPath = '/poster/' . $posterFileName;
-    }
-
-    $project = Project::create([
-      'name' => $validated['name'],
-      'production' => $validated['production'],
-      'customer_id' => $customer->id,
-      'description' => $validated['description'] ?? null,
-      'poster' => $relativePosterPath,
-    ]);
-
-    // Handle multiple image uploads
-    if ($request->hasFile('images')) {
-
-      foreach ($request->file('images') as $image) {
-
-        $imageFileName = uniqid() . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('bucket'), $imageFileName);
-
-        // Generate the relative path (without 'public')
-        $relativeImagePath = '/bucket/' . $imageFileName;
-
-        // Get the dimensions of each image
-        $imageSize = getimagesize(public_path($relativeImagePath));
-        $imageDimensions = $imageSize ? "{$imageSize[0]}x{$imageSize[1]}" : null;
-
-        // Save the image in the polymorphic relation using morphMany
-        $project->images()->create([
-          'src' => $relativeImagePath,             // Path of the uploaded image
-          'mime_type' => $image->getClientMimeType(), // MIME type of the file
-          'size' => $imageDimensions, // Save image dimensions as widthxheight
-        ]);
-      }
-    }
-
-    return redirect()->route('auth.projects.index');
   }
 
   // Method to delete a bucket or an image
@@ -250,48 +157,26 @@ class ProjectController extends Controller
         // Delete the image record from the database
         $imageRecord->delete();
 
-        session()->flash('notify', [
+        return redirect()->back()->with('notify', [
           'type' => 'success',
-          'title' => 'Bravo',
+          'title' => 'Image deleted',
           'message' => 'Image was deleted successfully!'
         ]);
-
-        return redirect()->back();
       }
 
-      session()->flash('notify', [
+      return redirect()->back()->with('notify', [
         'type' => 'danger',
-        'title' => 'Failed',
+        'title' => 'Deletion failed',
         'message' => 'Image could not be found!'
       ]);
-
-      return redirect()->back();
     }
-
-    // If no image is provided, delete the entire bucket along with all its images
-    foreach ($project->images as $imageRecord) {
-      // Delete each image file if stored locally
-      if (file_exists(public_path($imageRecord->src))) {
-        unlink(public_path($imageRecord->src));
-      }
-    }
-
-    // Delete the bucket's poster if it exists
-    if ($project->poster && file_exists(public_path($project->poster))) {
-      unlink(public_path($project->poster));
-    }
-
-    // Delete the bucket and its images
-    $project->images()->delete();
 
     $project->delete();
 
-    session()->flash('notify', [
+    return redirect()->route('auth.projects.index')->with('notify', [
       'type' => 'success',
-      'title' => 'Done',
+      'title' => 'Deletion succeeded',
       'message' => 'Project and its images were deleted successfully!'
     ]);
-
-    return redirect()->route('auth.projects.index');
   }
 }

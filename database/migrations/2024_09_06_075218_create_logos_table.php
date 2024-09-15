@@ -14,10 +14,7 @@ return new class extends Migration
     Schema::create('logos', function (Blueprint $table) {
       $table->id();
       $table->uuid('lid')->nullable();
-      $table->string('name');
-      $table->string('poster')->nullable();
-      $table->string('file_path');
-      $table->string('mime_type');
+      $table->string('brand');
       $table->timestamps();
     });
   }

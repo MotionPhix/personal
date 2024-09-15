@@ -17,23 +17,16 @@ import { UseDark } from "@vueuse/components";
 
 import { DatePicker } from 'v-calendar'
 
-import { ref } from "vue";
+import { onBeforeUnmount, ref } from "vue";
 
 import 'v-calendar/style.css'
 
-import TipTap from "@/Components/TipTap.vue";
-
-import { Image, Project } from "@/types";
+import { Project } from "@/types";
 
 import Navheader from "@/Components/Backend/Navheader.vue";
 
-// Import Vue FilePond
-import vueFilePond from "vue-filepond";
-
-// Import FilePond styles
+import vueFilePond, { setOptions } from "vue-filepond";
 import "filepond/dist/filepond.min.css";
-
-// Import image preview plugin styles
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
 
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
@@ -41,19 +34,17 @@ import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 
 import type { FilePond } from "filepond";
+import PreTap from "@/Components/PreTap.vue";
 
-// Create component
 const FilePondInput = vueFilePond(
   FilePondPluginFileValidateType,
   FilePondPluginFileValidateSize,
   FilePondPluginImagePreview
 );
 
-const singlePond = ref<FilePond | null>(null);
-const multiPond = ref<FilePond | null>(null);
-
-const singleFile = ref([]);
-const multiFile = ref([]);
+const projectGalleryPond = ref<FilePond | null>(null);
+const projectImages = ref([]);
+const formData = new FormData();
 
 const props = defineProps<{
   project: Project;
@@ -62,106 +53,74 @@ const props = defineProps<{
 const form = useForm({
   name: props.project.name,
   description: props.project.description,
-  poster: props.project.poster,
   customer_id: props.project?.customer_id,
   production: props.project.production ?? new Date(),
-  images: props.project.images
+  media: props.project.media
 });
 
-// Handle file selection for poster
-const handleAddPoster = () => {
+const handlePondInit = () => {
 
-  const fileItem = singlePond.value?.getFile(); // Check if there's a file
+  setOptions({
+    credits: false,
+  });
 
-  if (fileItem && fileItem.file) {
-    // Only assign if the file exists
-    form.poster = fileItem.file as File;
-  } else {
-    form.poster = ''
+  if (props.project.media) {
+
+    projectImages.value = props.project.media.map((image) => ({
+
+      source: image.original_url,
+
+    })) as any;
+
   }
 
-};
+}
 
-// Handle file selection for poster
-const handleRemovePoster = async () => {
+const handleAddImage = () => {
 
-  const fileItem = singlePond.value?.getFile(); // Check if there's a file
-
-  if (fileItem && fileItem.file) {
-    // Only assign if the file exists
-    form.poster = fileItem.file as File;
-  } else {
-    form.poster = ''
-  }
-
-};
-
-// Handle file selection for images (multiple)
-const handleAddImages = () => {
-
-  const files = multiPond.value?.getFiles(); // Get the array of FilePond files
+  const files = projectGalleryPond.value?.getFiles();
 
   if (files && files.length) {
 
-    // Map over the files and return their file objects
-    form.images = files.map(fileItem => fileItem.file as File) as any;
+    form.media = files.map(fileItem => fileItem.file) as any;
+
+    files.map(fileItem => {
+      formData.append('media[]', fileItem.file);
+    })
 
   } else {
 
-    form.images = []
+    form.media = []
+    formData.set('media', '')
 
   }
 
 };
 
-const handleRemoveImages = async () => {
+const handleRemoveImage = () => {
 
-  const files = multiPond.value?.getFiles(); // Get the array of FilePond files
-
-  if (files && files.length) {
-
-    // Map over the files and return their file objects
-    form.images = files.map(fileItem => fileItem.file as File) as any;
-
-  } else {
-
-    form.images = []
-
-  }
+  handleAddImage()
 
 };
 
 function onSubmit() {
 
-  form.transform((data) => {
-
-    let formData: Partial<Project> = {
-      name: data.name,
-      poster: data.poster,
-      production: data.production,
-      customer_id: data.customer_id,
-    };
-
-    if (!! data.description) {
-      formData.description = data.description
-    }
-
-    if (data.images?.length) {
-      formData.images = data.images // && data.images[0] instanceof File
-    }
-
-    return formData;
-
-  })
-
   if (props.project.pid) {
 
-    form.patch(route('auth.projects.update', { project: props.project.id }), {
-      preserveScroll: true,
+    form.transform((data) => {
+      const formData: Partial<any> = {
+        ...data,
+        _method: 'patch',
+      };
 
+      return formData
+
+    }).post(route("auth.projects.update", props.project.pid), {
+      preserveScroll: true,
       onSuccess: () => {
-        form.reset()
-      },
+        form.reset();
+        projectGalleryPond.value?.removeFiles();
+      }
     });
 
     return;
@@ -173,6 +132,7 @@ function onSubmit() {
 
     onSuccess: () => {
       form.reset()
+      projectGalleryPond.value?.removeFiles();
     },
   });
 }
@@ -185,36 +145,9 @@ const disabledDates = ref([
   },
 ])
 
-const handlePosterInit = () => {
-
-  if (props.project.poster) {
-
-    singleFile.value = [{
-      source: props.project.poster,
-      options: {
-        type: 'local',
-      },
-    }] as any;
-
-  }
-}
-
-const handleImagesInit = () => {
-
-  if (props.project.images) {
-
-    multiFile.value = props.project.images.map((image) => ({
-      source: image.src,
-
-      options: {
-        type: 'server',
-      },
-
-    })) as any;
-
-  }
-
-}
+onBeforeUnmount(() => {
+  projectGalleryPond.value?.destroy
+})
 
 defineOptions({
   layout: AuthLayout,
@@ -229,8 +162,8 @@ defineOptions({
     <Navheader>
 
       <nav
-      class="flex items-center w-full gap-1 mx-auto dark:text-white dark:border-gray-700"
-    >
+        class="flex items-center w-full gap-1 mx-auto dark:text-white dark:border-gray-700"
+      >
       <h2 class="text-xl font-semibold dark:text-gray-300 sm:inline-block">
         New project
       </h2>
@@ -259,39 +192,19 @@ defineOptions({
         class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-800 border border-transparent rounded-lg gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
         Cancel
       </Link>
+
     </nav>
 
-    </Navheader>
+  </Navheader>
 
-  <main class="sm:px-6 lg:px-8">
+  <article class="sm:px-6 lg:px-8">
 
     <section class="max-w-2xl px-6 py-12 mx-auto">
 
       <form>
-        <div class="grid grid-cols-1 gap-4 mb-4 sm:gap-8 sm:grid-cols-2">
 
-          <!-- Poster Upload -->
-          <div class="col-span-2">
-            <label for="poster" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Project poster
-            </label>
-
-              <FilePondInput
-                credits="false"
-                name="Project Poster Image"
-                ref="singlePond"
-                maxFileSize="1MB"
-                v-bind:files="singleFile"
-                label-idle="Drop your poster here..."
-                v-bind:allow-multiple="false"
-                accepted-file-types="image/png, image/jpeg"
-                v-on:init="handlePosterInit"
-                @addfile="handleAddPoster"
-                @removefile="handleRemovePoster"
-              />
-
-            <InputError :message="form.errors.poster" />
-          </div>
+        <div
+          class="grid grid-cols-1 gap-4 mb-4 sm:gap-8 sm:grid-cols-2">
 
           <section class="grid col-span-2 gap-8 sm:grid-cols-2">
 
@@ -361,37 +274,37 @@ defineOptions({
               Description
             </label>
 
-            <TipTap
+            <PreTap
               v-model="form.description"
               placeholder="Say a few things worthy noting about the project" />
 
             <InputError :message="form.errors.description" />
           </div>
 
-          <!-- Images Upload -->
           <div class="col-span-2">
             <label
-              for="images"
+              for="Media"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Project Images
+              Project Media
             </label>
 
             <FilePondInput
-              credits="false"
-              name="Project Images"
-              ref="multiPond"
-              :files="multiFile"
-              maxFileSize="2MB"
+              name="Project images"
+              ref="projectGalleryPond"
+              :files="projectImages"
+              max-file-size="2MB"
               label-idle="Drop project images here..."
               :allow-multiple="true"
-              :allowImagePreview="project.pid"
+              :allow-mage-preview="true"
+              :allow-paste="true"
+              :allow-reorder="true"
               accepted-file-types="image/jpeg, image/png"
-              @init="handleImagesInit"
-              @addfile="handleAddImages"
-              @removefile="handleRemoveImages"
+              @init="handlePondInit"
+              @addfile="handleAddImage"
+              @removefile="handleRemoveImage"
             />
 
-            <InputError :message="form.errors.images" />
+            <InputError :message="form.errors.media" />
           </div>
 
         </div>
@@ -400,5 +313,6 @@ defineOptions({
 
     </section>
 
-  </main>
+  </article>
+
 </template>

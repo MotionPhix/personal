@@ -32,19 +32,18 @@ class Subscribe extends Controller
     // Send email
     if (Mail::to($subscriber->email)->send(new ConfirmationMail($token, $subscriber))) {
 
-      session()->flash('notify', [
+      return redirect()->back()->with('notify', [
         'type' => 'success',
-        'title' => 'Welcome',
-        'message' => 'You are successfully subscribed.'
+        'title' => 'Thank you!',
+        'message' => 'Please check your inbox to confirm subscription'
       ]);
 
-      return redirect()->back();
     };
 
     session()->flash('notify', [
-      'type' => 'info',
-      'title' => 'Thanks',
-      'message' => 'Please check your inbox to confirm subscription'
+      'type' => 'danger',
+      'title' => 'Mail delivery failure',
+      'message' => 'Please check if you entered the correct email'
     ]);
 
     return redirect()->back();

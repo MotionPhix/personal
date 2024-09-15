@@ -3,7 +3,6 @@ import Navheader from "@/Components/Backend/Navheader.vue";
 import ContactActionMenu from "@/Components/Contact/ContactActionMenu.vue";
 import ContactGridCard from "@/Components/Contact/ContactGridCard.vue";
 import NoContactFound from "@/Components/Contact/NoContactFound.vue";
-import Footnote from "@/Components/Front/Footnote.vue";
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 import { Customer } from "@/types";
 import { Head, Link } from "@inertiajs/vue3";
@@ -37,7 +36,7 @@ defineOptions({
 
   </Navheader>
 
-  <main class="max-w-2xl px-6 py-12 mx-auto">
+  <article class="max-w-2xl px-6 py-12 mx-auto">
 
     <section v-if="customers.length">
 
@@ -68,7 +67,6 @@ defineOptions({
       </NoContactFound>
     </section>
 
-  </main>
+  </article>
 
-  <Footnote />
 </template>

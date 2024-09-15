@@ -8,6 +8,7 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 import ToastList from '@/Components/Backend/ToastList.vue';
 import { useDark } from '@vueuse/core';
+import Footnote from '@/Components/Front/Footnote.vue';
 
 const showingNavigationDropdown = ref(false);
 
@@ -147,6 +148,13 @@ const isDark = useDark()
             </ResponsiveNavLink>
           </div>
 
+          <div class="pt-2 pb-3 space-y-1">
+            <ResponsiveNavLink :href="route('auth.downloads.index')"
+                              :active="$page.url.startsWith('/auth/downloads')">
+              Downloads
+            </ResponsiveNavLink>
+          </div>
+
           <!-- Responsive Settings Options -->
           <div class="pt-4 pb-1 border-t border-gray-200 dark:border-gray-600">
             <div class="px-4">
@@ -176,6 +184,9 @@ const isDark = useDark()
       <main>
         <slot />
       </main>
+
+      <Footnote />
+
     </div>
 
   </div>
