@@ -34,8 +34,8 @@ class ProjectController extends Controller
         'pid' => $project->pid,
         'name' => $project->name,
         'customer' => $project->customer,
-        'poster_url' => $project->getMedia('bucket')->random()->getUrl('thumb')
-        // getFirstMediaUrl('bucket', 'thumb'),
+        'poster_url' => $project->getFirstMediaUrl('bucket')
+        // $project->getMedia('bucket')->random()->getUrl(),
       ];
     });
 

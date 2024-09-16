@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+// use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Stevebauman\Purify\Casts\PurifyHtmlOnGet;
 
 class Project extends Model implements HasMedia
@@ -45,12 +45,7 @@ class Project extends Model implements HasMedia
     return $this->belongsTo(Customer::class);
   }
 
-  /*public function images()
-  {
-    return $this->morphMany(Photo::class, 'model');
-  }*/
-
-  // Define media conversions (thumbnail generation)
+  /*// Define media conversions (thumbnail generation)
   public function registerMediaConversions(Media $media = null): void
   {
     // Generate thumbnail conversion for images
@@ -59,7 +54,7 @@ class Project extends Model implements HasMedia
       ->height(150) // Height for the thumbnail
       ->sharpen(10) // Optional: Sharpen the thumbnail
       ->nonQueued(); // This ensures it's processed immediately (optional)
-  }
+  }*/
 
   protected static function boot()
   {

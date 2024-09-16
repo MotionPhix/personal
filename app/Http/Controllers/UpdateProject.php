@@ -37,9 +37,25 @@ class UpdateProject extends Controller
     $existingMedia = $project->getMedia('bucket');
     // $existingMediaUuids = $existingMedia->pluck('uuid')->toArray();
 
-    if (count($existingMedia)) {
+    $requestImageUuids = array_map(fn($image) => $image['uuid'], $request->input('images', []));
 
-      $requestImageUuids = array_map(fn($image) => $image['uuid'], $request->input('media', []));
+    // dd($request->media);
+
+    foreach ($request->media as $image) {
+      // Assuming you have an uploaded file
+      $uploadedFile = $request->file('media');
+
+      dd($uploadedFile);
+
+      if (isset($image->uuid)) {
+        $requestImageUuids[] = $image->uuid;
+      }
+
+    }
+
+    dd($requestImageUuids);
+
+    if (count($existingMedia)) {
 
       // Delete images that are not present in the request
       foreach ($existingMedia as $media) {

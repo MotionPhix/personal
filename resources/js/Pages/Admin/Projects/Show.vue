@@ -18,8 +18,17 @@ defineOptions({
 })
 
 // Function to find a specific image by ID
-const getImageById = (id: number) => {
-  return props.project.media?.find(media => media.id === id)?.original_url || '';
+// const getImageById = (id: number) => {
+//   return props.project.media?.find(media => media.id === id)?.original_url || '';
+// };
+
+const getRandomImage = () => {
+  const media = props.project.media;
+  if (!media || media.length === 0) {
+    return ''; // Return an empty string if there are no images
+  }
+  const randomIndex = Math.floor(Math.random() * media.length);
+  return media[randomIndex].original_url;
 };
 </script>
 
@@ -69,7 +78,9 @@ const getImageById = (id: number) => {
 
             <div
               class="md:h-[calc(100vh-400px)] group my-10 max-w-full h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
-              :style="{ backgroundImage: `url(${getImageById(random(1, 3))})` }" />
+              :style="{
+                backgroundImage: `url(${project.media[0].original_url})`
+              }" />
 
             <header class="max-w-2xl mb-12">
               <h1

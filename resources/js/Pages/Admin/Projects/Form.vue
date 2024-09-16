@@ -44,7 +44,6 @@ const FilePondInput = vueFilePond(
 
 const projectGalleryPond = ref<FilePond | null>(null);
 const projectImages = ref([]);
-const formData = new FormData();
 
 const props = defineProps<{
   project: Project;
@@ -62,6 +61,7 @@ const handlePondInit = () => {
 
   setOptions({
     credits: false,
+    storeAsFile: true,
   });
 
   if (props.project.media) {
@@ -69,6 +69,20 @@ const handlePondInit = () => {
     projectImages.value = props.project.media.map((image) => ({
 
       source: image.original_url,
+
+      options: {
+
+        type: 'server',
+
+        // mock file information
+        // file: {
+        //   name: image.file_name,
+        //   size:  image.size,
+        //   type: image.mime_type,
+        //   uuid: image.uuid,
+        // },
+
+      }
 
     })) as any;
 
@@ -84,14 +98,9 @@ const handleAddImage = () => {
 
     form.media = files.map(fileItem => fileItem.file) as any;
 
-    files.map(fileItem => {
-      formData.append('media[]', fileItem.file);
-    })
-
   } else {
 
     form.media = []
-    formData.set('media', '')
 
   }
 
@@ -304,7 +313,10 @@ defineOptions({
               @removefile="handleRemoveImage"
             />
 
-            <InputError :message="form.errors.media" />
+            <InputError
+              :message="form.errors?.media[`media.${i}`] || ''"
+              v-for="(err, i) in form.errors.media"
+              :key="i" />
           </div>
 
         </div>
