@@ -18,8 +18,10 @@ const getImageById = (id: number) => {
     :href="route('projects.show', project.pid)">
 
     <img
+      loading="lazy"
+      decoding="async" data-nimg="1"
       class="object-cover w-full bg-gray-100 rounded-lg size-40 dark:bg-neutral-800"
-      :src="getImageById(4)" alt="Project image">
+      :src="project?.media?.length ? project?.media[0]?.original_url : ''" alt="Project image">
 
     <div
       class="absolute transition opacity-0 bottom-1 end-1 group-hover:opacity-100">

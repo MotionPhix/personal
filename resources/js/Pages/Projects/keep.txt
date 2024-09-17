@@ -3,7 +3,6 @@
                     <img
                       alt=""
                       loading="lazy"
-                      width="32" height="32"
                       decoding="async" data-nimg="1"
                       class="w-8 h-8" src="/_next/static/media/planetaria.ecd81ade.svg"
                       style="color: transparent;">

@@ -140,43 +140,4 @@ class ProjectController extends Controller
     ]);
   }
 
-  // Method to delete a bucket or an image
-  public function destroy(Project $project, $image = null)
-  {
-    // Check if the image parameter is provided
-    if ($image) {
-      // If the image is provided, delete the specific image
-      $imageRecord = $project->images()->where('id', $image)->first();
-
-      if ($imageRecord) {
-        // Delete the image file if stored locally
-        if (file_exists(public_path($imageRecord->src))) {
-          unlink(public_path($imageRecord->src));
-        }
-
-        // Delete the image record from the database
-        $imageRecord->delete();
-
-        return redirect()->back()->with('notify', [
-          'type' => 'success',
-          'title' => 'Image deleted',
-          'message' => 'Image was deleted successfully!'
-        ]);
-      }
-
-      return redirect()->back()->with('notify', [
-        'type' => 'danger',
-        'title' => 'Deletion failed',
-        'message' => 'Image could not be found!'
-      ]);
-    }
-
-    $project->delete();
-
-    return redirect()->route('auth.projects.index')->with('notify', [
-      'type' => 'success',
-      'title' => 'Deletion succeeded',
-      'message' => 'Project and its images were deleted successfully!'
-    ]);
-  }
 }

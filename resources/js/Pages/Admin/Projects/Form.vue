@@ -25,20 +25,28 @@ import { Project } from "@/types";
 
 import Navheader from "@/Components/Backend/Navheader.vue";
 
-import vueFilePond, { setOptions } from "vue-filepond";
+import vueFilePond from "vue-filepond";
+
 import "filepond/dist/filepond.min.css";
+
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
 
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
+
 import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
+
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 
+import FilePondPluginFileMetadata from "filepond-plugin-file-metadata";
+
 import type { FilePond } from "filepond";
+
 import PreTap from "@/Components/PreTap.vue";
 
 const FilePondInput = vueFilePond(
   FilePondPluginFileValidateType,
   FilePondPluginFileValidateSize,
+  FilePondPluginFileMetadata,
   FilePondPluginImagePreview
 );
 
@@ -59,11 +67,6 @@ const form = useForm({
 
 const handlePondInit = () => {
 
-  setOptions({
-    credits: false,
-    storeAsFile: true,
-  });
-
   if (props.project.media) {
 
     projectImages.value = props.project.media.map((image) => ({
@@ -74,13 +77,11 @@ const handlePondInit = () => {
 
         type: 'server',
 
-        // mock file information
-        // file: {
-        //   name: image.file_name,
-        //   size:  image.size,
-        //   type: image.mime_type,
-        //   uuid: image.uuid,
-        // },
+      },
+
+      metadata: {
+
+        uuid: image.uuid // Add UUID for existing files
 
       }
 
@@ -93,6 +94,8 @@ const handlePondInit = () => {
 const handleAddImage = () => {
 
   const files = projectGalleryPond.value?.getFiles();
+
+  files?.map((img) => img.setMetadata('uuid', img.file.name))
 
   if (files && files.length) {
 
@@ -119,7 +122,8 @@ function onSubmit() {
     form.transform((data) => {
       const formData: Partial<any> = {
         ...data,
-        _method: 'patch',
+        captured_media: projectGalleryPond.value?.getFiles().map((img) => img.source),
+        _method: 'put',
       };
 
       return formData
@@ -302,6 +306,8 @@ defineOptions({
               ref="projectGalleryPond"
               :files="projectImages"
               max-file-size="2MB"
+              credits="false"
+              :storeAsFile="true"
               label-idle="Drop project images here..."
               :allow-multiple="true"
               :allow-mage-preview="true"

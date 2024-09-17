@@ -162,6 +162,8 @@ defineOptions({
           class="aspect-w-16 aspect-h-11"
           :href="route('auth.projects.detail', project.pid)">
           <img
+            loading="lazy"
+            decoding="async" data-nimg="1"
             class="object-cover w-full rounded-xl"
             :src="project.poster_url as any" alt="Project Image">
         </Link>

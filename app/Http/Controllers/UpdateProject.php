@@ -33,54 +33,107 @@ class UpdateProject extends Controller
       'description' => $validated['description'] ?? null,
     ]);
 
-    // Handle image removals
-    $existingMedia = $project->getMedia('bucket');
-    // $existingMediaUuids = $existingMedia->pluck('uuid')->toArray();
+    // Initialize an array to store old files (URLs or paths)
+    $oldFiles = [];
 
-    $requestImageUuids = array_map(fn($image) => $image['uuid'], $request->input('images', []));
+    // Gather old file paths (URLs) from the request
+    if ($request->has('captured_media')) {
 
-    // dd($request->media);
+      foreach ($request->captured_media as $media) {
 
-    foreach ($request->media as $image) {
-      // Assuming you have an uploaded file
-      $uploadedFile = $request->file('media');
+        if (! $media instanceof \Illuminate\Http\UploadedFile) {
 
-      dd($uploadedFile);
+          // Add the old file path (URL) to the array
+          $oldFiles[] = $media;
 
-      if (isset($image->uuid)) {
-        $requestImageUuids[] = $image->uuid;
-      }
-
-    }
-
-    dd($requestImageUuids);
-
-    if (count($existingMedia)) {
-
-      // Delete images that are not present in the request
-      foreach ($existingMedia as $media) {
-        if (!in_array($media->uuid, $requestImageUuids)) {
-          $media->delete();
         }
       }
 
     }
+
+    // Get the media currently associated with the project
+    $projectMedia = $project->getMedia('bucket');
+
+    // Compare and delete media that are no longer in the request
+    foreach ($projectMedia as $image) {
+
+      $mediaUrl = $image->getFullUrl();  // Get the full URL of the media
+
+      // If the media URL is not in the list of old files, delete it
+      if (!in_array($mediaUrl, $oldFiles)) {
+
+        $image->delete();
+
+      }
+
+    }
+
+    // Now add the new files from the request
+    if ($request->hasFile('captured_media')) {
+
+      foreach ($request->file('captured_media') as $newFile) {
+
+        if ($newFile instanceof \Illuminate\Http\UploadedFile) {
+
+          // Add the new media to the media collection
+          $project->addMedia($newFile)
+            ->toMediaCollection('bucket');
+
+        }
+
+      }
+
+    }
+
+    /*if ($request->has('captured_media')) {
+
+      foreach ($request->captured_media as $media) {
+
+        // Check if the file is not an instance of UploadedFile (i.e., it's an old file to keep)
+        if (!$media instanceof \Illuminate\Http\UploadedFile) {
+
+          $oldFiles[] = $media;  // Add the file path (URL) to the array
+
+        }
+
+        $projectMedia = $project->getMedia('bucket');
+
+        // Compare and delete media that are in $projectMedia but not in the $oldFiles
+        foreach ($projectMedia as $image) {
+
+          $mediaUrl = $image->getFullUrl();  // Get the full URL of the media
+
+          // If the media URL is not in the list of old files, delete it
+          if (!in_array($mediaUrl, $oldFiles)) {
+
+            $image->delete();
+
+          }
+
+        }
+
+        // just add the new files here
+        if ($media instanceof \Illuminate\Http\UploadedFile) {
+
+          $project->addMedia($media)
+            ->toMediaCollection('bucket');
+
+        }
+
+      }
+
+    }*/
 
     // Add new images
-    if ($request->hasFile('media')) {
+    /*if ($request->hasFile('media')) {
 
-      foreach ($request->file('media') as $image) {
+      $project->addMultipleMediaFromRequest(['media'])->each(function ($fileAdder) {
 
-        // Check if the image is already present by its filename
-        $fileName = $image->getClientOriginalName();
-        $existingFileNames = $existingMedia->pluck('file_name')->toArray();
+        $fileAdder->toMediaCollection('bucket');
 
-        // If the image file name is not in the existing list, upload it
-        if (!in_array($fileName, $existingFileNames)) {
-          $project->addMedia($image)->toMediaCollection('bucket');
-        }
-      }
-    }
+      });
+
+    }*/
 
     return redirect()->route('auth.projects.index')->with('notify', [
       'type' => 'success',

@@ -41,7 +41,7 @@ const getImageById = (id: number) => {
 
             <div
               class="md:h-[calc(100vh-400px)] group my-10 max-w-full h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
-              :style="{ backgroundImage: `url(${getImageById(4)})` }" />
+              :style="{ backgroundImage: `url(${ project.media?.length ? project?.media[0]?.original_url : '' })` }" />
 
             <header class="max-w-2xl mb-12">
               <h1
@@ -114,6 +114,8 @@ const getImageById = (id: number) => {
                 v-for="(image, index) in project?.media"
                 :key="index" class="break-inside-avoid">
                 <img
+                  loading="lazy"
+                  decoding="async" data-nimg="1"
                   :src="image?.original_url"
                   @contextmenu.prevent
                   :alt="'Project image ' + index + 1"

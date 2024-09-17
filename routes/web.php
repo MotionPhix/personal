@@ -128,14 +128,14 @@ Route::group(['prefix' => 'auth'], function () {
       [\App\Http\Controllers\ProjectController::class, 'detail'],
     )->name('auth.projects.detail');
 
-    Route::patch(
+    Route::put(
       '/u/{project:pid}',
       App\Http\Controllers\UpdateProject::class,
     )->name('auth.projects.update');
 
     Route::delete(
       '/d/{project}/{image?}',
-      [\App\Http\Controllers\ProjectController::class, 'destroy'],
+      \App\Http\Controllers\DestroyProject::class,
     )->name('auth.projects.destroy');
 
   });
