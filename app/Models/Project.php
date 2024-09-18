@@ -37,6 +37,23 @@ class Project extends Model implements HasMedia
   {
     return Attribute::make(
       get: fn($value) => \Carbon\Carbon::parse($value)->format('F, Y'),
+      /*set: function($value) {
+        // Trim the input to remove any extra spaces
+        $value = trim($value);
+
+        // Check if the value is empty
+        if (empty($value)) {
+            return null; // or handle as needed
+        }
+
+        // Attempt to create a date from the format
+        try {
+            return \Carbon\Carbon::createFromFormat('F, Y', $value)->toDateString();
+        } catch (\Exception $e) {
+            // Handle the error, log it, or throw a custom exception
+            throw new \InvalidArgumentException('Invalid date format provided: ' . $value);
+        }
+    }*/
     );
   }
 

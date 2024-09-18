@@ -37,7 +37,7 @@ import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 
-import FilePondPluginFileMetadata from "filepond-plugin-file-metadata";
+// import FilePondPluginFileMetadata from "filepond-plugin-file-metadata";
 
 import type { FilePond } from "filepond";
 
@@ -46,7 +46,7 @@ import PreTap from "@/Components/PreTap.vue";
 const FilePondInput = vueFilePond(
   FilePondPluginFileValidateType,
   FilePondPluginFileValidateSize,
-  FilePondPluginFileMetadata,
+  // FilePondPluginFileMetadata,
   FilePondPluginImagePreview
 );
 
@@ -62,7 +62,6 @@ const form = useForm({
   description: props.project.description,
   customer_id: props.project?.customer_id,
   production: props.project.production ?? new Date(),
-  media: props.project.media
 });
 
 const handlePondInit = () => {
@@ -79,19 +78,13 @@ const handlePondInit = () => {
 
       },
 
-      metadata: {
-
-        uuid: image.uuid // Add UUID for existing files
-
-      }
-
     })) as any;
 
   }
 
 }
 
-const handleAddImage = () => {
+/*const handleAddImage = () => {
 
   const files = projectGalleryPond.value?.getFiles();
 
@@ -107,13 +100,13 @@ const handleAddImage = () => {
 
   }
 
-};
+};*/
 
-const handleRemoveImage = () => {
+/*const handleRemoveImage = () => {
 
   handleAddImage()
 
-};
+};*/
 
 function onSubmit() {
 
@@ -294,7 +287,7 @@ defineOptions({
             <InputError :message="form.errors.description" />
           </div>
 
-          <div class="col-span-2">
+          <div class="flex flex-col col-span-2">
             <label
               for="Media"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -315,14 +308,7 @@ defineOptions({
               :allow-reorder="true"
               accepted-file-types="image/jpeg, image/png"
               @init="handlePondInit"
-              @addfile="handleAddImage"
-              @removefile="handleRemoveImage"
             />
-
-            <InputError
-              :message="form.errors?.media[`media.${i}`] || ''"
-              v-for="(err, i) in form.errors.media"
-              :key="i" />
           </div>
 
         </div>

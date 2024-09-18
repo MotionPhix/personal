@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\Project;
+use App\Rules\ImageOrUrl;
 use Illuminate\Http\Request;
 
 class UpdateProject extends Controller
@@ -22,8 +23,13 @@ class UpdateProject extends Controller
       'production' => 'required|date',
       'customer_id' => 'required|exists:customers,id',
       'description' => 'nullable|string',
-      'media.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+      'captured_media' => 'required|array',
+      'captured_media.*' => [new ImageOrUrl()],
+    ], [
+      'captured_media.required' => 'Upload at least one image to showcase your work.'
     ]);
+
+    dd('here passed');
 
     // Update project details
     $project->update([
