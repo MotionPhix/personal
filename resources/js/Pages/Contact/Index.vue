@@ -1,9 +1,17 @@
 <script setup lang="ts">
 import InputLabel from '@/Components/InputLabel.vue';
+
+import MazPhoneNumberInput, { CountryCode } from 'maz-ui/components/MazPhoneNumberInput';
+
 import PreTap from '@/Components/PreTap.vue';
+
 import TextInput from '@/Components/TextInput.vue';
+
 import AppLayout from '@/Layouts/AppLayout.vue';
+
 import { Head, useForm } from '@inertiajs/vue3';
+
+import { ref } from 'vue';
 
 const contactForm = useForm({
   name: '',
@@ -11,6 +19,8 @@ const contactForm = useForm({
   phone: '',
   message: '',
 })
+
+const countryCode = ref<CountryCode>('MW')
 
 const onSubmit = () => {
 
@@ -95,9 +105,15 @@ defineOptions({
           for="phone"
           value="Phone" />
 
-        <vue-tel-input
+        <MazPhoneNumberInput
+          show-code-on-list
+          v-model="contactForm.phone"
+          v-model:country-code="countryCode"
           class="mt-1 w-full"
-          v-model="contactForm.phone" />
+          orientation="responsive"
+          :preferred-countries="['MW', 'ZM', 'ZA', 'ZW', 'GB', 'US']"
+          :ignored-countries="['AC']"
+        />
 
         <p class="text-red-500 text-sm" v-if="contactForm.errors.phone">
           {{ contactForm.errors.phone }}

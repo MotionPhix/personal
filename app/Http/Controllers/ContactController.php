@@ -21,6 +21,8 @@ class ContactController extends Controller
 
   public function send(Request $request)
   {
+    dd($request->all());
+
     $request->validate([
       'name' => 'required|string',
       'email' => 'required|email',

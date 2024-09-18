@@ -51,8 +51,10 @@
     "filepond-plugin-file-validate-type": "^1.2.9",
     "filepond-plugin-image-preview": "^4.6.12",
     "laravel-vite-plugin": "^1.0",
+    "libphonenumber-js": "^1.11.8",
     "lodash": "^4.17.21",
     "lowlight": "^3.1.0",
+    "maz-ui": "^3.45.4",
     "pinia": "^2.2.2",
     "postcss": "^8.4.31",
     "preline": "^2.4.1",
@@ -64,7 +66,6 @@
     "vite": "^5.0",
     "vue": "^3.4.0",
     "vue-filepond": "^7.0.4",
-    "vue-tel-input": "^9.1.4",
     "vue-tsc": "^2.0.24"
   }
 }
