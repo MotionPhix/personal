@@ -15,7 +15,7 @@ class HomeController extends Controller
   {
     $user = User::where('email', 'support@ultrashots.net')->first();
 
-    $projects = Project::inRandomOrder()->take(6)->select('id', 'pid', 'poster')->get();;
+    $projects = Project::with('media')->inRandomOrder()->take(6)->select('id', 'pid')->get();;
 
     return Inertia::render('Index', [
       'user' => $user,

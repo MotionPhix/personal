@@ -79,7 +79,7 @@ const getRandomImage = () => {
             <div
               class="md:h-[calc(100vh-400px)] group my-10 max-w-full h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
               :style="{
-                backgroundImage: `url(${project?.media[0]?.original_url})`
+                backgroundImage: `url(${ project.media?.length ? project.media[0].original_url : '' })`
               }" />
 
             <header class="max-w-2xl mb-12">
@@ -149,7 +149,7 @@ const getRandomImage = () => {
 
             <div
               class="gap-4 space-y-4 columns-2 sm:columns-3"
-              :style="project.media && project.media?.length > 3 ? 'direction: rtl;' : ''">
+              :style="project.media && project.media?.length > 3 ? 'direction: ltr;' : 'rtl'">
 
               <div
                 v-for="(media, index) in project.media"
@@ -223,7 +223,7 @@ const getRandomImage = () => {
                               ]"
                               :href="route(
                                 'auth.projects.destroy',
-                                { project: project.pid, media: media.uuid }
+                                { project: project.pid, image: media }
                               )"
                             >
                               <IconPhotoX

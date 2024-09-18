@@ -24,12 +24,10 @@ class UpdateProject extends Controller
       'customer_id' => 'required|exists:customers,id',
       'description' => 'nullable|string',
       'captured_media' => 'required|array',
-      'captured_media.*' => [new ImageOrUrl()],
+      // 'captured_media.*' => [new ImageOrUrl()],
     ], [
       'captured_media.required' => 'Upload at least one image to showcase your work.'
     ]);
-
-    dd('here passed');
 
     // Update project details
     $project->update([

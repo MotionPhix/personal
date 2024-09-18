@@ -44,13 +44,27 @@ defineOptions({
 
   </Navheader>
 
-  <article class="max-w-2xl px-4 py-10 mx-auto sm:px-6 lg:px-8 lg:py-14">
+  <article
+    class="max-w-2xl px-4 py-10 mx-auto sm:px-6 lg:px-8 lg:py-14">
 
     <!-- Conditional Section if no projects are available -->
-    <div v-if="!projects.length" class="text-center">
-      <IconPhotoX class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500" />
-      <h2 class="mt-4 text-2xl font-semibold text-gray-800 dark:text-neutral-200">No Projects Available</h2>
-      <p class="mt-2 text-gray-600 dark:text-neutral-400">It seems there are no projects yet. Add new projects to get started!</p>
+    <div
+      v-if="!projects.length"
+      class="text-center">
+
+      <IconPhotoX
+        class="w-12 h-12 mx-auto text-gray-400 dark:text-gray-500" />
+
+      <h2
+        class="mt-4 text-2xl font-semibold text-gray-800 dark:text-neutral-200">
+        No Projects Available
+      </h2>
+
+      <p
+        class="mt-2 text-gray-600 dark:text-neutral-400">
+        It seems there are no projects yet. Add new projects to get started!
+      </p>
+
       <Link
         as="button"
         :href="route('auth.projects.create')"
@@ -59,10 +73,12 @@ defineOptions({
         <IconDeviceProjector class="w-5 h-5 mr-2" />
         Add a Project
       </Link>
+
     </div>
 
     <!-- Grid -->
-    <div v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+    <div
+      v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2">
 
       <!-- Card -->
       <section

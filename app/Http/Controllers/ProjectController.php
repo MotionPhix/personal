@@ -129,7 +129,6 @@ class ProjectController extends Controller
       foreach ($request->file('media') as $image) {
 
         $project->addMedia($image)->toMediaCollection('bucket');
-
       }
     }
 
@@ -139,5 +138,4 @@ class ProjectController extends Controller
       'message' => 'Project has been successfully added!'
     ]);
   }
-
 }
