@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Thank you {{ $name }}</title>
+  <title>Thank you for contacting me</title>
 
   <style type="text/css">
     @import url('https://fonts.bunny.net/css?family=roboto:400,500,600,700&display=swap');
@@ -86,18 +86,21 @@
 
             <td style="padding: 20px; font-family: Roboto, Inter, Helvetica, sans-serif;">
 
-              <h1
-                style="font-family: Roboto, Inter, Helvetica, sans-serif;">
-                Feedback from <br> {{ $name }}
-              </h1>
+              <h1 style="font-family: Roboto, Inter, Helvetica, sans-serif;">Thank you for <br>contacting me!</h1>
+
+              <p style="font-family: Roboto, Inter, Helvetica, sans-serif;">Hi {{ $name }},</p>
 
               <p style="font-family: Roboto, Inter, Helvetica, sans-serif;">
-                {!! $user_query !!}
+                Thank you for getting in touch with me. I have received your message and
+                would like to thank you for writing to me. I will reply by either email, or a phone call as soon
+                as possible, usually within 24 hours.
               </p>
 
+              <h2 style="font-family: Roboto, Inter, Helvetica, sans-serif;">Verify your information</h2>
+
               <p
-                style="font-family: Roboto, Inter, Helvetica, sans-serif; font-weight: bold">
-                {{ $name }}'s information
+                style="font-family: Roboto, Inter, Helvetica, sans-serif;">
+                If any of the below information is incorrect, please contact me immediately.
               </p>
 
               <table
@@ -132,6 +135,13 @@
                   <td style="padding: 10px; border-bottom: 1px solid #3ad85d;">{{ $name }}</td>
                 </tr>
 
+                @isset($company)
+                  <tr>
+                    <td style="padding: 10px; border-bottom: 1px solid #3ad85d;">Company</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #3ad85d;">{{ $company }}</td>
+                  </tr>
+                @endisset
+
                 <tr>
                   <td style="padding: 10px; border-bottom: 1px solid #3ad85d;">Email Address</td>
                   <td style="padding: 10px; border-bottom: 1px solid #3ad85d;">{{ $email }}</td>
@@ -143,6 +153,11 @@
                 </tr>
 
               </table>
+
+              <p style="font-family: Roboto, Inter, Helvetica, sans-serif;">
+                If you need to adjust any information or have any further questions,
+                please do not hesitate to contact me via <a href="mailto:support@ultrashots.net">Email</a>.
+              </p>
 
               <p
                 class="footer"
@@ -160,6 +175,13 @@
     </tr>
 
   </table>
+
+  <p
+    style="font-size: 12px; color: #666666; text-align: left; width: 100%; max-width: 500px; margin: 20px auto; font-family: Roboto, Inter, Helvetica, sans-serif;">
+    You are receiving this email because you contacted me from
+    <a href="https://ultrashots.net"><strong>{{ config('app.name') }}</strong></a>.
+    <br>If you didn't initiate it, you can ignore and delete this email.
+  </p>
 
 </body>
 </html>

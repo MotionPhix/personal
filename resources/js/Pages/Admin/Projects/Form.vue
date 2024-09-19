@@ -146,7 +146,7 @@ defineOptions({
 
 <template>
     <Head
-      :title="props.project.pid ? `Edit ${props.project.name}` : 'New project'"
+      :title="project.pid ? `Edit ${project.name}` : 'New project'"
     />
 
     <Navheader>
@@ -155,7 +155,7 @@ defineOptions({
         class="flex items-center w-full gap-1 mx-auto dark:text-white dark:border-gray-700"
       >
       <h2 class="text-xl font-semibold dark:text-gray-300 sm:inline-block">
-        New project
+        <span>{{ project.pid ? 'Editing' : 'New' }}</span> <span class="hidden sm:inline-flex">project</span>
       </h2>
 
       <span class="flex-1"></span>
@@ -286,6 +286,7 @@ defineOptions({
               max-file-size="2MB"
               credits="false"
               :storeAsFile="true"
+              accepted-file-types="image/*"
               label-idle="Drop project images here..."
               :allow-multiple="true"
               :allow-mage-preview="true"
@@ -293,15 +294,19 @@ defineOptions({
               :allow-reorder="true"
               @init="handlePondInit"
             />
-            <!-- accepted-file-types="image/jpeg, image/png" -->
 
             <div v-if="projectGalleryPond?.getFiles().length">
 
               <div v-for="(img, index) in projectGalleryPond?.getFiles()" :key="index">
 
-                <InputError
+                <!-- <InputError
                   v-if="form.errors[`captured_media.${index}`]"
                   :message="form.errors[`captured_media.${index}`]"
+                /> -->
+
+                <InputError
+                  v-if="(form.errors as Record<string, any>)[`captured_media.${index}`]"
+                  :message="(form.errors as Record<string, any>)[`captured_media.${index}`]"
                 />
 
               </div>

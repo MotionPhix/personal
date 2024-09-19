@@ -24,9 +24,13 @@ const getImageById = (id: number) => {
   <Head :title="project.name" preserve-scroll preserve-state />
 
   <main class="flex-auto mb-10 sm:mb-14">
+
     <div class="mt-8 sm:px-8 sm:mt-16">
+
       <div class="w-full max-w-3xl mx-auto lg:px-8">
+
         <div class="relative px-4 sm:px-8 lg:px-12">
+
           <div class="max-w-2xl mx-auto lg:max-w-5xl">
             <!-- Back to Projects Button -->
             <Link
@@ -36,11 +40,11 @@ const getImageById = (id: number) => {
             >
               <IconArrowLeft size="24" class="hidden group-hover:inline-block" />
 
-              <span class="group-hover:font-bold">Projects</span>
+              <span class="group-hover:font-bold">All</span>
             </Link>
 
             <div
-              class="md:h-[calc(100vh-400px)] group my-10 max-w-full h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
+              class="group my-10 max-w-full h-[20rem] md:h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
               :style="{ backgroundImage: `url(${ project.media?.length ? project?.media[0]?.original_url : '' })` }" />
 
             <header class="max-w-2xl mb-12">
@@ -54,7 +58,7 @@ const getImageById = (id: number) => {
                 <div v-html="project.description" />
               </section>
 
-              <div class="mt-4">
+              <div class="grid grid-cols-2 gap-6 mt-4">
 
                 <dl class="flex flex-col gap-2">
 
@@ -82,7 +86,7 @@ const getImageById = (id: number) => {
 
                 </dl>
 
-                <dl class="flex flex-col gap-2 mt-6">
+                <dl class="flex flex-col gap-2">
 
                   <dt>
                     <span class="text-sm text-gray-500 dark:text-neutral-500">

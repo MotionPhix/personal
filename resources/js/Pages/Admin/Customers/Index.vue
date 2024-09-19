@@ -36,7 +36,7 @@ defineOptions({
 
   </Navheader>
 
-  <article class="max-w-2xl px-6 py-12 mx-auto">
+  <article class="max-w-2xl px-4 py-12 mx-auto">
 
     <section v-if="customers.length">
 

@@ -21,6 +21,7 @@ class ContactMe extends Mailable
     private string $email,
     private string $phone,
     private string $user_query,
+    private string $company,
   ) {}
 
   /**
@@ -42,7 +43,7 @@ class ContactMe extends Mailable
     $logo = public_path('ultrashots_logo.png');
 
     return new Content(
-      view: 'emails.feedback-mail',
+      view: 'emails.contact-me',
 
       with: [
         'name' => $this->name,
@@ -52,6 +53,8 @@ class ContactMe extends Mailable
         'email' => $this->email,
 
         'user_query' => $this->user_query,
+
+        'company' => $this->company,
 
         'logo' => $logo,
       ],

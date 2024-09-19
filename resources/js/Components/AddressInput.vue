@@ -25,7 +25,7 @@ function onChangeType(type) {
 </script>
 
 <template>
-  <div class="relative mb-4 space-y-2 group first-letter:uppercase">
+  <div class="relative space-y-2 group first-letter:uppercase">
     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
       {{ address.type }} address
     </label>
@@ -50,7 +50,7 @@ function onChangeType(type) {
         <InputError :message="page.props.errors[`address.city`]" />
       </div>
 
-      <div>
+      <div class="col-span-2 md:col-span-1">
         <TextInput
           v-model="address.state"
           placeholder="Enter state/region name"
@@ -59,7 +59,7 @@ function onChangeType(type) {
         <InputError :message="page.props.errors[`address.state`]" />
       </div>
 
-      <div>
+      <div class="col-span-2 md:col-span-1">
         <TextInput
           v-model="address.country"
           placeholder="Enter country name"

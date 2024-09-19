@@ -67,7 +67,18 @@ class DownloadController extends Controller
     $request->validate([
       'file_path' => 'required|file|mimes:svg,ai,cdr,pdf|max:2048',
       'poster' => 'required|image|max:1024',
-      'brand' => 'required|string'
+      'brand' => 'required'
+    ], [
+      'file_path.required' => 'Please add a logo file to upload.',
+      'file_path.file' => 'This is an invalid file.',
+      'file_path.mimes' => 'Incorrect file format. Correct ones are .svg, .ai, .cdr, and .pdf.',
+      'file_path.max' => 'The file is to large. Max size is 2MB.',
+
+      'poster.required' => 'Please add a poster image.',
+      'poster.image' => 'This is an invalid image.',
+      'poster.max' => 'The poster is to large. Max size is 1MB.',
+
+      'brand.required' => 'Please enter a brand name.'
     ]);
 
     $logo = new Logo();

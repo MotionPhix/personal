@@ -1,5 +1,6 @@
 import './bootstrap';
 import 'maz-ui/styles'
+import 'lenis/dist/lenis.css'
 import '../css/app.css';
 
 import { createApp, h, DefineComponent, onMounted } from 'vue';
@@ -7,6 +8,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import "preline/preline";
+import Lenis from 'lenis'
 
 import { createPinia } from 'pinia'
 
@@ -23,6 +25,19 @@ declare global {
 setTimeout(() => {
   window.HSStaticMethods.autoInit();
 }, 100)
+
+const lenis = new Lenis()
+
+lenis.on('scroll', (e) => {
+  console.log(e)
+})
+
+function raf(time: any) {
+  lenis.raf(time)
+  requestAnimationFrame(raf)
+}
+
+requestAnimationFrame(raf)
 
 createInertiaApp({
   title: (title) => `${title} - ${appName}`,

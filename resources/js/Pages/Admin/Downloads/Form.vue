@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Head, useForm } from "@inertiajs/vue3";
+import { Head, Link, useForm } from "@inertiajs/vue3";
 import type { FilePond } from "filepond";
 
 import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
@@ -16,6 +16,11 @@ import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css
 import VueFilePond from "vue-filepond";
 
 import AuthLayout from "@/Layouts/AuthLayout.vue";
+import { IconFileUpload } from "@tabler/icons-vue";
+import TextInput from "@/Components/TextInput.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import Navheader from "@/Components/Backend/Navheader.vue";
+import InputError from "@/Components/InputError.vue";
 
 // Register FilePond plugins
 const Uploader = VueFilePond(
@@ -39,7 +44,7 @@ const acceptedFileTypes = [
 
 // Form setup using Inertia.js
 const form = useForm({
-  brand: null,
+  brand: '',
   poster: <string | File>'',
   file_path: <string | File>'',
 });
@@ -93,24 +98,48 @@ defineOptions({
 <template>
   <Head title="Logo downloads" />
 
-  <div class="max-w-2xl py-8 mx-auto">
-    <h1 class="text-4xl font-bold text-center dark:text-white">Upload a new logo</h1>
-    <p class="mt-2 text-lg text-center text-gray-600 dark:text-gray-400">
+  <Navheader>
+
+    <h2 class="text-xl font-semibold dark:text-gray-300 sm:inline-block">
+      New brand
+    </h2>
+
+    <span class="flex-1"></span>
+
+    <Link
+      as="button"
+      :href="route('auth.downloads.index')"
+      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-800 border border-transparent rounded-lg hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
+      Cancel
+    </Link>
+
+  </Navheader>
+
+  <div class="max-w-2xl px-4 py-8 mx-auto">
+    <h1 class="text-2xl font-bold sm:text-xl dark:text-white">
+      Upload a new logo
+    </h1>
+
+    <p class="mt-2 text-lg text-gray-600 dark:text-gray-400">
       Upload a logo in SVG, AI, CDR, or PDF format.
     </p>
 
-    <form @submit.prevent="submit" class="flex flex-col gap-4 mt-8">
+    <form @submit.prevent="submit" class="flex flex-col mt-8">
       <!-- Brand Name Input -->
-      <div class="mb-6">
-        <label for="brand" class="block text-gray-800 dark:text-white">Brand name</label>
-        <input
+      <div class="mb-4">
+        <InputLabel
+          for="brand"
+          value="Brand name" />
+
+        <TextInput
           type="text"
           v-model="form.brand"
           id="brand"
           placeholder="Enter brand name"
-          class="w-full px-4 py-3 mt-1 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-900 dark:text-white dark:border-gray-600"
-          required
+          class="w-full mt-2"
         />
+
+        <InputError :message="form.errors.brand" />
       </div>
 
       <div>
@@ -125,8 +154,10 @@ defineOptions({
           maxFileSize="1MB"
           labelIdle='Drop your poster or <span class="filepond--label-action">Browse</span>'
           :allowMultiple="false"
-          class="filepond dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+          class="mt-1 filepond dark:border-gray-700 dark:bg-gray-900 dark:text-white"
         />
+
+        <InputError :message="form.errors.poster" />
       </div>
 
       <div>
@@ -141,15 +172,17 @@ defineOptions({
           maxFileSize="2MB"
           labelIdle='Drop your logo or <span class="filepond--label-action">Browse</span>'
           :allowMultiple="false"
-          class="filepond dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+          class="mt-4 filepond dark:border-gray-700 dark:bg-gray-900 dark:text-white"
         />
+
+        <InputError :message="form.errors.file_path" />
       </div>
 
       <!-- Submit Button -->
       <button
         type="submit"
-        class="self-end max-w-full px-4 py-2 font-semibold text-white bg-green-500 rounded-lg sm:max-w-xs hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-        Upload Logo
+        class="mt-4 flex items-center self-end max-w-sm gap-1 px-4 py-2.5 font-semibold text-white bg-green-500 rounded-lg sm:max-w-xs hover:bg-green-600 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+        <IconFileUpload class="size-8" /> <span>Upload</span>
       </button>
     </form>
   </div>

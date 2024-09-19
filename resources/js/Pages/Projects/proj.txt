@@ -23,44 +23,29 @@ const projectsRef = ref([]);
 
 // Animation on mounted
 onMounted(() => {
-  // Create a GSAP timeline
-  const timeline = gsap.timeline({
+  // Animate header
+  gsap.from(headerRef.value, {
+    opacity: 0,
+    y: 50,
+    duration: 1,
     scrollTrigger: {
       trigger: headerRef.value,
-      start: 'top 70%',
-      end: 'bottom top',
-      scrub: true,  // Enables smooth scroll animation
-      toggleActions: 'play none none reverse',
-    }
+      start: 'top 80%', // Trigger when the top of the header is at 80% of the viewport
+    },
   });
 
-  // Add animations to the timeline
-  timeline
-    // Animate the header on page load and scrolling
-    .from(headerRef.value, {
+  // Animate each project card
+  projectsRef.value.forEach((project, index) => {
+    gsap.from(project, {
       opacity: 0,
-      y: 50,
-      duration: 1,
-    })
-    // Animate each project card in sequence
-    .from(
-      projectsRef.value,
-      {
-        opacity: 0,
-        y: 30,
-        stagger: 0.5, // Stagger each project card animation
-        duration: 0.6,
+      y: 30,
+      duration: 0.6,
+      delay: index * 0.1, // Slight delay for staggered effect
+      scrollTrigger: {
+        trigger: project,
+        start: 'top 90%', // Trigger when the top of each card is at 90% of the viewport
       },
-      '-=0.5' // Overlap the animations slightly
-    );
-
-  // Create another ScrollTrigger for scroll direction detection (up/down)
-  ScrollTrigger.create({
-    trigger: projectsRef.value,
-    start: 'top 90%',
-    end: 'bottom 10%',
-    onEnter: () => gsap.to(projectsRef.value, { opacity: 1, y: 0 }),
-    onLeaveBack: () => gsap.to(projectsRef.value, { opacity: 0, y: 30 })
+    });
   });
 });
 </script>

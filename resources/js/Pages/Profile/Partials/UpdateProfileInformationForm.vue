@@ -38,16 +38,16 @@ const form = useForm({
           value="First Name" />
 
         <TextInput
-          id="name"
+          id="first_name"
           type="text"
-          class="mt-1 block w-full"
+          class="block w-full mt-1"
           v-model="form.first_name"
           required
           autofocus />
 
         <InputError
           class="mt-2"
-          message="form.errors.first_name" />
+          :message="form.errors.first_name" />
       </div>
 
       <div>
@@ -56,16 +56,15 @@ const form = useForm({
           value="Last Name" />
 
         <TextInput
-          id="name"
+          id="last_name"
           type="text"
-          class="mt-1 block w-full"
+          class="block w-full mt-1"
           v-model="form.last_name"
-          required
-          autofocus />
+          required/>
 
         <InputError
           class="mt-2"
-          message="form.errors.last_name" />
+          :message="form.errors.last_name" />
       </div>
 
       <div>
@@ -76,29 +75,30 @@ const form = useForm({
         <TextInput
           id="email"
           type="email"
-          class="mt-1 block w-full"
+          class="block w-full mt-1"
           v-model="form.email"
-          required
-          autocomplete="username" />
+          required />
 
         <InputError
           class="mt-2"
-          message="form.errors.email" />
+          :message="form.errors.email" />
       </div>
 
       <div v-if="mustVerifyEmail && user.email_verified_at === null">
-        <p class="text-sm mt-2 text-gray-800 dark:text-gray-200">
+        <p class="mt-2 text-sm text-gray-800 dark:text-gray-200">
           Your email address is unverified.
-          <Link :href="route('verification.send')"
-                method="post"
-                as="button"
-                class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-          Click here to re-send the verification email.
+          <Link
+            :href="route('verification.send')"
+            method="post"
+            as="button"
+            class="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+            Re-send the verification email.
           </Link>
         </p>
 
-        <div v-show="status === 'verification-link-sent'"
-             class="mt-2 font-medium text-sm text-green-600 dark:text-green-400">
+        <div
+          v-show="status === 'verification-link-sent'"
+          class="mt-2 text-sm font-medium text-green-600 dark:text-green-400">
           A new verification link has been sent to your email address.
         </div>
       </div>

@@ -7,6 +7,7 @@ use App\Mail\FeedbackMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
+use Propaganistas\LaravelPhone\PhoneNumber;
 
 class ContactController extends Controller
 {
@@ -24,8 +25,9 @@ class ContactController extends Controller
     $request->validate([
       'name' => 'required',
       'email' => 'required|email:rfc,dns',
-      'phone' => 'required',
+      'phone' => 'required|phone:INTERNATIONAL,MW',
       'message' => 'required|not_equal',
+      'company' => 'nullable',
     ], [
       'name.required' => 'Enter your full name.',
 
@@ -33,21 +35,29 @@ class ContactController extends Controller
       'email.email' => 'You have entered an invalid email address.',
 
       'phone.required' => 'Provide your phone number.',
+      'phone.phone' => 'That ' . $request->phone . ' is an invalid phone number',
 
       'message.required' => 'Enter your message so I can help accordingly.',
       'message.not_equal' => 'Provide some context I can use to help you',
     ]);
 
+    $phone = new PhoneNumber($request->phone);
+
     $data = [
       'name' => $request->name,
       'email' => $request->email,
-      'phone' => $request->phone,
+      'phone' => $phone->formatInternational(),
       'user_query' => $request->message,
+      'company' => $request->company,
     ];
 
     // Send email
     if (Mail::to('kwikdev@ultrashots.net', 'Kingsley')->send(new ContactMe(
-        $data['name'], $data['email'], $data['phone'], $data['user_query']
+        $data['name'],
+        $data['email'],
+        $data['phone'],
+        $data['user_query'],
+        $data['company']
       ))) {
 
       session()->flash('notify', [

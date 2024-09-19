@@ -77,7 +77,7 @@ const getRandomImage = () => {
           <div class="max-w-2xl mx-auto lg:max-w-5xl">
 
             <div
-              class="md:h-[calc(100vh-400px)] group my-10 max-w-full h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
+              class="md:h-[30rem] group my-10 max-w-full h-[20rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
               :style="{
                 backgroundImage: `url(${ project.media?.length ? project.media[0].original_url : '' })`
               }" />
@@ -94,7 +94,7 @@ const getRandomImage = () => {
                 <div v-html="project.description" />
               </section>
 
-              <div class="mt-4">
+              <div class="grid grid-cols-2 gap-6 mt-4">
 
                 <dl class="flex flex-col gap-2">
 
@@ -122,7 +122,7 @@ const getRandomImage = () => {
 
                 </dl>
 
-                <dl class="flex flex-col gap-2 mt-6">
+                <dl class="flex flex-col gap-2">
 
                   <dt>
                     <span class="text-gray-500 dark:text-neutral-500">

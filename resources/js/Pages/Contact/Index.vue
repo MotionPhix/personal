@@ -12,11 +12,13 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
 import { ref } from 'vue';
+import InputError from '@/Components/InputError.vue';
 
 const contactForm = useForm({
   name: '',
   email: '',
   phone: '',
+  company: '',
   message: '',
 })
 
@@ -47,8 +49,8 @@ defineOptions({
      <!-- Title -->
      <div class="max-w-3xl mb-10 lg:mb-14">
 
-      <h2 class="dark:text-white text-neutral-500 font-semibold text-2xl md:text-4xl md:leading-tight">
-        Contact us
+      <h2 class="text-2xl font-semibold dark:text-white text-neutral-500 md:text-4xl md:leading-tight">
+        Contact me
       </h2>
 
       <p class="mt-1 text-neutral-400">
@@ -72,11 +74,9 @@ defineOptions({
           name="name"
           id="name"
           v-model="contactForm.name"
-          class="mt-1 w-full" />
+          class="w-full my-2" />
 
-        <p class="text-red-500 text-sm" v-if="contactForm.errors.name">
-          {{ contactForm.errors.name }}
-        </p>
+        <InputError :message="contactForm.errors.name" />
 
       </div>
 
@@ -91,11 +91,9 @@ defineOptions({
           name="email"
           id="email"
           v-model="contactForm.email"
-          class="mt-1 w-full" />
+          class="w-full my-2" />
 
-        <p class="text-red-500 text-sm" v-if="contactForm.errors.email">
-          {{ contactForm.errors.email }}
-        </p>
+        <InputError :message="contactForm.errors.email" />
 
       </div>
 
@@ -106,18 +104,35 @@ defineOptions({
           value="Phone" />
 
         <MazPhoneNumberInput
-          show-code-on-list
+          :show-code-on-list="false"
           v-model="contactForm.phone"
           v-model:country-code="countryCode"
-          class="mt-1 w-full"
+          class="w-full my-2"
+          placeholder="Enter your phone number"
+          no-country-selector
+          no-example
+          :size="'xl'"
+          block
+          rounded-size="md"
           orientation="responsive"
           :preferred-countries="['MW', 'ZM', 'ZA', 'ZW', 'GB', 'US']"
-          :ignored-countries="['AC']"
         />
 
-        <p class="text-red-500 text-sm" v-if="contactForm.errors.phone">
-          {{ contactForm.errors.phone }}
-        </p>
+        <InputError :message="contactForm.errors.phone" />
+
+      </div>
+
+      <div>
+        <InputLabel
+          for="company"
+          value="Company" />
+
+        <TextInput
+          id="company"
+          class="w-full my-2"
+          placeholder="Enter your company name"
+          v-model="contactForm.company"
+        />
 
       </div>
 
@@ -132,7 +147,7 @@ defineOptions({
           placeholder="How can I assist you? Be a bit verbose" />
 
         <p
-          class="text-red-500 text-sm"
+          class="text-sm text-red-500"
           v-if="contactForm.errors.message">
           {{ contactForm.errors.message }}
         </p>
@@ -142,7 +157,7 @@ defineOptions({
 
         <button
           type="submit"
-          class="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
+          class="inline-flex items-center px-4 py-3 text-sm font-medium text-gray-800 bg-white border border-gray-200 rounded-lg shadow-sm gap-x-2 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
           Send Message
           <svg
             class="shrink-0 size-4"

@@ -6,18 +6,18 @@ const model = defineModel<string>({ required: true });
 const input = ref<HTMLInputElement | null>(null);
 
 onMounted(() => {
-    if (input.value?.hasAttribute('autofocus')) {
-        input.value?.focus();
-    }
+  if (input.value?.hasAttribute('autofocus')) {
+    input.value?.focus();
+  }
 });
 
 defineExpose({ focus: () => input.value?.focus() });
 </script>
 
 <template>
-    <input
-        class="py-3 border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600"
-        v-model="model"
-        ref="input"
+  <input
+    class="py-4 border-gray-300 rounded-md shadow-sm sm:py-5 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600"
+    v-model="model"
+    ref="input"
     />
 </template>

@@ -98,8 +98,19 @@ defineOptions({
 
   <Navheader>
 
-    <h2 class="text-xl font-semibold dark:text-gray-300 sm:inline-block">
-      {{ props.customer.cid ? `Edit ${customer.first_name} ${customer.last_name}` : 'New customer'}}
+    <h2
+      class="text-xl font-semibold dark:text-gray-300 sm:inline-block">
+      <span>
+        {{ customer.cid ? 'Editing ' : 'New '}}
+      </span>
+
+      <span class="hidden sm:inline-flex" v-if="customer.cid">
+        {{ `${customer.first_name} ${customer.last_name}` }}
+      </span>
+
+      <span v-else class="hidden sm:inline-flex">
+        customer
+      </span>
     </h2>
 
     <span class="flex-1"></span>
@@ -132,7 +143,7 @@ defineOptions({
   <article class="w-full max-w-2xl px-4 py-10 mx-auto md:pt-16 sm:px-6 lg:px-8">
 
     <form
-      class="flex flex-col w-full gap-6 px-4 md:mx-auto">
+      class="flex flex-col w-full gap-6 md:mx-auto">
       <div class="mb-8">
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">
           Customer profile

@@ -41,7 +41,7 @@ class FeedbackMail extends Mailable
     $logo = public_path('ultrashots_logo.png');
 
     return new Content(
-      view: 'emails.contact-me',
+      view: 'emails.feedback-mail',
 
       with: [
         'name' => $this->data['name'],
@@ -49,6 +49,8 @@ class FeedbackMail extends Mailable
         'phone' => $this->data['phone'],
 
         'email' => $this->data['email'],
+
+        'company' => $this->data['company'],
 
         'logo' => $logo,
       ],

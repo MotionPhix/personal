@@ -16,10 +16,10 @@ class StoreProject extends Controller
     $validated = $request->validate([
       'name' => 'required|max:255',
       'production' => 'required|date',
-      'customer_id' => 'required|exists:customers,id',
+      'customer_id' => 'required|exists:customers,cid',
       'description' => 'nullable|string',
       'captured_media' => 'required',
-      'captured_media.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+      'captured_media.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
     ], [
       'name.required' => 'Please provide the project name.',
       'name.max' => 'Please shorten your input to 255 characters long.',
@@ -31,8 +31,8 @@ class StoreProject extends Controller
       'customer_id.exists' => 'The provided customer does not exist.',
 
       'captured_media.required' => 'Please upload at least a poster image.',
-      'captured_media.*.image' => 'Please upload a valid image.',
-      'captured_media.*.mimes' => 'Supported formats are JPEG, PNG, JPG, GIF, and SVG.',
+      'captured_media.*.image' => 'The uploaded file is not an image.',
+      'captured_media.*.mimes' => 'Supported formats are .jpeg, .png, .jpg, and .webp.',
       'captured_media.*.max' => 'The image size should not exceed 2MB.',
     ]);
 
@@ -46,9 +46,9 @@ class StoreProject extends Controller
       'description' => $validated['description'] ?? null,
     ]);
 
-    if ($request->hasFile('media')) {
+    if ($request->hasFile('captured_media')) {
 
-      foreach ($request->file('media') as $image) {
+      foreach ($request->file('captured_media') as $image) {
 
         $project->addMedia($image)->toMediaCollection('bucket');
       }
