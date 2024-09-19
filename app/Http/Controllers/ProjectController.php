@@ -101,41 +101,4 @@ class ProjectController extends Controller
     ]);
   }
 
-  /**
-   * Store a project
-   */
-  public function store(Request $request)
-  {
-    $customer = Customer::where('cid', $request->customer_id)->first();
-    $request->merge(['customer_id' => $customer->id]);
-
-    $validated = $request->validate([
-      'name' => 'required|string|max:255',
-      'production' => 'required|date',
-      'customer_id' => 'required|exists:customers,id',
-      'description' => 'nullable|string',
-      'media.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-    ]);
-
-    $project = Project::create([
-      'name' => $validated['name'],
-      'production' => $validated['production'],
-      'customer_id' => $customer->id,
-      'description' => $validated['description'] ?? null,
-    ]);
-
-    if ($request->hasFile('media')) {
-
-      foreach ($request->file('media') as $image) {
-
-        $project->addMedia($image)->toMediaCollection('bucket');
-      }
-    }
-
-    return redirect()->route('auth.projects.index')->with('notify', [
-      'type' => 'success',
-      'title' => 'New project',
-      'message' => 'Project has been successfully added!'
-    ]);
-  }
 }

@@ -21,13 +21,21 @@ class ContactController extends Controller
 
   public function send(Request $request)
   {
-    dd($request->all());
-
     $request->validate([
-      'name' => 'required|string',
-      'email' => 'required|email',
+      'name' => 'required',
+      'email' => 'required|email:rfc,dns',
       'phone' => 'required',
-      'message' => 'required|string',
+      'message' => 'required|not_equal',
+    ], [
+      'name.required' => 'Enter your full name.',
+
+      'email.required' => 'Enter your email address.',
+      'email.email' => 'You have entered an invalid email address.',
+
+      'phone.required' => 'Provide your phone number.',
+
+      'message.required' => 'Enter your message so I can help accordingly.',
+      'message.not_equal' => 'Provide some context I can use to help you',
     ]);
 
     $data = [

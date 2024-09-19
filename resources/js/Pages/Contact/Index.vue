@@ -121,7 +121,7 @@ defineOptions({
 
       </div>
 
-      <div>
+      <div class="flex flex-col gap-4">
         <InputLabel
           for="message"
           value="Message"
@@ -137,12 +137,6 @@ defineOptions({
           {{ contactForm.errors.message }}
         </p>
       </div>
-
-      <!-- <button
-        type="submit"
-        class="bg-blue-500 text-white py-2 px-4">
-        Send Message
-      </button> -->
 
       <div>
 

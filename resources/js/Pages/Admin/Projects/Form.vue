@@ -37,8 +37,6 @@ import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 
-// import FilePondPluginFileMetadata from "filepond-plugin-file-metadata";
-
 import type { FilePond } from "filepond";
 
 import PreTap from "@/Components/PreTap.vue";
@@ -46,7 +44,6 @@ import PreTap from "@/Components/PreTap.vue";
 const FilePondInput = vueFilePond(
   FilePondPluginFileValidateType,
   FilePondPluginFileValidateSize,
-  // FilePondPluginFileMetadata,
   FilePondPluginImagePreview
 );
 
@@ -62,6 +59,7 @@ const form = useForm({
   description: props.project.description,
   customer_id: props.project?.customer_id,
   production: props.project.production ?? new Date(),
+  captured_media: ''
 });
 
 const handlePondInit = () => {
@@ -83,30 +81,6 @@ const handlePondInit = () => {
   }
 
 }
-
-/*const handleAddImage = () => {
-
-  const files = projectGalleryPond.value?.getFiles();
-
-  files?.map((img) => img.setMetadata('uuid', img.file.name))
-
-  if (files && files.length) {
-
-    form.media = files.map(fileItem => fileItem.file) as any;
-
-  } else {
-
-    form.media = []
-
-  }
-
-};*/
-
-/*const handleRemoveImage = () => {
-
-  handleAddImage()
-
-};*/
 
 function onSubmit() {
 
@@ -133,7 +107,17 @@ function onSubmit() {
 
   }
 
-  form.post(route('auth.projects.store'), {
+  form
+    .transform((data) => {
+
+      const formData: Partial<any> = {
+        ...data,
+        captured_media: projectGalleryPond.value?.getFiles().map((img) => img.source),
+      };
+
+      return formData;
+
+    }).post(route('auth.projects.store'), {
     preserveScroll: true,
 
     onSuccess: () => {
@@ -288,6 +272,7 @@ defineOptions({
           </div>
 
           <div class="flex flex-col col-span-2">
+
             <label
               for="Media"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -306,9 +291,27 @@ defineOptions({
               :allow-mage-preview="true"
               :allow-paste="true"
               :allow-reorder="true"
-              accepted-file-types="image/jpeg, image/png"
               @init="handlePondInit"
             />
+            <!-- accepted-file-types="image/jpeg, image/png" -->
+
+            <div v-if="projectGalleryPond?.getFiles().length">
+
+              <div v-for="(img, index) in projectGalleryPond?.getFiles()" :key="index">
+
+                <InputError
+                  v-if="form.errors[`captured_media.${index}`]"
+                  :message="form.errors[`captured_media.${index}`]"
+                />
+
+              </div>
+
+            </div>
+
+            <InputError
+              v-else
+              :message="form.errors.captured_media" />
+
           </div>
 
         </div>

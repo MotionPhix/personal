@@ -115,7 +115,7 @@ Route::group(['prefix' => 'auth'], function () {
 
     Route::post(
       '/s',
-      [\App\Http\Controllers\ProjectController::class, 'store'],
+      \App\Http\Controllers\StoreProject::class,
     )->name('auth.projects.store');
 
     Route::get(

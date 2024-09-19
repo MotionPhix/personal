@@ -43,6 +43,11 @@ defineOptions({ layout: AppLayout })
       </div>
       <!-- End Profile -->
 
+      <h1
+        class="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100 mt-8">
+        I'm Kingsley Nyirenda. I live in Lilongwe, Malawi, where I make designs.
+      </h1>
+
       <!-- About -->
       <div class="mt-8">
         <p class="text-base text-gray-600 dark:text-neutral-400">
