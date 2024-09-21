@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { IconBrandBehance, IconBrandX, IconMail } from '@tabler/icons-vue';
 import Projects from '@/Components/Front/Projects.vue';
@@ -9,29 +9,27 @@ import Subscription from '@/Components/Front/Subscription.vue';
 import { Project, User } from '@/types';
 import { onMounted, ref } from 'vue';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+// Register ScrollTrigger plugin
+gsap.registerPlugin(ScrollTrigger);
 
 defineProps<{
   projects?: Project[];
-
   user?: User;
 }>();
 
 // Refs for elements to animate
 const profileRef = ref(null);
+const aboutRef = ref(null);
 const headlineRef = ref(null);
-const projectsRef = ref(null);
 
-// Animate on mounted
 onMounted(() => {
-  // Animate profile section
-  gsap.from(profileRef.value, { opacity: 0, x: -50, duration: 1 });
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
-  // Animate headline
-  gsap.from(headlineRef.value, { opacity: 0, y: 50, duration: 1.2, delay: 0.3 });
-
-
-  // Animate projects section
-  gsap.from(projectsRef.value, { opacity: 0, scale: 0.9, duration: 1.4, delay: 0.6 });
+  tl.from(profileRef.value, { opacity: 0, x: -50, duration: 1 })
+    .from(headlineRef.value, { opacity: 0, y: 50, duration: 1.2 }, '-=0.5')
+    .from(aboutRef.value, { opacity: 0, y: 20, duration: 1 }, '-=0.8');
 });
 
 defineOptions({ layout: AppLayout })
@@ -130,101 +128,21 @@ defineOptions({ layout: AppLayout })
 
     <!-- Projects -->
     <Projects
-      ref="projectsRef"
       :projects v-if="projects?.length"
       :small-columns="false"
     />
     <!-- End Projects -->
 
-    <!-- Testimonials -->
-    <!-- <Testimonials /> -->
-    <!-- End Testimonials -->
-
     <!-- Skills -->
-    <Skills />
+    <Skills ref="skillsRef" />
     <!-- End Skills -->
 
     <!-- Work Experience -->
-    <Expertise />
+    <Expertise ref="expertiseRef" />
     <!-- End Work Experience -->
 
-    <!-- Education -->
-    <!-- <Education /> -->
-    <!-- End Education -->
-
-    <!-- Articles -->
-    <!-- <div class="my-10 sm:my-14">
-      <h2 class="mb-5 font-medium text-gray-800 dark:text-neutral-200">
-        Articles
-      </h2>
-
-      <ul class="space-y-10">
-        <li>
-          <p class="mb-2 text-sm text-gray-500 dark:text-neutral-500">
-            2024
-          </p>
-
-          <h5 class="text-sm font-medium text-gray-800 dark:text-neutral-200">
-            The complete guide to OKRs
-          </h5>
-
-          <p class="mt-1 text-sm text-gray-500 dark:text-neutral-500">
-            How to make objectives and key results work for your company.
-          </p>
-
-          <p class="mt-1">
-            <a class="text-sm text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400" href="#">
-              Continue reading
-            </a>
-          </p>
-        </li>
-
-        <li>
-          <p class="mb-2 text-sm text-gray-500 dark:text-neutral-500">
-            2024
-          </p>
-
-          <h5 class="text-sm font-medium text-gray-800 dark:text-neutral-200">
-            Enhancement in Customer Engagement
-          </h5>
-
-          <p class="mt-1 text-sm text-gray-500 dark:text-neutral-500">
-            With the aim of optimizing customer interactions and boosting brand loyalty, the team at Preline leveraged Mailchimp's powerful tools and expertise to deliver exceptional results.
-          </p>
-
-          <p class="mt-1">
-            <a class="text-sm text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400" href="#">
-              Continue reading
-            </a>
-          </p>
-        </li>
-
-        <li>
-          <p class="mb-2 text-sm text-gray-500 dark:text-neutral-500">
-            2023
-          </p>
-
-          <h5 class="text-sm font-medium text-gray-800 dark:text-neutral-200">
-            How Google Assistant now helps you record stories for kids
-          </h5>
-
-          <p class="mt-1 text-sm text-gray-500 dark:text-neutral-500">
-            Google is constantly updating its consumer AI, Google Assistant, with new features.
-          </p>
-
-          <p class="mt-1">
-            <a class="text-sm text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400" href="#">
-              Continue reading
-            </a>
-          </p>
-        </li>
-      </ul>
-
-    </div> -->
-    <!-- End Articles -->
-
     <!-- Subscribe -->
-    <Subscription />
+    <Subscription ref="subscriptionRef" />
     <!-- End Subscribe -->
   </div>
 

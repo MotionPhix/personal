@@ -11,8 +11,16 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 
 import { Head, useForm } from '@inertiajs/vue3';
 
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+
 import InputError from '@/Components/InputError.vue';
+
+import { gsap } from 'gsap';
+
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
+
 
 const contactForm = useForm({
   name: '',
@@ -35,6 +43,50 @@ const onSubmit = () => {
 
 }
 
+const mainRef = ref(null);
+
+onMounted(() => {
+  const main = mainRef.value as any;
+  const title = main.querySelector('.title-section');
+  const formFields = main.querySelectorAll('form > div');
+
+  // Animate title
+  gsap.from(title.children, {
+    opacity: 0,
+    y: 30,
+    duration: 0.8,
+    stagger: 0.2,
+    ease: "power2.out"
+  });
+
+  // Animate form fields
+  gsap.from(formFields, {
+    opacity: 0,
+    y: 20,
+    duration: 0.6,
+    stagger: 0.1,
+    delay: 0.5,
+    scrollTrigger: {
+      trigger: formFields[0],
+      start: 'top bottom-=100',
+      toggleActions: 'play none none reverse'
+    }
+  });
+
+  // Animate submit button
+  gsap.from('button[type="submit"]', {
+    opacity: 0,
+    y: 20,
+    duration: 0.6,
+    delay: 1,
+    scrollTrigger: {
+      trigger: 'button[type="submit"]',
+      start: 'top bottom-=50',
+      toggleActions: 'play none none reverse'
+    }
+  });
+});
+
 defineOptions({
   layout: AppLayout
 })
@@ -44,12 +96,14 @@ defineOptions({
 
   <Head title="Contact Me" />
 
-  <main class="w-full max-w-2xl px-4 pt-10 mx-auto md:pt-16 sm:px-6 lg:px-8">
+  <article
+    class="w-full max-w-2xl px-4 pt-10 mx-auto md:pt-16 sm:px-6 lg:px-8"
+    ref="mainRef">
 
      <!-- Title -->
-     <div class="max-w-3xl mb-10 lg:mb-14">
+     <div class="w-full mb-10 lg:mb-14 title-section">
 
-      <h2 class="text-2xl font-semibold dark:text-white text-neutral-500 md:text-4xl md:leading-tight">
+      <h2 class="text-2xl font-semibold dark:text-white text-neutral-800 md:text-4xl md:leading-tight">
         Contact me
       </h2>
 
@@ -175,6 +229,6 @@ defineOptions({
 
     </form>
 
-  </main>
+  </article>
 
 </template>

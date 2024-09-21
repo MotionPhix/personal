@@ -8,7 +8,7 @@ import {Project} from "@/types";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import IconContacts from "@/Components/Icon/IconContacts.vue";
 
-defineProps<{
+const props = defineProps<{
   projects: Project[],
 }>()
 
