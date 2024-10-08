@@ -17,14 +17,15 @@ defineProps<{
 }>();
 
 // Refs for elements to animate
-const profileRef = ref(null);
+const aboutRef = ref(null);
 const headlineRef = ref(null);
 const projectsRef = ref(null);
 
 // Animate on mounted
 onMounted(() => {
+
   // Animate profile section
-  gsap.from(profileRef.value, { opacity: 0, x: -50, duration: 1 });
+  gsap.from(aboutRef.value, { opacity: 0, x: -50, duration: 1 });
 
   // Animate headline
   gsap.from(headlineRef.value, { opacity: 0, y: 50, duration: 1.2, delay: 0.3 });
@@ -32,6 +33,7 @@ onMounted(() => {
 
   // Animate projects section
   gsap.from(projectsRef.value, { opacity: 0, scale: 0.9, duration: 1.4, delay: 0.6 });
+
 });
 
 defineOptions({ layout: AppLayout })
@@ -130,8 +132,8 @@ defineOptions({ layout: AppLayout })
 
     <!-- Projects -->
     <Projects
-      ref="projectsRef"
-      :projects v-if="projects?.length"
+      :projects
+      v-if="projects?.length"
       :small-columns="false"
     />
     <!-- End Projects -->
