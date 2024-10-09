@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import {
   IconBrandLaravel,
   IconBrandVue,
@@ -10,11 +10,66 @@ import {
   IconBrandAdobeIndesign,
   IconBrandAdobeAfterEffect,
   IconBrandCoreos,
+  IconBrandFigma,
 } from '@tabler/icons-vue';
+
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { onMounted, ref } from 'vue';
+
+gsap.registerPlugin(ScrollTrigger);
+
+const skillsRef = ref(null);
+
+onMounted(() => {
+  const skillsSection = skillsRef.value as any;
+
+  // Animate the main skills section
+  gsap.from(skillsSection, {
+    opacity: 0,
+    y: 50,
+    duration: 0.8,
+    scrollTrigger: {
+      trigger: skillsSection,
+      start: 'top bottom-=100',
+      toggleActions: 'play none none reverse'
+    }
+  });
+
+  // Animate each skill category
+  gsap.utils.toArray(skillsSection?.querySelectorAll('dl')).forEach((dl: any, index) => {
+    gsap.from(dl, {
+      opacity: 0,
+      x: -30,
+      duration: 0.6,
+      delay: index * 0.2,
+      scrollTrigger: {
+        trigger: dl,
+        start: 'top bottom-=50',
+        toggleActions: 'play none none reverse'
+      }
+    });
+  });
+
+  // Animate individual skills
+  gsap.utils.toArray(skillsSection.querySelectorAll('li')).forEach((li: any, index) => {
+    gsap.from(li, {
+      opacity: 0,
+      scale: 0.8,
+      duration: 0.4,
+      delay: 0.1 * index,
+      scrollTrigger: {
+        trigger: li,
+        start: 'top bottom-=30',
+        toggleActions: 'play none none reverse'
+      }
+    });
+  });
+});
 </script>
 
 <template>
-<div class="my-10 sm:my-14">
+<div class="my-10 sm:my-14" ref="skillsRef">
 
   <h2 class="mb-5 font-medium text-gray-800 dark:text-neutral-200">
     Skills
@@ -34,6 +89,11 @@ import {
       <dd>
 
         <ul>
+
+          <li class="me-1 after:content-[','] inline-flex items-center text-gray-800 dark:text-neutral-200">
+            <IconBrandFigma size="16" class="mr-1" />
+            Figma
+          </li>
 
           <li class="me-1 after:content-[','] inline-flex items-center text-gray-800 dark:text-neutral-200">
             <IconBrandAdobePhotoshop size="16" class="mr-1" />

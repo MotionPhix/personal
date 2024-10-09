@@ -11,7 +11,7 @@ import { IconPlus } from "@tabler/icons-vue";
 
 import Spinner from "@/Components/Spinner.vue";
 
-import TextInput from "@/Components/TextInput.vue";
+import MazInput from 'maz-ui/components/MazInput'
 
 import { UseDark } from "@vueuse/components";
 
@@ -206,12 +206,14 @@ defineOptions({
                 Project name
               </label>
 
-              <TextInput
+              <MazInput
                 id="name"
+                type="text"
                 v-model="form.name"
                 placeholder="Type project's name"
-                class="w-full"
-                type="text"
+                rounded-size="md"
+                size="lg"
+                block
               />
 
               <InputError :message="form.errors.name" />

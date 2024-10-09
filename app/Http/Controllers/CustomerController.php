@@ -34,7 +34,7 @@ class CustomerController extends Controller
   /**
    * Create and instance of the customer.
    */
-  public function create(): Response
+  public function create(Request $request): Response
   {
     $customer = [
       'id' => '',
@@ -51,9 +51,18 @@ class CustomerController extends Controller
       ],
     ];
 
-    return Inertia::render('Admin/Customers/Form', [
+    $template = 'Admin/Customers/Form';
+
+    if ($request->query->get('modal')) {
+
+      $template = 'Admin/Customers/FormModal';
+
+    }
+
+    return Inertia::render($template, [
       'customer' => $customer,
     ]);
+
   }
 
   public function store(Request $request)
@@ -63,10 +72,10 @@ class CustomerController extends Controller
       'last_name' => 'required|string|max:255',
       'job_title' => 'required|string|max:255',
       'company_name' => 'nullable|string|max:255',
-      'address.street' => 'required|string|max:255',
-      'address.city' => 'required|string|max:255',
+      'address.street' => 'sometimes|required|string|max:255',
+      'address.city' => 'sometimes|required|string|max:255',
       'address.state' => 'nullable|string|max:255',
-      'address.country' => 'required|string|max:255',
+      'address.country' => 'sometimes|required|string|max:255',
     ], [
       'job_title.required' => 'Provide customer\'s position',
       'first_name.required' => 'Provide customer\'s first name',
@@ -76,13 +85,15 @@ class CustomerController extends Controller
       'address.country.required' => 'Enter customer address\' country name',
     ]);
 
-    Customer::create($validated);
+    $customer = Customer::create($validated);
 
     session()->flash('notify', [
       'type' => 'success',
       'title' => 'Great',
       'message' => 'New customer was added!'
     ]);
+
+    if($request->query->get('modal')) return redirect(route('auth.projects.create', $customer->cid));
 
     return redirect(route('auth.customer.index'));
   }

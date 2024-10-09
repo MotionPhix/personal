@@ -1,5 +1,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+
+import { IconCheck, IconPlus, IconSelector } from '@tabler/icons-vue'
+
+import { router } from '@inertiajs/vue3'
+
+import { ModalLink } from '@inertiaui/modal-vue'
+
+import axios from 'axios';
+
 import {
   Combobox,
   ComboboxInput,
@@ -8,8 +17,6 @@ import {
   ComboboxOption,
   TransitionRoot,
 } from '@headlessui/vue'
-import { IconCheck, IconSelector } from '@tabler/icons-vue'
-import axios from 'axios';
 
 const props = defineProps({
   modelValue: {
@@ -78,18 +85,43 @@ const onFetchSelectedPersonName = (id) => {
 </script>
 
 <template>
+
     <Combobox
       :modelValue="modelValue"
       @update:modelValue="value => emit('update:modelValue', value)"
       by="id">
+
       <div class="relative mt-1">
+
         <div>
           <ComboboxInput
-            class="w-full py-3 border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600"
+            class="w-full py-3.5 border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600"
             :placeholder="props.placeholder"
             :value="onFetchSelectedPersonName(props.modelValue)"
             @change="query = $event.target.value"
           />
+
+
+
+          <div
+            class="absolute inset-y-0 right-7 flex items-center z-10">
+
+            <ModalLink
+              :href="route('auth.customer.create')"
+              class="flex items-center w-full bg-gray-700 rounded-xl"
+              :data="{ 'modal': 'show' }"
+              @close="onFetchContacts"
+              preserve-scroll
+              as="button">
+
+              <span
+                class="left-0 block text-gray-300 truncate font-semibold dark:text-gray-300">
+                <IconPlus class="size-5" />
+              </span>
+            </ModalLink>
+
+          </div>
+
           <ComboboxButton
             class="absolute inset-y-0 right-0 flex items-center pr-2"
           >
@@ -123,6 +155,7 @@ const onFetchSelectedPersonName = (id) => {
               :key="person.id"
               :value="person.id"
             >
+
               <li
                 class="relative py-2 pl-10 pr-4 cursor-default select-none dark:hover:bg-gray-700 group"
                 :class="{ 'dark:bg-lime-500': person.id === props.modelValue }">
@@ -138,9 +171,14 @@ const onFetchSelectedPersonName = (id) => {
                   <IconCheck stroke="2.5" class="w-5 h-5" aria-hidden="true" />
                 </span>
               </li>
+
             </ComboboxOption>
+
           </ComboboxOptions>
+
         </TransitionRoot>
+
       </div>
+
     </Combobox>
 </template>

@@ -28,7 +28,7 @@ setTimeout(() => {
 
 const lenis = new Lenis()
 
-// lenis.on('scroll', (e) => {})
+lenis.on('scroll', (e) => {})
 
 function raf(time: any) {
   lenis.raf(time)

@@ -9,6 +9,7 @@ import { Link } from '@inertiajs/vue3';
 import ToastList from '@/Components/Backend/ToastList.vue';
 import { useDark } from '@vueuse/core';
 import Footnote from '@/Components/Front/Footnote.vue';
+import { ModalRoot } from '@inertiaui/modal-vue'
 
 const showingNavigationDropdown = ref(false);
 
@@ -188,6 +189,8 @@ const isDark = useDark()
       <Footnote />
 
     </div>
+
+    <ModalRoot />
 
   </div>
 

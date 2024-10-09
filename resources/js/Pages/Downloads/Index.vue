@@ -5,93 +5,150 @@ import { Head } from "@inertiajs/vue3"
 import { Logo } from "@/types";
 import LogoCard from "@/Components/Front/LogoCard.vue";
 import { IconAlertCircle } from "@tabler/icons-vue";
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { onMounted, ref } from "vue";
 
-defineProps<{
+gsap.registerPlugin(ScrollTrigger);
+
+const props = defineProps<{
   logoFiles: Logo[]
 }>()
+
+const headerRef = ref(null);
+const logoListRef = ref(null);
+
+onMounted(() => {
+  const header = headerRef.value as any;
+  const logoList = logoListRef.value as any;
+
+  // Animate the header
+  gsap.from(header.querySelector('h1'), {
+    opacity: 0,
+    y: 30,
+    duration: 0.8,
+    ease: "power2.out"
+  });
+
+  gsap.from(header.querySelector('p'), {
+    opacity: 0,
+    y: 20,
+    duration: 0.8,
+    delay: 0.2,
+    ease: "power2.out"
+  });
+
+  // Animate the main header section
+  gsap.from(logoList, {
+    opacity: 0,
+    y: 50,
+    duration: 0.8,
+    scrollTrigger: {
+      trigger: logoList,
+      start: 'top bottom-=100',
+      toggleActions: 'play none none reverse'
+    }
+  });
+
+  // Animate logo cards
+  if (props.logoFiles?.length) {
+    gsap.utils.toArray('.logo-card').forEach((card: any, index) => {
+      gsap.from(card, {
+        opacity: 0,
+        y: 30,
+        duration: 0.6,
+        delay: index * 0.1,
+        scrollTrigger: {
+          trigger: card,
+          start: 'top bottom-=50',
+          toggleActions: 'play none none reverse'
+        }
+      });
+    });
+  } else {
+    // Animate the "No logos available" section
+    const noLogosSection = logoList?.querySelector('.no-logos');
+
+    if (noLogosSection) {
+      gsap.from(noLogosSection.children, {
+        opacity: 0,
+        y: 20,
+        duration: 0.6,
+        stagger: 0.2,
+        scrollTrigger: {
+          trigger: noLogosSection,
+          start: 'top bottom-=50',
+          toggleActions: 'play none none reverse'
+        }
+      });
+    }
+  }
+});
 
 defineOptions({
   layout: AppLayout
 })
-
 </script>
 
 <template>
 
   <Head title="Polished up logos" />
 
-  <main
-    class="flex-auto mb-10 sm:mb-14">
+  <div
+    class="w-full max-w-2xl px-8 mx-auto mt-16">
 
-    <div class="mt-16 sm:px-8 sm:mt-16">
+    <header ref="headerRef">
 
+      <h1
+        class="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
+        Download vectorized logos of leading companies in Malawi
+      </h1>
+
+      <p
+        class="mt-6 text-lg text-zinc-600 dark:text-zinc-400">
+        Explore my collection of high-quality, vectorized logos from top companies and organisations
+        across Malawi. These logos are optimized for various design and branding needs, ensuring scalability
+        and clarity across all media.
+      </p>
+
+    </header>
+
+    <div class="mt-16 sm:mt-20" ref="logoListRef">
+
+      <ul
+        role="list"
+        v-if="logoFiles.length"
+        class="grid grid-cols-3 gap-2 lg:grid-cols-4">
+
+        <li
+          class="relative flex flex-col items-start group"
+          v-for="logo in logoFiles" :key="logo.lid">
+
+          <LogoCard :logo-file="logo" />
+
+        </li>
+
+      </ul>
+
+      <!-- Display this section if no logos are available -->
       <div
-        class="w-full max-w-3xl mx-auto lg:px-8">
+        v-else
+        class="flex flex-col items-center justify-center mt-10 space-y-4 text-center text-zinc-600 dark:text-zinc-400">
 
-        <div class="relative px-4 sm:px-8 lg:px-12">
+        <IconAlertCircle class="text-gray-400 size-16 dark:text-gray-500" />
 
-          <div class="max-w-2xl mx-auto lg:max-w-5xl">
+        <p class="text-lg font-semibold text-zinc-800 dark:text-zinc-100">
+          No logos available at the moment
+        </p>
 
-            <header class="max-w-2xl">
-
-              <h1
-                class="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
-                Download vectorized logos of leading companies in Malawi
-              </h1>
-
-              <p
-                class="mt-6 text-lg text-zinc-600 dark:text-zinc-400">
-                Explore my collection of high-quality, vectorized logos from top companies and organisations
-                across Malawi. These logos are optimized for various design and branding needs, ensuring scalability
-                and clarity across all media.
-              </p>
-
-            </header>
-
-            <div class="mt-16 sm:mt-20">
-
-              <ul
-                role="list"
-                v-if="logoFiles.length"
-                class="grid grid-cols-3 gap-2 lg:grid-cols-4">
-
-                <li
-                  class="relative flex flex-col items-start group"
-                  v-for="logo in logoFiles" :key="logo.lid">
-
-                  <LogoCard :logo-file="logo" />
-
-                </li>
-
-              </ul>
-
-              <!-- Display this section if no logos are available -->
-              <div
-                v-else
-                class="flex flex-col items-center justify-center mt-10 space-y-4 text-center text-zinc-600 dark:text-zinc-400">
-
-                <IconAlertCircle class="text-gray-400 size-16 dark:text-gray-500" />
-
-                <p class="text-lg font-semibold text-zinc-800 dark:text-zinc-100">
-                  No logos available at the moment
-                </p>
-
-                <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                  Please check back later.
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">
+          Please check back later.
+        </p>
 
       </div>
 
     </div>
 
-  </main>
+  </div>
 
 </template>

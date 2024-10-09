@@ -1,7 +1,10 @@
 <script setup>
 import InputError from '@/Components/InputError.vue';
-import TextInput from '@/Components/TextInput.vue';
+
+import MazInput from 'maz-ui/components/MazInput'
+
 import { usePage } from '@inertiajs/vue3';
+
 import { onMounted } from 'vue';
 
 const address = defineModel()
@@ -32,38 +35,51 @@ function onChangeType(type) {
 
     <section class="grid grid-cols-2 gap-6">
 
-      <div class="col-span-2 md:col-span-1">
-        <TextInput
+      <div class="col-span-2 sm:col-span-1">
+        <MazInput
+          type="text"
           v-model="address.street"
           placeholder="Enter street name"
-          type="text" class="w-full" />
+          rounded-size="md"
+          size="lg"
+          block />
 
         <InputError :message="page.props.errors[`address.street`]" />
       </div>
 
-      <div class="col-span-2 md:col-span-1">
-        <TextInput
+      <div class="col-span-2 sm:col-span-1">
+        <MazInput
+          type="text"
           v-model="address.city"
           placeholder="Enter city name"
-          type="text" class="w-full" />
+          rounded-size="md"
+          size="lg"
+          block />
 
         <InputError :message="page.props.errors[`address.city`]" />
       </div>
 
-      <div class="col-span-2 md:col-span-1">
-        <TextInput
+      <div class="col-span-2 sm:col-span-1">
+        <MazInput
+          type="text"
           v-model="address.state"
           placeholder="Enter state/region name"
-          type="text" class="w-full" />
+          rounded-size="md"
+          size="lg"
+          block />
 
         <InputError :message="page.props.errors[`address.state`]" />
       </div>
 
-      <div class="col-span-2 md:col-span-1">
-        <TextInput
+      <div class="col-span-2 sm:col-span-1">
+
+        <MazInput
+          type="text"
           v-model="address.country"
           placeholder="Enter country name"
-          type="text" class="w-full"/>
+          rounded-size="md"
+          size="lg"
+          block />
 
         <InputError :message="page.props.errors[`address.country`]" />
       </div>

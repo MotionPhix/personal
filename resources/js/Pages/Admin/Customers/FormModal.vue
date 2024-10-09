@@ -1,21 +1,19 @@
 <script setup lang="ts">
-import AddressInput from "@/Components/AddressInput.vue";
+import MazBtn from 'maz-ui/components/MazBtn'
 
-import Spinner from "@/Components/Spinner.vue";
+// import Spinner from "@/Components/Spinner.vue";
 
 import InputError from "@/Components/InputError.vue";
 
 import MazInput from 'maz-ui/components/MazInput'
 
-import AuthLayout from "@/Layouts/AuthLayout.vue";
+import { Modal } from '@inertiaui/modal-vue'
 
-import {Head, Link, useForm} from "@inertiajs/vue3";
-
-import { IconPlus } from "@tabler/icons-vue";
+import {useForm} from "@inertiajs/vue3";
 
 import { Customer } from "@/types";
 
-import Navheader from "@/Components/Backend/Navheader.vue";
+import { ref } from "vue";
 
 const props = defineProps<{
 
@@ -23,17 +21,13 @@ const props = defineProps<{
 
 }>();
 
+const createCustomerRef = ref();
+
 const form = useForm({
   first_name: props.customer.first_name,
   last_name: props.customer.last_name,
   job_title: props.customer.job_title ?? "",
-  company_name: props.customer.company_name ?? "",
-  address: {
-    city: props.customer.address?.city ?? "",
-    street: props.customer.address?.street ?? "",
-    state: props.customer.address?.state ?? "",
-    country: props.customer.address?.country ?? "",
-  },
+  company_name: props.customer.company_name ?? ""
 });
 
 function onSubmit() {
@@ -50,13 +44,13 @@ function onSubmit() {
 
     if (!!data.company_name) formData.company_name = data.company_name;
 
-    if (!!data?.address?.city) formData.address = data?.address;
-
     return formData;
   });
 
   if (props.customer.cid) {
+
     form.patch(route("auth.customer.update", props.customer.cid), {
+
       preserveScroll: true,
 
       onSuccess: () => {
@@ -64,93 +58,44 @@ function onSubmit() {
         form.reset();
 
       },
+
     });
 
     return;
   }
 
-  form.post(route("auth.customer.store"), {
+  form.post(route("auth.customer.store", { modal: 'show' }), {
+
     preserveScroll: true,
 
     onSuccess: () => {
 
       form.reset();
 
+      createCustomerRef.value.close();
+
     },
+
   });
 }
-
-defineOptions({
-
-  layout: AuthLayout,
-
-});
 </script>
 
 <template>
-  <Head
-    :title="
-      props.customer.cid
-        ? `Edit ${customer.first_name} ${customer.last_name}`
-        : 'New customer'
-    "
-  />
 
-  <Navheader>
-
-    <h2
-      class="text-xl font-semibold dark:text-gray-300 sm:inline-block">
-      <span>
-        {{ customer.cid ? 'Editing ' : 'New '}}
-      </span>
-
-      <span class="hidden sm:inline-flex" v-if="customer.cid">
-        {{ `${customer.first_name} ${customer.last_name}` }}
-      </span>
-
-      <span v-else class="hidden sm:inline-flex">
-        customer
-      </span>
-    </h2>
-
-    <span class="flex-1"></span>
-
-    <button
-      type="submit"
-      @click.prevent="onSubmit"
-      :disabled="form.processing"
-      class="inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-gray-800 bg-white border border-gray-200 shadow-sm -ms-px first:rounded-s-lg first:ms-0 rounded-s-lg rounded-e-lg focus:z-10 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-900 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-800 dark:focus:bg-neutral-800">
-
-      <IconPlus stroke="2.5" size="16" />
-
-      <span>
-        {{ props.customer.cid ? "Update" : "Create" }}
-      </span>
-
-      <Spinner v-if="form.processing" />
-
-    </button>
-
-    <Link
-      as="button"
-      :href="route('auth.customer.index')"
-      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-800 border border-transparent rounded-lg hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
-      Cancel
-    </Link>
-
-  </Navheader>
-
-  <article class="w-full max-w-2xl px-4 py-10 mx-auto md:pt-16 sm:px-6 lg:px-8">
+  <Modal
+    ref="createCustomerRef"
+    panel-classes="bg-blue-50 rounded-lg dark:bg-gray-700"
+    position="top">
 
     <form
       class="flex flex-col w-full gap-6 md:mx-auto">
-      <div class="mb-8">
+      <div class="mb-4 border-b dark:border-gray-500 pb-6">
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">
-          Customer profile
+          New customer
         </h2>
 
         <p class="text-sm text-gray-600 dark:text-gray-400">
-          Manage customer information, and company.
+          Quickly create, and add the newly created customer.
         </p>
       </div>
 
@@ -239,11 +184,19 @@ defineOptions({
         </div>
 
         <div class="col-span-1 sm:col-span-2">
-          <AddressInput v-model="form.address" />
+
+          <MazBtn
+            :loading="form.processing"
+            color="white"
+            rounded-size="md"
+            @click="onSubmit"
+            size="lg">
+            Save
+          </MazBtn>
+
         </div>
       </section>
     </form>
 
-  </article>
-
+  </Modal>
 </template>

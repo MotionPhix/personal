@@ -1,11 +1,51 @@
 <script setup lang="ts">
 import { Project } from '@/types';
 import { Link } from '@inertiajs/vue3';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { onMounted, onUnmounted, ref } from 'vue';
+
+gsap.registerPlugin(ScrollTrigger);
 
 defineProps<{
   projects?: Project[],
   smallColumns: boolean
 }>()
+
+const main = ref();
+let ctx: any;
+
+onMounted(() => {
+  ctx = gsap.context(() => {
+
+    // const cards = self?.selector('.card');
+    const cards = gsap.utils.toArray('.card');
+
+    cards.forEach((card: any, index) => {
+      gsap.fromTo(card,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: card,
+            start: 'top bottom-=100',
+            end: 'bottom center',
+            toggleActions: 'play none none reverse',
+          },
+          delay: index * 0.2 // Stagger effect
+        }
+      );
+    });
+
+  }, main.value);
+})
+
+onUnmounted(() => {
+  //ctx.revert(); // <- Easy Cleanup!
+});
 </script>
 
 <template>
@@ -17,11 +57,12 @@ defineProps<{
 
     <!-- Image Grid -->
     <div
+      ref="main"
       class="grid gap-2"
       :class="smallColumns ? 'grid-cols-3' : 'grid-cols-2'">
 
       <Link
-        class="relative block overflow-hidden rounded-lg group"
+        class="relative block overflow-hidden rounded-lg card group"
         :href="route('projects.show', project.pid)"
         v-for="project in projects"
         :key="project.pid">
