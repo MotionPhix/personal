@@ -3,12 +3,12 @@
 import { Head, Link } from '@inertiajs/vue3';
 import Navheader from '@/Components/Backend/Navheader.vue';
 import AuthLayout from "@/Layouts/AuthLayout.vue";
-import { IconDeviceProjector, IconDots, IconPhotoX, IconPencil } from '@tabler/icons-vue';
+import { IconDeviceProjector, IconDots, IconPhotoX, IconPencil, IconAppWindow } from '@tabler/icons-vue';
 import {Project} from "@/types";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import IconContacts from "@/Components/Icon/IconContacts.vue";
 
-const props = defineProps<{
+defineProps<{
   projects: Project[],
 }>()
 
@@ -32,7 +32,7 @@ defineOptions({
         :href="route('auth.projects.create')"
         class="flex items-center gap-2 py-1 text-xl font-semibold transition duration-300 hover:opacity-70 dark:text-gray-300"
       >
-        <IconDeviceProjector class="w-8 h-8 stroke-current" /> <span>Add new</span>
+        <IconAppWindow class="w-8 h-8 stroke-current" /> <span>Add new</span>
 
       </Link>
 

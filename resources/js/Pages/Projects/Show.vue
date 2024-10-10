@@ -23,119 +23,104 @@ const getImageById = (id: number) => {
 
   <Head :title="project.name" preserve-scroll preserve-state />
 
-  <main class="flex-auto mb-10 sm:mb-14">
+  <article class="mb-10 sm:mb-14 mt-8 sm:px-8 sm:mt-16 w-full mx-auto lg:px-8 px-4 max-w-2xl">
 
-    <div class="mt-8 sm:px-8 sm:mt-16">
+    <!-- Back to Projects Button -->
+    <Link
+      as="button"
+      :href="route('projects.index')"
+      class="flex items-center gap-2 text-base text-blue-600 transition-all duration-300 ease-in-out transform group dark:text-blue-400 hover:-translate-x-1 hover:text-blue-800 dark:hover:text-blue-600"
+    >
+      <IconArrowLeft size="24" class="hidden group-hover:inline-block" />
 
-      <div class="w-full max-w-3xl mx-auto lg:px-8">
+      <span class="group-hover:font-bold">All</span>
+    </Link>
 
-        <div class="relative px-4 sm:px-8 lg:px-12">
+    <div
+      class="w-full h-full max-w-full my-10 bg-center bg-cover min-h-80 rounded-xl"
+      :style="{ backgroundImage: `url(${ project.media?.length ? project?.media[0]?.original_url : '' })` }" />
 
-          <div class="max-w-2xl mx-auto lg:max-w-5xl">
-            <!-- Back to Projects Button -->
-            <Link
-              as="button"
-              :href="route('projects.index')"
-              class="flex items-center gap-2 text-base text-blue-600 transition-all duration-300 ease-in-out transform group dark:text-blue-400 hover:-translate-x-1 hover:text-blue-800 dark:hover:text-blue-600"
-            >
-              <IconArrowLeft size="24" class="hidden group-hover:inline-block" />
+    <header class="max-w-2xl mb-12">
+      <h1
+        class="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100"
+      >
+        {{ project.name }}
+      </h1>
 
-              <span class="group-hover:font-bold">All</span>
-            </Link>
+      <section class="my-12 text-base prose sm:prose-md dark:prose-invert">
+        <div v-html="project.description" />
+      </section>
 
-            <div
-              class="group my-10 max-w-full h-[20rem] md:h-[30rem] relative flex flex-col w-full min-h-60 bg-center bg-cover rounded-xl hover:shadow-lg focus:outline-none focus:shadow-lg transition"
-              :style="{ backgroundImage: `url(${ project.media?.length ? project?.media[0]?.original_url : '' })` }" />
+      <div class="grid grid-cols-2 gap-6 mt-4">
 
-            <header class="max-w-2xl mb-12">
-              <h1
-                class="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100"
-              >
-                {{ project.name }}
-              </h1>
+        <dl class="flex flex-col gap-2">
 
-              <section class="my-12 text-base prose sm:prose-md dark:prose-invert">
-                <div v-html="project.description" />
-              </section>
+          <dt>
+            <span class="text-sm text-gray-500 dark:text-neutral-500">
+              Client
+            </span>
+          </dt>
 
-              <div class="grid grid-cols-2 gap-6 mt-4">
+          <dd class="pt-2 border-t border-gray-300 dark:border-neutral-500">
 
-                <dl class="flex flex-col gap-2">
+            <ul>
 
-                  <dt>
-                    <span class="text-sm text-gray-500 dark:text-neutral-500">
-                      Client
-                    </span>
-                  </dt>
+              <li class="text-sm font-bold text-gray-800 dark:text-neutral-200">
+                {{ project?.customer?.first_name + ' ' + project?.customer?.last_name }}
+              </li>
 
-                  <dd>
+              <li class="text-xs text-gray-800 dark:text-neutral-200">
+                {{ project?.customer?.company_name }}
+              </li>
 
-                    <ul>
+            </ul>
 
-                      <li class="text-sm font-bold text-gray-800 dark:text-neutral-200">
-                        {{ project?.customer?.first_name + ' ' + project?.customer?.last_name }}
-                      </li>
+          </dd>
 
-                      <li class="text-xs text-gray-800 dark:text-neutral-200">
-                        {{ project?.customer?.company_name }}
-                      </li>
+        </dl>
 
-                    </ul>
+        <dl class="flex flex-col gap-2">
 
-                  </dd>
+          <dt>
+            <span class="text-sm text-gray-500 dark:text-neutral-500">
+              Completed
+            </span>
+          </dt>
 
-                </dl>
+          <dd class="pt-2 border-t border-gray-300 dark:border-neutral-500">
 
-                <dl class="flex flex-col gap-2">
+            <ul>
 
-                  <dt>
-                    <span class="text-sm text-gray-500 dark:text-neutral-500">
-                      Completed
-                    </span>
-                  </dt>
+              <li class="text-sm text-gray-800 dark:text-neutral-200">
+                {{ project?.production }}
+              </li>
 
-                  <dd>
+            </ul>
 
-                    <ul>
+          </dd>
 
-                      <li class="text-sm text-gray-800 dark:text-neutral-200">
-                        {{ project?.production }}
-                      </li>
-
-                    </ul>
-
-                  </dd>
-
-                </dl>
-
-              </div>
-            </header>
-
-            <div
-              class="gap-4 space-y-4 columns-2 sm:columns-3"
-              :style="project?.media && project.media.length > 3 ? 'direction: ltr;' : 'rtl'">
-              <div
-                v-for="(image, index) in project?.media"
-                :key="index" class="break-inside-avoid">
-                <img
-                  loading="lazy"
-                  decoding="async" data-nimg="1"
-                  :src="image?.original_url"
-                  @contextmenu.prevent
-                  :alt="'Project image ' + index + 1"
-                  class="w-full rounded-lg shadow-lg">
-              </div>
-            </div>
-
-          </div>
-
-        </div>
+        </dl>
 
       </div>
+    </header>
 
+    <div
+      class="gap-4 space-y-4 columns-2 sm:columns-3"
+      :style="project?.media && project.media.length > 3 ? 'direction: ltr;' : 'rtl'">
+      <div
+        v-for="(image, index) in project?.media"
+        :key="index" class="break-inside-avoid">
+        <img
+          loading="lazy"
+          decoding="async" data-nimg="1"
+          :src="image?.original_url"
+          @contextmenu.prevent
+          :alt="'Project image ' + index + 1"
+          class="w-full rounded-lg shadow-lg">
+      </div>
     </div>
 
-  </main>
+  </article>
 
 
 </template>

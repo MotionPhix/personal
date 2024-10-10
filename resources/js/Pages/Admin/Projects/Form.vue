@@ -3,7 +3,6 @@ import { Head, Link, useForm } from "@inertiajs/vue3";
 
 import InputError from "@/Components/InputError.vue";
 
-// import ContactSelector from "@/Components/Contact/ContactSelector.vue";/
 import MazSelect, { MazSelectOption } from 'maz-ui/components/MazSelect'
 
 import AuthLayout from "@/Layouts/AuthLayout.vue";
@@ -22,7 +21,7 @@ import { onBeforeUnmount, ref } from "vue";
 
 import 'v-calendar/style.css'
 
-import { Customer, Project } from "@/types";
+import { Project } from "@/types";
 
 import Navheader from "@/Components/Backend/Navheader.vue";
 
@@ -37,6 +36,8 @@ import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
 import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
+
+import { ModalLink } from '@inertiaui/modal-vue'
 
 import type { FilePond } from "filepond";
 
@@ -137,6 +138,12 @@ const disabledDates = ref([
   },
 ])
 
+function onAssignContact () {
+
+  form.customer_id = props.project.customer_id
+
+}
+
 onBeforeUnmount(() => {
   projectGalleryPond.value?.destroy
 })
@@ -156,8 +163,14 @@ defineOptions({
       <nav
         class="flex items-center w-full gap-1 mx-auto dark:text-white dark:border-gray-700"
       >
-      <h2 class="text-xl font-semibold dark:text-gray-300 sm:inline-block">
-        <span>{{ project.pid ? 'Editing' : 'New' }}</span> <span class="hidden sm:inline-flex">project</span>
+      <h2 class="text-xl font-semibold dark:text-gray-300 sm:inline-flex gap-2">
+        <span>
+          {{ project.pid ? 'Editing' : 'New' }}
+        </span>
+
+        <span class="hidden sm:inline-flex">
+          project
+        </span>
       </h2>
 
       <span class="flex-1"></span>
@@ -198,7 +211,7 @@ defineOptions({
         <div
           class="grid grid-cols-1 gap-4 mb-4 sm:gap-8 sm:grid-cols-2">
 
-          <section class="grid col-span-2 gap-8 sm:grid-cols-2">
+          <section class="grid col-span-2 gap-4 sm:grid-cols-2">
 
             <div>
               <label
@@ -221,16 +234,12 @@ defineOptions({
               <InputError :message="form.errors.name" />
             </div>
 
-            <div>
+            <div class="relative">
               <label
                 for="company"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 Customer
               </label>
-
-              <!-- <ContactSelector
-                v-model="form.customer_id"
-                placeholder="Pick a project's customer" /> -->
 
               <MazSelect
                 v-model="form.customer_id"
@@ -247,11 +256,30 @@ defineOptions({
                   :class="isSelected ? 'dark:text-gray-800 font-semibold' : ''"
                   style="width: 100%; gap: 1rem">
 
-                  <strong class="block">{{ option.label }}</strong>
-                  <span class="block text-sm font-light">{{ option.company }}</span>
+                  <strong class="block">
+                    {{ option.label }}
+                  </strong>
+
+                  <span class="block text-sm font-light">
+                    {{ option.company }}
+                  </span>
 
                 </div>
               </MazSelect>
+
+              <ModalLink
+                :href="route('auth.customer.create')"
+                class="absolute right-2 bottom-2 z-10 flex items-center size-10 justify-center bg-gray-700 rounded-lg transition duration-200 hover:hover:bg-gray-500"
+                :data="{ 'modal': 'show' }"
+                @close="onAssignContact"
+                preserve-scroll
+                as="button">
+
+                <span
+                  class="left-0 block font-semibold text-gray-300 truncate dark:text-gray-300">
+                  <IconPlus class="size-5" />
+                </span>
+              </ModalLink>
 
               <InputError :message="form.errors.customer_id" />
             </div>
@@ -324,11 +352,6 @@ defineOptions({
 
               <div v-for="(img, index) in projectGalleryPond?.getFiles()" :key="index">
 
-                <!-- <InputError
-                  v-if="form.errors[`captured_media.${index}`]"
-                  :message="form.errors[`captured_media.${index}`]"
-                /> -->
-
                 <InputError
                   v-if="(form.errors as Record<string, any>)[`captured_media.${index}`]"
                   :message="(form.errors as Record<string, any>)[`captured_media.${index}`]"
@@ -353,3 +376,13 @@ defineOptions({
   </article>
 
 </template>
+
+<style lang="scss">
+.m-select .m-select-list__scroll-wrapper {
+  @apply scrollbar scrollbar-none;
+}
+
+.m-select-list {
+  @apply w-full mt-2;
+}
+</style>

@@ -3,9 +3,9 @@ import InputLabel from '@/Components/InputLabel.vue';
 
 import MazPhoneNumberInput, { CountryCode } from 'maz-ui/components/MazPhoneNumberInput';
 
-import PreTap from '@/Components/PreTap.vue';
+import MazInput from 'maz-ui/components/MazInput'
 
-import TextInput from '@/Components/TextInput.vue';
+import PreTap from '@/Components/PreTap.vue';
 
 import AppLayout from '@/Layouts/AppLayout.vue';
 
@@ -122,12 +122,16 @@ defineOptions({
           value="Full name"
           for="name" />
 
-        <TextInput
+        <MazInput
           placeholder="Enter your full name"
+          v-model="contactForm.name"
+          rounded-size="md"
+          color="success"
+          class="my-2"
           name="name"
           id="name"
-          v-model="contactForm.name"
-          class="w-full my-2" />
+          size="lg"
+          block />
 
         <InputError :message="contactForm.errors.name" />
 
@@ -139,12 +143,16 @@ defineOptions({
           for="email"
           value="Email address" />
 
-        <TextInput
+        <MazInput
           placeholder="Enter your email address"
-          name="email"
-          id="email"
           v-model="contactForm.email"
-          class="w-full my-2" />
+          rounded-size="md"
+          color="success"
+          name="email"
+          class="my-2"
+          id="email"
+          size="lg"
+          block />
 
         <InputError :message="contactForm.errors.email" />
 
@@ -157,18 +165,18 @@ defineOptions({
           value="Phone" />
 
         <MazPhoneNumberInput
+          class="w-full my-2"
           :show-code-on-list="false"
           v-model="contactForm.phone"
           v-model:country-code="countryCode"
-          class="w-full my-2"
           placeholder="Enter your phone number"
-          no-country-selector
-          no-example
-          :size="'xl'"
-          block
-          rounded-size="md"
           orientation="responsive"
           :preferred-countries="['MW', 'ZM', 'ZA', 'ZW', 'GB', 'US']"
+          no-country-selector
+          rounded-size="md"
+          no-example
+          size="lg"
+          block
         />
 
         <InputError :message="contactForm.errors.phone" />
@@ -180,11 +188,15 @@ defineOptions({
           for="company"
           value="Company" />
 
-        <TextInput
+        <MazInput
           id="company"
           class="w-full my-2"
           placeholder="Enter your company name"
           v-model="contactForm.company"
+          rounded-size="md"
+          color="success"
+          size="lg"
+          block
         />
 
       </div>

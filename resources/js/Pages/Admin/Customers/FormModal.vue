@@ -84,12 +84,14 @@ function onSubmit() {
 
   <Modal
     ref="createCustomerRef"
-    panel-classes="bg-blue-50 rounded-lg dark:bg-gray-700"
+    panel-classes="bg-gray-100 rounded-lg dark:bg-gray-700"
     position="top">
 
     <form
-      class="flex flex-col w-full gap-6 md:mx-auto">
-      <div class="mb-4 border-b dark:border-gray-500 pb-6">
+      class="flex flex-col w-full gap-4 md:mx-auto">
+
+      <div class="mb-4 border-b dark:border-gray-500 pb-6 border-gray-300">
+
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">
           New customer
         </h2>
@@ -97,9 +99,10 @@ function onSubmit() {
         <p class="text-sm text-gray-600 dark:text-gray-400">
           Quickly create, and add the newly created customer.
         </p>
+
       </div>
 
-      <section class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <section class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 
         <div>
           <label
@@ -143,7 +146,7 @@ function onSubmit() {
     </section>
 
       <section
-        class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
