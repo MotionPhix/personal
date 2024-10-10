@@ -81,8 +81,22 @@ class ProjectController extends Controller
       'media' => [],
     ];
 
+    $customers = Customer::select([
+        'cid', 'first_name',
+        'last_name',
+        'company_name'
+      ])->get()
+      ->transform(function ($customer) {
+        return [
+          'label' => trim($customer->first_name . ' ' . $customer->last_name),
+          'company' => $customer->company_name,
+          'value' => $customer->cid,
+        ];
+      });
+
     return Inertia::render('Admin/Projects/Form', [
       'project' => $project,
+      'customers' => $customers
     ]);
   }
 
@@ -100,5 +114,4 @@ class ProjectController extends Controller
       'project' => $project,
     ]);
   }
-
 }

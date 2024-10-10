@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 
 import { IconCheck, IconPlus, IconSelector } from '@tabler/icons-vue'
 
-import { router } from '@inertiajs/vue3'
+import { usePage } from '@inertiajs/vue3'
 
 import { ModalLink } from '@inertiaui/modal-vue'
 
@@ -29,6 +29,8 @@ const props = defineProps({
     default: 'Pick a contact person'
   }
 })
+
+const q = usePage().props.selected_contact?.id;
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -82,6 +84,14 @@ const onFetchSelectedPersonName = (id) => {
   return person ? person.name : '';
 
 };
+
+function onAssignContact () {
+  onFetchContacts()
+
+  setTimeout(() => {
+    onFetchSelectedPersonName(q)
+  }, 100)
+}
 </script>
 
 <template>
@@ -104,18 +114,18 @@ const onFetchSelectedPersonName = (id) => {
 
 
           <div
-            class="absolute inset-y-0 right-7 flex items-center z-10">
+            class="absolute inset-y-0 z-10 flex items-center right-7">
 
             <ModalLink
               :href="route('auth.customer.create')"
               class="flex items-center w-full bg-gray-700 rounded-xl"
               :data="{ 'modal': 'show' }"
-              @close="onFetchContacts"
+              @close="onAssignContact"
               preserve-scroll
               as="button">
 
               <span
-                class="left-0 block text-gray-300 truncate font-semibold dark:text-gray-300">
+                class="left-0 block font-semibold text-gray-300 truncate dark:text-gray-300">
                 <IconPlus class="size-5" />
               </span>
             </ModalLink>

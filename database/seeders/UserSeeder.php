@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
     User::factory(1)->create([
       'first_name' => 'Kingsley',
       'last_name' => 'Nyirenda',
-      'email' => 'support@ultrashots.net',
+      'email' => 'hello@ultrashots.net',
       'phone_number' => '+265 996 727 163',
       'password' => 'run%$Ace5',
       'socials' => [

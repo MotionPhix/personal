@@ -89,4 +89,14 @@ export type PageProps<T extends Record<string, unknown> = Record<string, unknown
   auth: {
     user: User;
   };
+
+  notify?: {
+    type: string;
+    title?: string;
+    message: string;
+  };
+
+  selected_contact?: {
+    id: string;
+  };
 };

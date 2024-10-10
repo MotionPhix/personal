@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import Checkbox from '@/Components/Checkbox.vue';
+import MazCheckbox from 'maz-ui/components/MazCheckbox'
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import MazBtn from 'maz-ui/components/MazBtn'
+import MazInput from 'maz-ui/components/MazInput'
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 defineProps<{
@@ -31,7 +31,7 @@ const submit = () => {
     <GuestLayout>
         <Head title="Log in" />
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
+        <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}
         </div>
 
@@ -39,14 +39,18 @@ const submit = () => {
             <div>
                 <InputLabel for="email" value="Email" />
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
+                <MazInput
+                  id="email"
+                  type="email"
+                  class="block w-full mt-1"
+                  autocomplete="username"
+                  placeholder="Enter your login email"
+                  v-model="form.email"
+                  rounded-size="md"
+                  color="success"
+                  autofocus
+                  size="lg"
+                  required
                 />
 
                 <InputError class="mt-2" :message="form.errors.email" />
@@ -55,37 +59,48 @@ const submit = () => {
             <div class="mt-4">
                 <InputLabel for="password" value="Password" />
 
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="current-password"
+                <MazInput
+                  id="password"
+                  type="password"
+                  class="block w-full mt-1"
+                  placeholder="Enter your password"
+                  v-model="form.password"
+                  rounded-size="md"
+                  color="success"
+                  size="lg"
+                  required
                 />
 
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
             <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">Remember me</span>
-                </label>
+              <MazCheckbox
+                name="remember"
+                color="success"
+                v-model:checked="form.remember"
+                label="Keep me signed in" />
             </div>
 
             <div class="flex items-center justify-end mt-4">
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
-                    class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
+                    class="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
                 >
                     Forgot your password?
                 </Link>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
-                </PrimaryButton>
+                <MazBtn
+                  class="ms-4"
+                  color="success"
+                  rounded-size="md"
+                  :loading="form.processing"
+                  :class="{ 'opacity-25': form.processing }"
+                  :disabled="form.processing"
+                  type="submit">
+                  Log in
+                </MazBtn>
             </div>
         </form>
     </GuestLayout>

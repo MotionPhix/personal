@@ -3,7 +3,8 @@ import { Head, Link, useForm } from "@inertiajs/vue3";
 
 import InputError from "@/Components/InputError.vue";
 
-import ContactSelector from "@/Components/Contact/ContactSelector.vue";
+// import ContactSelector from "@/Components/Contact/ContactSelector.vue";/
+import MazSelect, { MazSelectOption } from 'maz-ui/components/MazSelect'
 
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 
@@ -21,7 +22,7 @@ import { onBeforeUnmount, ref } from "vue";
 
 import 'v-calendar/style.css'
 
-import { Project } from "@/types";
+import { Customer, Project } from "@/types";
 
 import Navheader from "@/Components/Backend/Navheader.vue";
 
@@ -41,6 +42,11 @@ import type { FilePond } from "filepond";
 
 import PreTap from "@/Components/PreTap.vue";
 
+const props = defineProps<{
+  project: Project;
+  customers: MazSelectOption[]
+}>();
+
 const FilePondInput = vueFilePond(
   FilePondPluginFileValidateType,
   FilePondPluginFileValidateSize,
@@ -49,10 +55,6 @@ const FilePondInput = vueFilePond(
 
 const projectGalleryPond = ref<FilePond | null>(null);
 const projectImages = ref([]);
-
-const props = defineProps<{
-  project: Project;
-}>();
 
 const form = useForm({
   name: props.project.name,
@@ -226,9 +228,30 @@ defineOptions({
                 Customer
               </label>
 
-              <ContactSelector
+              <!-- <ContactSelector
                 v-model="form.customer_id"
-                placeholder="Pick a project's customer" />
+                placeholder="Pick a project's customer" /> -->
+
+              <MazSelect
+                v-model="form.customer_id"
+                :options="customers"
+                v-slot="{ option, isSelected }"
+                placeholder="Pick a project's customer"
+                rounded-size="md"
+                size="lg"
+                search
+                block
+              >
+                <div
+                  class="dark:text-gray-200"
+                  :class="isSelected ? 'dark:text-gray-800 font-semibold' : ''"
+                  style="width: 100%; gap: 1rem">
+
+                  <strong class="block">{{ option.label }}</strong>
+                  <span class="block text-sm font-light">{{ option.company }}</span>
+
+                </div>
+              </MazSelect>
 
               <InputError :message="form.errors.customer_id" />
             </div>

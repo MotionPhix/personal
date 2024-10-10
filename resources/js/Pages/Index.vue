@@ -11,6 +11,7 @@ import { onMounted, ref } from 'vue';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
+// Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
 defineProps<{
@@ -18,22 +19,12 @@ defineProps<{
   user?: User;
 }>();
 
+// Refs for elements to animate
 const profileRef = ref(null);
-const projectsRef = ref(null);
 const aboutRef = ref(null);
 const headlineRef = ref(null);
 
 onMounted(() => {
-  // Animate profile section
-  gsap.from(aboutRef.value, { opacity: 0, x: -50, duration: 1 });
-
-  // Animate headline
-  gsap.from(headlineRef.value, { opacity: 0, y: 50, duration: 1.2, delay: 0.3 });
-
-
-  // Animate projects section
-  gsap.from(projectsRef.value, { opacity: 0, scale: 0.9, duration: 1.4, delay: 0.6 });
-
   const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
 
   tl.from(profileRef.value, { opacity: 0, x: -50, duration: 1 })
@@ -49,7 +40,7 @@ defineOptions({ layout: AppLayout })
   <Head title="Welcome" />
 
   <div
-    class="w-full max-w-2xl px-4 pt-10 mx-auto md:pt-16 sm:px-6 lg:px-8">
+    class="w-full max-w-2xl px-8 pt-10 mx-auto md:pt-16">
 
     <!-- Profile -->
     <div
@@ -137,9 +128,7 @@ defineOptions({ layout: AppLayout })
 
     <!-- Projects -->
     <Projects
-      :projects
-       ref="projectsRef"
-      v-if="projects?.length"
+      :projects v-if="projects?.length"
       :small-columns="false"
     />
     <!-- End Projects -->

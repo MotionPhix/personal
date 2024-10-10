@@ -21,7 +21,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
 
-
 const contactForm = useForm({
   name: '',
   email: '',

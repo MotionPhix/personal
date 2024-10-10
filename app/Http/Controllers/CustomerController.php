@@ -93,7 +93,15 @@ class CustomerController extends Controller
       'message' => 'New customer was added!'
     ]);
 
-    if($request->query->get('modal')) return redirect(route('auth.projects.create', $customer->cid));
+    if($request->query->get('modal')) {
+
+      session()->flash('selected', [
+        'id' => $customer->cid
+      ]);
+
+      return redirect(route('auth.projects.create', $customer->cid));
+
+    }
 
     return redirect(route('auth.customer.index'));
   }
