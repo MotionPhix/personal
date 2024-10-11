@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
   ->withRouting(
@@ -27,11 +28,21 @@ return Application::configure(basePath: dirname(__DIR__))
       \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
       \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
     ]);
-
   })
   // ->registered(function ($app) {
   //   $app->usePublicPath(path: realpath(base_path('public_html')));
   // })
   ->withExceptions(function (Exceptions $exceptions) {
-    //
+
+    $exceptions->respond(function (Response $response) {
+      if ($response->getStatusCode() === 419) {
+        return back()->with('notify', [
+          'type' => 'success',
+          'message' => 'The page expired, please try again.',
+        ]);
+      }
+
+      return $response;
+    });
+
   })->create();

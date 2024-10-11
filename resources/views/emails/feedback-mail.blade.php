@@ -91,16 +91,15 @@
               <p style="font-family: Roboto, Inter, Helvetica, sans-serif;">Hi {{ $name }},</p>
 
               <p style="font-family: Roboto, Inter, Helvetica, sans-serif;">
-                Thank you for getting in touch with me. I have received your message and
-                would like to thank you for writing to me. I will reply by either email, or a phone call as soon
-                as possible, usually within 24 hours.
+                Thank you for getting in touch with me. I will provide you with a
+                relevant response once I go through the email you sent me, usually
+                within 24 hours.
               </p>
-
-              <h2 style="font-family: Roboto, Inter, Helvetica, sans-serif;">Verify your information</h2>
 
               <p
                 style="font-family: Roboto, Inter, Helvetica, sans-serif;">
-                If any of the below information is incorrect, please contact me immediately.
+                Should any of your information below be incorrect, please reply to this email, with
+                the corrected information so I can get back to you with proper feedback.
               </p>
 
               <table
@@ -154,15 +153,16 @@
 
               </table>
 
-              <p style="font-family: Roboto, Inter, Helvetica, sans-serif;">
-                If you need to adjust any information or have any further questions,
-                please do not hesitate to contact me via <a href="mailto:support@ultrashots.net">Email</a>.
-              </p>
-
               <p
                 class="footer"
                 style="font-family: Roboto, Inter, Helvetica, sans-serif; font-size: 12px; color: #666666; text-align: left; margin-top: 20px;">
                 © {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+              </p>
+
+              <p
+                style="border-top: 1px solid; padding-top: 4px; font-size: 10px; color: #666666; text-align: left; width: 100%; font-family: Roboto, Inter, Helvetica, sans-serif;">
+                You are receiving this email because you contacted me from
+                <a href="https://ultrashots.net"><strong>{{ config('app.name') }}</strong></a>. If you didn't mean to be contacted back, you can just ignore and delete this email.
               </p>
 
             </td>
@@ -176,12 +176,6 @@
 
   </table>
 
-  <p
-    style="font-size: 12px; color: #666666; text-align: left; width: 100%; max-width: 500px; margin: 20px auto; font-family: Roboto, Inter, Helvetica, sans-serif;">
-    You are receiving this email because you contacted me from
-    <a href="https://ultrashots.net"><strong>{{ config('app.name') }}</strong></a>.
-    <br>If you didn't initiate it, you can ignore and delete this email.
-  </p>
-
 </body>
+
 </html>

@@ -1,6 +1,7 @@
 export interface Socials {
   twitter?: string;
   facebook?: string;
+  linkedin?: string;
   behance?: string;
 }
 
@@ -94,9 +95,5 @@ export type PageProps<T extends Record<string, unknown> = Record<string, unknown
     type: string;
     title?: string;
     message: string;
-  };
-
-  selected_contact?: {
-    id: string;
   };
 };

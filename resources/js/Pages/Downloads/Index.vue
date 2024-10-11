@@ -25,7 +25,7 @@ onMounted(() => {
   // Animate the header
   gsap.from(header.querySelector('h1'), {
     opacity: 0,
-    y: 30,
+    y: 20,
     duration: 0.8,
     ease: "power2.out"
   });
@@ -45,7 +45,7 @@ onMounted(() => {
     duration: 0.8,
     scrollTrigger: {
       trigger: logoList,
-      start: 'top bottom-=100',
+      start: 'top bottom-=20',
       toggleActions: 'play none none reverse'
     }
   });
@@ -60,7 +60,7 @@ onMounted(() => {
         delay: index * 0.1,
         scrollTrigger: {
           trigger: card,
-          start: 'top bottom-=50',
+          start: 'top bottom-=20',
           toggleActions: 'play none none reverse'
         }
       });
@@ -77,7 +77,7 @@ onMounted(() => {
         stagger: 0.2,
         scrollTrigger: {
           trigger: noLogosSection,
-          start: 'top bottom-=50',
+          start: 'top bottom-=20',
           toggleActions: 'play none none reverse'
         }
       });

@@ -95,8 +95,8 @@ class ProjectController extends Controller
       });
 
     return Inertia::render('Admin/Projects/Form', [
-      'project' => $project,
-      'customers' => $customers
+      'project' => fn() => $project,
+      'customers' => fn() => $customers
     ]);
   }
 

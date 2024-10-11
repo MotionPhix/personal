@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { IconBrandBehance, IconBrandX, IconMail } from '@tabler/icons-vue';
+import { IconBrandBehance, IconBrandLinkedin, IconBrandX } from '@tabler/icons-vue';
 import Projects from '@/Components/Front/Projects.vue';
 import Skills from '@/Components/Front/Skills.vue';
 import Expertise from '@/Components/Front/Expertise.vue';
@@ -10,6 +10,7 @@ import { Project, User } from '@/types';
 import { onMounted, ref } from 'vue';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import IconEmail from '@/Components/Icon/IconEmail.vue';
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -66,8 +67,8 @@ defineOptions({ layout: AppLayout })
 
     <h1
       ref="headlineRef"
-      class="mt-8 text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
-      I'm Kingsley. I live in Lilongwe, Malawi, where I make designs.
+      class="mt-8 text-3xl font-bold tracking-tight text-zinc-800 sm:text-4xl dark:text-zinc-100">
+      Hi, I'm Kingsley, a self-taught graphic designer and front-end web developer based in Lilongwe, Malawi.
     </h1>
 
     <!-- About -->
@@ -75,15 +76,15 @@ defineOptions({ layout: AppLayout })
       ref="aboutRef"
       class="mt-8">
       <p class="text-base text-gray-600 dark:text-neutral-400">
-        I am a seasoned graphic designer with over 14 years of experience in creating visually appealing and user-centric designs. My expertise spans across UI design, design systems, and custom illustrations, helping clients bring their digital visions to life.
+        With over 10 years of experience, I've honed my skills in creating stunning, user-focused designs that don't just look good but also work seamlessly. From crafting intuitive UI designs to developing cohesive design systems and custom illustrations, I'm passionate about turning creative ideas into digital realities. My goal is always to create designs that are not only visually appealing but also functional, helping clients elevate their brand and deliver exceptional user experiences.
       </p>
 
       <p class="mt-3 text-base text-gray-600 dark:text-neutral-400">
-        Currently, I work with <a
-            class="text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
-            href="https://firstmarkmw.com" target="_blank">
-            <strong>Firstmark Advertising</strong>
-          </a>, where I design artworks, convert them into print-ready artworks, and provide comprehensive support to our customers. I am passionate about crafting elegant and functional designs that enhance user experiences and businesses.
+        Throughout my career, I've collaborated with diverse clients to breathe life into their products/services. I believe that great design is a blend of creativity and strategy, and I approach every project with this mindset. Whether it's building websites from the ground up or enhancing existing platforms, I focus on delivering results that matter.
+      </p>
+
+      <p class="mt-3 text-base text-gray-600 dark:text-neutral-400">
+        I'm always learning, adapting to new trends, and pushing the boundaries of what's possible in both design and front-end development. Let's create something amazing together!
       </p>
 
       <ul class="flex gap-2 mt-10 sm:gap-x-4">
@@ -92,9 +93,8 @@ defineOptions({ layout: AppLayout })
 
           <a
             class="text-base flex items-center gap-2.5 text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
-            href="mailto:support@ultrashots.net" target="_blank">
-            <IconMail size="24" class="dark:text-neutral-500" />
-            <span class="hidden sm:inline-flex">{{ user?.email }}</span>
+            :href="`https://linkedin.com/in/${user?.socials?.linkedin}`" target="_blank">
+            <IconBrandLinkedin size="24" class="dark:text-neutral-500" />
           </a>
 
         </li>
@@ -103,9 +103,8 @@ defineOptions({ layout: AppLayout })
 
           <a
             class="text-base flex items-center gap-2.5 text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
-            href="https://x.com/ultrashoots" target="_blank">
+            :href="`https://x.com/${user?.socials?.twitter}`" target="_blank">
             <IconBrandX size="24" class="dark:text-neutral-500" />
-            <span class="hidden sm:inline-flex">{{ user?.socials?.twitter }}</span>
           </a>
 
         </li>
@@ -114,9 +113,18 @@ defineOptions({ layout: AppLayout })
 
           <a
             class="text-base flex items-center gap-2.5 text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
-            href="https://be.net/ultrashots" target="_blank">
+            :href="`https://be.net/${user?.socials?.behance}`" target="_blank">
             <IconBrandBehance size="24" class="dark:text-neutral-500" />
-            <span class="hidden sm:inline-flex">{{ user?.socials?.behance }}</span>
+          </a>
+
+        </li>
+
+        <li>
+
+          <a
+            class="text-base flex items-center gap-2.5 text-gray-500 underline hover:text-gray-800 hover:decoration-2 focus:outline-none focus:decoration-2 dark:text-neutral-500 dark:hover:text-neutral-400"
+            :href="`mailto:${user?.email}`" target="_blank">
+            <IconEmail size="24" class="dark:text-neutral-500" />
           </a>
 
         </li>

@@ -80,7 +80,7 @@ onMounted(() => {
     delay: 1,
     scrollTrigger: {
       trigger: 'button[type="submit"]',
-      start: 'top bottom-=50',
+      start: 'top bottom-=20',
       toggleActions: 'play none none reverse'
     }
   });

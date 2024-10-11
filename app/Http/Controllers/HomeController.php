@@ -13,13 +13,12 @@ class HomeController extends Controller
    */
   public function __invoke()
   {
-    $user = User::where('email', 'support@ultrashots.net')->first();
-
-    $projects = Project::with('media')->inRandomOrder()->take(6)->select('id', 'pid')->get();;
-
     return Inertia::render('Index', [
-      'user' => $user,
-      'projects' => $projects,
+      'user' => fn() => User::where('email', 'hello@ultrashots.net')->first(),
+      'projects' => fn() => Project::with('media')
+        ->inRandomOrder()
+        ->take(6)->select('id', 'pid')
+        ->get(),
     ]);
   }
 }

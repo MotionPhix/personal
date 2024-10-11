@@ -17,12 +17,13 @@ class UserSeeder extends Seeder
       'first_name' => 'Kingsley',
       'last_name' => 'Nyirenda',
       'email' => 'hello@ultrashots.net',
-      'phone_number' => '+265 996 727 163',
+      'phone_number' => '+265 888 166 911',
       'password' => 'run%$Ace5',
       'socials' => [
-        'twitter' => '@ultrashoots',
+        'twitter' => 'ultrashoots',
+        'linkedin' => 'ultrashots',
         'facebook' => 'ultrashotz',
-        'behance' => '@ultrashots',
+        'behance' => 'ultrashots',
       ]
     ]);
   }

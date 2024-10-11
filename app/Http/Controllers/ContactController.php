@@ -52,7 +52,7 @@ class ContactController extends Controller
     ];
 
     // Send email
-    if (Mail::to('kwikdev@ultrashots.net', 'Kingsley')->send(new ContactMe(
+    if (Mail::to('hello@ultrashots.net', 'Kingsley')->send(new ContactMe(
         $data['name'],
         $data['email'],
         $data['phone'],
@@ -60,24 +60,20 @@ class ContactController extends Controller
         $data['company']
       ))) {
 
-      session()->flash('notify', [
+      Mail::to($data['email'], $data['name'])->send(new FeedbackMail($data));
+
+      return back('notify', [
         'type' => 'success',
         'title' => 'Thank you',
         'message' => 'Your message was successfully delivered.'
       ]);
 
-      Mail::to($data['email'], 'Kingsley')->send(new FeedbackMail($data));
-
-      return redirect()->back();
-
     };
 
-    session()->flash('notify', [
+    return back()->with('notify', [
       'type' => 'danger',
       'title' => 'Oops!',
       'message' => 'Message could not be sent.'
     ]);
-
-    return redirect()->back();
   }
 }

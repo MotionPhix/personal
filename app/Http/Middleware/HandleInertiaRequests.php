@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Pest\Plugins\Only;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -32,16 +33,10 @@ class HandleInertiaRequests extends Middleware
     return [
       ...parent::share($request),
       'auth' => [
-        'user' => $request->user(),
+        'user' => fn() => $request->user(), //->only('name', 'email', ''),
       ],
 
-      'notify' => function () {
-        return session('notify');
-      },
-
-      'selected_contact' => function () {
-        return session('selected');
-      },
+      'notify' => fn() => session('notify'),
     ];
   }
 }

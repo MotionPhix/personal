@@ -1,31 +1,3 @@
-{{-- <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Confirm Subscription</title>
-</head>
-
-<body>
-
-  <h2>Confirm Subscription</h2>
-
-  <p>Dear {{ $user->email }},</p>
-
-  <p>
-    Thank you for subscribing to my newsletter. Please click the link below to confirm your subscription:
-  </p>
-
-  <p><a href="{{ $confirmationUrl }}">Confirm Subscription</a></p>
-
-  <p>If you did not request this subscription, please ignore this email.</p>
-
-  <p>Regards, Kingsley<br>{{ config('app.name') }}</p>
-
-</body>
-
-</html> --}}
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -34,7 +6,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Confirm Your Email Address</title>
+  <title>Confirm your email address</title>
 
   <style>
     @import url('https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap');
@@ -158,7 +130,7 @@
     </p>
 
     <p>
-      You received this email because we received a request for a subscription for your email.
+      You received this email because you requested for a subscription for your email at <strong>ultrashots</strong>.
       If you didn't request a subscription you can safely delete this email. <br />
     </p>
   </div>
