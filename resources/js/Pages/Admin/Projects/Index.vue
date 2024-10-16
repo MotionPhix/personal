@@ -3,7 +3,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import Navheader from '@/Components/Backend/Navheader.vue';
 import AuthLayout from "@/Layouts/AuthLayout.vue";
-import { IconDeviceProjector, IconDots, IconPhotoX, IconPencil, IconAppWindow, IconPlus } from '@tabler/icons-vue';
+import { IconDots, IconPhotoX, IconPencil, IconPlus, IconTrash, IconListDetails } from '@tabler/icons-vue';
 import {Project} from "@/types";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import IconContacts from "@/Components/Icon/IconContacts.vue";
@@ -33,7 +33,7 @@ defineOptions({
         :href="route('auth.projects.create')"
         class="flex items-center gap-2 py-1 text-xl font-semibold transition duration-300 hover:opacity-70 dark:text-gray-300"
       >
-        <IconAppWindow class="w-8 h-8 stroke-current" /> <span>Add new</span>
+        <IconPlus class="w-8 h-8 stroke-current" /> <span>Add new</span>
 
       </Link>
 
@@ -77,34 +77,29 @@ defineOptions({
 
     </div>
 
-    <!-- Grid -->
+    <!-- load projects -->
     <div
-      v-else class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      class="gap-4 space-y-4 columns-2 sm:columns-3"
+      v-else>
 
-      <!-- Card -->
-      <section
-        class="flex flex-col h-full py-2 transition duration-300 border border-gray-200 group hover:border-transparent hover:shadow-lg focus:outline-none focus:border-transparent focus:shadow-lg rounded-xl dark:border-neutral-700 dark:hover:border-transparent dark:hover:shadow-black/40 dark:focus:border-transparent dark:focus:shadow-black/40"
-        v-for="project in projects"
+      <div
+        v-for="(project, idx ) in projects"
         :key="project.pid"
-      >
-        <div class="flex items-center px-2 pb-4 mt-auto gap-x-3">
+        class="relative break-inside-avoid group">
 
-          <div class="p-2 bg-gray-300 rounded-full">
-            <IconContacts
-              class="size-5" />
-          </div>
+        <img
+          loading="lazy"
+          decoding="async"
+          :src="project.poster_url as any"
+          :alt="'Project ' + idx + 1"
+          class="w-full rounded-lg shadow-lg">
 
-          <div>
-            <h5 class="text-sm text-gray-800 dark:text-neutral-200">
-              {{ `${project.customer?.first_name} ${project.customer?.last_name}` }}
-            </h5>
-          </div>
-
-          <div class="flex-1"></div>
+        <div
+          class="absolute top-1.5 right-1.5">
 
           <Menu
             as="div"
-            class="relative z-40 text-left rounded-full">
+            class="relative hidden z-10 text-left rounded size-6 items-center bg-neutral-100 dark:bg-neutral-800 group:hover:flex">
 
             <MenuButton
               class="inline-flex justify-center w-full"
@@ -124,21 +119,39 @@ defineOptions({
               leave-to-class="transform scale-95 opacity-0"
             >
               <MenuItems
-                class="absolute w-24 -mt-1 origin-bottom-right bg-white divide-y divide-gray-100 rounded-md shadow-lg -right-2 ring-1 ring-black/5 focus:outline-none"
+                class="absolute w-24 mt-24 origin-bottom-right dark:bg-black/90 bg-white divide-y divide-gray-100 rounded-md shadow-lg right-1 ring-1 ring-black/5 focus:outline-none"
               >
                 <div class="px-1 py-1">
                   <MenuItem v-slot="{ active }">
                     <Link
                       as="button"
                       :class="[
-                        active ? 'bg-violet-500 text-white' : 'text-gray-900',
-                        'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                        active ? 'bg-lime-500 text-white' : 'text-gray-900 dark:text-lime-500',
+                        'flex w-full items-center rounded-md px-2 py-2 text-sm',
+                      ]"
+                      :href="route('auth.projects.detail', project.pid)"
+                    >
+                      <IconListDetails
+                        :active="active"
+                        class="w-5 h-5 mr-2 text-lime-400 group:hover:text-gray-100"
+                        aria-hidden="true"
+                      />
+                      View
+                    </Link>
+                  </MenuItem>
+
+                  <MenuItem v-slot="{ active }">
+                    <Link
+                      as="button"
+                      :class="[
+                        active ? 'bg-lime-500 text-white' : 'text-gray-900 dark:text-lime-500',
+                        'flex w-full items-center rounded-md px-2 py-2 text-sm',
                       ]"
                       :href="route('auth.projects.edit', project.pid)"
                     >
                       <IconPencil
                         :active="active"
-                        class="w-5 h-5 mr-2 text-violet-400"
+                        class="w-5 h-5 mr-2 text-lime-400 group:hover:text-gray-100"
                         aria-hidden="true"
                       />
                       Edit
@@ -150,14 +163,14 @@ defineOptions({
                       as="button"
                       method="delete"
                       :class="[
-                        active ? 'bg-violet-500 text-white' : 'text-gray-900',
-                        'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                        active ? 'bg-lime-500 text-white' : 'text-gray-900 dark:text-lime-500',
+                        'flex w-full items-center rounded-md px-2 py-2 text-sm',
                       ]"
                       :href="route('auth.projects.destroy',  project.pid)"
                     >
-                      <IconPhotoX
+                      <IconTrash
                         :active="active"
-                        class="w-5 h-5 mr-2 text-violet-400"
+                        class="w-5 h-5 mr-2 text-lime-400 group:hover:text-gray-100"
                         aria-hidden="true"
                       />
                       Delete
@@ -173,31 +186,24 @@ defineOptions({
 
         </div>
 
-        <span class="flex-1 block" />
+        <div class="absolute bottom-0 inset-x-0 z-10">
 
-        <Link
-          class="aspect-w-16 aspect-h-11"
-          :href="route('auth.projects.detail', project.pid)">
-          <img
-            loading="lazy"
-            decoding="async" data-nimg="1"
-            class="object-cover w-full rounded-xl"
-            :src="project.poster_url as any" alt="Project Image">
-        </Link>
+          <div class="flex flex-col p-2 text-sm">
+            <h3 class=" text-white group-hover:text-white/80 group-focus:text-white/80">
+              {{ `${project.customer?.first_name} ${project.customer?.last_name}` }}
+            </h3>
 
-        <Link
-          class="px-2 pt-2"
-          :href="route('auth.projects.detail', project.pid)">
-          <p class="leading-tight text-gray-600 dark:text-neutral-400">
-            {{ project.name }}
-          </p>
-        </Link>
+            <p class="text-xs mt-2 text-white/80">
+              {{ project.name }}
+            </p>
+          </div>
 
-      </section>
-      <!-- End Card -->
+        </div>
+
+      </div>
 
     </div>
-    <!-- End Grid -->
+
 
   </article>
 

@@ -66,8 +66,7 @@ class ProjectController extends Controller
       'description' => $project->description,
       'completion_date' => $project->production->format('M, Y'),
       'customer' => [
-        'first_name' => $project->customer->first_name,
-        'last_name' => $project->customer->last_name,
+        'name' => $project->customer->first_name . ' ' .$project->customer->last_name,
         'company_name' => $project->customer->company_name,
       ],
       // 'poster_url' => $project->getFirstMediaUrl('bucket'),
