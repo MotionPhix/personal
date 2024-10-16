@@ -6,9 +6,9 @@ export default defineConfig({
   plugins: [
     laravel({
       input: 'resources/js/app.ts',
-      // publicDirectory: 'public_html',
       refresh: true,
     }),
+
     vue({
       template: {
         transformAssetUrls: {
@@ -18,14 +18,6 @@ export default defineConfig({
       },
     }),
   ],
-  // build: {
-  //   outDir: 'public_html/build',
-  // },
-  server: {
-    hmr: {
-      host: 'localhost',
-    },
-  },
 
   resolve: {
     dedupe: ['@inertiajs/vue3']

@@ -55,7 +55,6 @@ class DownloadController extends Controller
    */
   public function create()
   {
-
     return Inertia::render('Admin/Downloads/Form');
   }
 
@@ -97,7 +96,7 @@ class DownloadController extends Controller
 
     return redirect()->route('auth.downloads.index')->with('notify', [
       'type' => 'success',
-      'title' => 'New upload',
+      'title' => 'New logo',
       'message' => 'Logo uploaded successfully.'
     ]);
   }

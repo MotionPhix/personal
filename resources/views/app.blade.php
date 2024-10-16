@@ -39,11 +39,11 @@
 
   <!-- Scripts -->
   @routes
-  @vite(['resources/js/app.ts', "resources/js/Pages/{$page['component']}.vue"])
+  @vite(['resources/js/app.ts'])
   @inertiaHead
 </head>
 
-<body class="font-sans antialiased dark:bg-neutral-900">
+<body class="font-sans antialiased bg-neutral-50 dark:bg-neutral-900">
   @inertia
 </body>
 </html>

@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\Project;
-use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -42,7 +43,13 @@ class ProjectController extends Controller
     // $projects = Project::with('customer')->get();
 
     return Inertia::render('Admin/Projects/Index', [
+
+      'can' => [
+        'create_project' => Auth::user()->can('create'),
+      ],
+
       'projects' => $projects,
+
     ]);
   }
 
@@ -51,18 +58,50 @@ class ProjectController extends Controller
    */
   public function show(Project $project): Response
   {
+    $project->load('customer', 'media');
+
+    $modify_project = [
+      'pid' => $project->pid,  // Assuming 'pid' is the same as 'id'
+      'name' => $project->name,
+      'description' => $project->description,
+      'completion_date' => $project->production->format('M, Y'),
+      'customer' => [
+        'first_name' => $project->customer->first_name,
+        'last_name' => $project->customer->last_name,
+        'company_name' => $project->customer->company_name,
+      ],
+      // 'poster_url' => $project->getFirstMediaUrl('bucket'),
+      'media' => $project->getMedia('bucket'),
+    ];
+
     return Inertia::render('Projects/Show', [
-      'project' => $project->load('customer', 'media'),
+      'project' => $modify_project
     ]);
   }
 
   /**
-   * Display the selected bucket.
+   * Display the selected project for admin.
    */
   public function detail(Project $project): Response
   {
+    $project->load('customer', 'media');
+
+    $modify_project = [
+      'pid' => $project->pid,  // Assuming 'pid' is the same as 'id'
+      'name' => $project->name,
+      'description' => $project->description,
+      'completion_date' => $project->production->format('M, Y'),
+      'customer' => [
+        'first_name' => $project->customer->first_name,
+        'last_name' => $project->customer->last_name,
+        'company_name' => $project->customer->company_name,
+      ],
+      // 'poster_url' => $project->getFirstMediaUrl('bucket'),
+      'media' => $project->getMedia('bucket'),
+    ];
+
     return Inertia::render('Admin/Projects/Show', [
-      'project' => $project->load('customer', 'media')
+      'project' => $modify_project
     ]);
   }
 
@@ -82,10 +121,11 @@ class ProjectController extends Controller
     ];
 
     $customers = Customer::select([
-        'cid', 'first_name',
-        'last_name',
-        'company_name'
-      ])->get()
+      'cid',
+      'first_name',
+      'last_name',
+      'company_name'
+    ])->get()
       ->transform(function ($customer) {
         return [
           'label' => trim($customer->first_name . ' ' . $customer->last_name),
@@ -111,10 +151,11 @@ class ProjectController extends Controller
     $project->load('media');
 
     $customers = Customer::select([
-        'cid', 'first_name',
-        'last_name',
-        'company_name'
-      ])->get()
+      'cid',
+      'first_name',
+      'last_name',
+      'company_name'
+    ])->get()
       ->transform(function ($customer) {
         return [
           'label' => trim($customer->first_name . ' ' . $customer->last_name),

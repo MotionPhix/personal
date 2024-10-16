@@ -23,7 +23,7 @@ const getImageById = (id: number) => {
 
   <Head :title="project.name" preserve-scroll preserve-state />
 
-  <article class="mb-10 sm:mb-14 mt-8 sm:px-8 sm:mt-16 w-full mx-auto lg:px-8 px-4 max-w-2xl">
+  <article class="w-full max-w-2xl px-4 mx-auto mt-8 mb-10 sm:mb-14 sm:px-8 sm:mt-16 lg:px-8">
 
     <!-- Back to Projects Button -->
     <Link
@@ -92,7 +92,7 @@ const getImageById = (id: number) => {
             <ul>
 
               <li class="text-sm text-gray-800 dark:text-neutral-200">
-                {{ project?.production }}
+                {{ project?.completion_date }}
               </li>
 
             </ul>

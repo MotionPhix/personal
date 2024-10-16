@@ -1,11 +1,12 @@
 <script setup lang="ts">
 
-import { Head, Link } from "@inertiajs/vue3"
+import { Head } from "@inertiajs/vue3"
 import { Logo } from "@/types";
 import LogoCard from "@/Components/Front/LogoCard.vue";
 import AuthLayout from "@/Layouts/AuthLayout.vue";
 import Navheader from "@/Components/Backend/Navheader.vue";
-import { IconAlertCircle, IconFileUpload, IconUpload } from "@tabler/icons-vue";
+import { IconAlertCircle, IconBookUpload, IconUpload } from "@tabler/icons-vue";
+import { ModalLink } from '@inertiaui/modal-vue'
 
 defineProps<{
   logoFiles: Logo[]
@@ -26,18 +27,20 @@ defineOptions({
     <nav
       class="flex items-center w-full gap-1 mx-auto dark:text-white dark:border-gray-700">
 
-      <h2 class="text-xl font-semibold dark:text-gray-300 sm:inline-block">
+      <h2 class="text-xl font-semibold dark:text-gray-300">
         Explore logos
       </h2>
 
       <span class="flex-1"></span>
 
-      <Link
+      <ModalLink
         as="button"
+        preserve-scroll
+        v-if="logoFiles.length"
         :href="route('auth.downloads.create')"
         class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-800 border border-transparent rounded-lg gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
         <IconUpload class="size-5" /> New
-      </Link>
+      </ModalLink>
 
     </nav>
 
@@ -48,8 +51,8 @@ defineOptions({
     <header>
 
       <h1
-        class="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
-        Available logos
+        class="text-3xl text-zinc-800 sm:text-4xl dark:text-zinc-100">
+        All logos
       </h1>
 
       <p
@@ -90,12 +93,13 @@ defineOptions({
           Please check back later or click the button below to upload a new logo.
         </p>
 
-        <Link
+        <ModalLink
           as="button"
+          preserve-scroll
           :href="route('auth.downloads.create')"
-          class="inline-flex items-center px-4 py-2 mt-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-lg shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:ring-offset-gray-900">
-          <IconFileUpload class="mr-2 size-5" /> Upload Logo
-        </Link>
+          class="inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-white border border-transparent rounded-md bg-lime-600 hover:bg-lime-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-500 dark:ring-offset-gray-900">
+          <IconBookUpload class="mr-2 size-5" /> Upload Logo
+        </ModalLink>
       </div>
 
     </div>

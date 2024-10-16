@@ -8,100 +8,117 @@ import MazInput from 'maz-ui/components/MazInput'
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 defineProps<{
-    canResetPassword?: boolean;
-    status?: string;
+  canResetPassword?: boolean;
+  status?: string;
 }>();
 
 const form = useForm({
-    email: '',
-    password: '',
-    remember: false,
+  email: '',
+  password: '',
+  remember: false,
 });
 
 const submit = () => {
-    form.post(route('login'), {
-        onFinish: () => {
-            form.reset('password');
-        },
-    });
+
+  form.post(route('login'), {
+
+    onFinish: () => {
+
+      form.reset('password');
+
+    },
+
+  });
+
 };
+
+defineOptions({
+  layout: GuestLayout,
+})
 </script>
 
 <template>
-    <GuestLayout>
-        <Head title="Log in" />
 
-        <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
-            {{ status }}
-        </div>
+  <Head title="Log in" />
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
+  <form @submit.prevent="submit">
+    <div>
+      <InputLabel
+        for="email"
+        value="Email" />
 
-                <MazInput
-                  id="email"
-                  type="email"
-                  class="block w-full mt-1"
-                  autocomplete="username"
-                  placeholder="Enter your login email"
-                  v-model="form.email"
-                  rounded-size="md"
-                  color="success"
-                  autofocus
-                  size="lg"
-                  required
-                />
+      <MazInput
+        id="email"
+        type="email"
+        class="block w-full mt-1"
+        autocomplete="username"
+        placeholder="Enter your login email"
+        v-model="form.email"
+        rounded-size="md"
+        color="success"
+        autofocus
+        size="lg"
+        required />
 
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
+      <InputError class="mt-2"
+                  :message="form.errors.email" />
+    </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+    <div class="mt-4">
+      <InputLabel for="password"
+                  value="Password" />
 
-                <MazInput
-                  id="password"
-                  type="password"
-                  class="block w-full mt-1"
-                  placeholder="Enter your password"
-                  v-model="form.password"
-                  rounded-size="md"
-                  color="success"
-                  size="lg"
-                  required
-                />
+      <MazInput
+        id="password"
+        type="password"
+        class="block w-full mt-1"
+        placeholder="Enter your password"
+        v-model="form.password"
+        rounded-size="md"
+        color="success"
+        size="lg"
+        required />
 
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
+      <InputError
+        class="mt-2"
+        :message="form.errors.password" />
+    </div>
 
-            <div class="block mt-4">
-              <MazCheckbox
-                name="remember"
-                color="success"
-                v-model:checked="form.remember"
-                label="Keep me signed in" />
-            </div>
+    <div class="flex mt-4 justify-between items-center">
 
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-                >
-                    Forgot your password?
-                </Link>
+      <MazCheckbox
+        name="remember"
+        color="success"
+        v-model="form.remember">
+        <span class="dark:text-neutral-400">
+          Keep me signed in
+        </span>
+      </MazCheckbox>
 
-                <MazBtn
-                  class="ms-4"
-                  color="success"
-                  rounded-size="md"
-                  :loading="form.processing"
-                  :class="{ 'opacity-25': form.processing }"
-                  :disabled="form.processing"
-                  type="submit">
-                  Log in
-                </MazBtn>
-            </div>
-        </form>
-    </GuestLayout>
+      <Link v-if="canResetPassword"
+        :href="route('password.request')"
+        class="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+        Forgot your password?
+      </Link>
+
+    </div>
+
+    <div class="flex items-center justify-end mt-10">
+
+      <MazBtn
+        class="ms-4m"
+        color="success"
+        rounded-size="md"
+        :loading="form.processing"
+        :class="{ 'opacity-25': form.processing }"
+        :disabled="form.processing"
+        type="submit"
+        block>
+        Log in
+      </MazBtn>
+
+    </div>
+
+  </form>
+
 </template>

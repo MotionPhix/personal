@@ -3,7 +3,10 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
   ->withRouting(
@@ -13,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
     health: '/up',
   )
   ->withMiddleware(function (Middleware $middleware) {
+
+    $middleware->redirectGuestsTo('/login');
 
     $middleware->web(append: [
       \App\Http\Middleware\HandleInertiaRequests::class,
@@ -28,18 +33,27 @@ return Application::configure(basePath: dirname(__DIR__))
       \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
       \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
     ]);
+
   })
   // ->registered(function ($app) {
   //   $app->usePublicPath(path: realpath(base_path('public_html')));
   // })
   ->withExceptions(function (Exceptions $exceptions) {
 
+    $exceptions->render(function (NotFoundHttpException $e, Request $request) {
+      // return response()->view('errors.invalid-order', status: 500);
+      return Inertia::render('NotFound')->toResponse($request);
+    });
+
     $exceptions->respond(function (Response $response) {
+
       if ($response->getStatusCode() === 419) {
+
         return back()->with('notify', [
-          'type' => 'success',
+          'type' => 'danger',
           'message' => 'The page expired, please try again.',
         ]);
+
       }
 
       return $response;

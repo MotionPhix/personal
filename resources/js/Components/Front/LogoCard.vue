@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { IconDownload, IconTrashFilled } from "@tabler/icons-vue";
+import { IconPhotoDown, IconTrashFilled } from "@tabler/icons-vue";
 import { Logo } from "@/types";
 import { Link } from "@inertiajs/vue3";
 
@@ -25,7 +25,7 @@ defineProps<{
         <div
           class="flex items-center px-2 py-1 text-gray-800 bg-white border border-gray-200 rounded-lg gap-x-1 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200">
 
-          <IconDownload
+          <IconPhotoDown
             class="shrink-0 size-3" />
 
           <span class="text-xs">Download</span>
@@ -41,7 +41,7 @@ defineProps<{
       :href="route('auth.downloads.destroy', logoFile.lid)"
       method="delete"
       as="button"
-      v-if="$page.props.auth?.user?.email">
+      v-if="$page.url.startsWith('/auth')">
 
       <IconTrashFilled
         class="size-4" />

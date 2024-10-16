@@ -11,6 +11,7 @@ export interface User {
   last_name: string;
   email: string;
   email_verified_at?: string;
+  phone_number?: string;
   socials?: Socials;
 }
 
@@ -71,6 +72,7 @@ export interface Project {
   name: string;
   poster_url: string|File;
   production?: Date;
+  completion_date?: string;
   description?: string;
   media?: MediaItem[];
   customer_id: number;

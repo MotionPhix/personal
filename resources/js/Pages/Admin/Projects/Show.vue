@@ -65,7 +65,7 @@ const getRandomImage = () => {
 
   </Navheader>
 
-  <article class="mb-10 sm:mb-14 mt-8 sm:px-8 sm:mt-16 w-full mx-auto lg:px-8 relative px-4 max-w-2xl">
+  <article class="relative w-full max-w-2xl px-4 mx-auto mt-8 mb-10 sm:mb-14 sm:px-8 sm:mt-16 lg:px-8">
 
     <div
       class="w-full h-full max-w-full my-10 bg-center bg-cover min-h-80 rounded-xl"
@@ -126,7 +126,7 @@ const getRandomImage = () => {
             <ul>
 
               <li class="text-gray-800 dark:text-neutral-200">
-                {{ project?.production }}
+                {{ project?.completion_date }}
               </li>
 
             </ul>

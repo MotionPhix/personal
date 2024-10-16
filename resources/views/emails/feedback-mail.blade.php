@@ -28,7 +28,7 @@
       margin: auto;
       text-align: left;
       margin-bottom: 10px;
-      margin-top: 20px;
+      padding-top: 20px;
     }
 
     .header img {
@@ -62,12 +62,12 @@
 
     <tr>
       <td align="left" class="header">
-      <p>
-        <img
-          alt="Ultrashots Logo"
-          style="max-width: 60px; margin-left: 50px;"
-          src="{{ $message->embed($logo) }}" />
-          </p>
+        <p>
+          <img
+            alt="Ultrashots Logo"
+            style="max-width: 60px; margin-left: 50px;"
+            src="{{ $message->embed($logo) }}" />
+        </p>
       </td>
     </tr>
 

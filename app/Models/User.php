@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use \Sushi\Sushi;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
   use HasFactory, Notifiable, HasApiTokens;
 
@@ -23,6 +22,7 @@ class User extends Authenticatable
     'last_name',
     'email',
     'password',
+    'role',
     'email_verified_at',
     'phone_number',
     'socials'
@@ -52,25 +52,21 @@ class User extends Authenticatable
     ];
   }
 
-  /**
-   * Define the rows to be used by Sushi.
-   *
-   * @return array<int, array<string, mixed>>
-   */
-  /*protected function getRows()
+  protected static function boot()
   {
-    return [
-      [
-        'first_name' => 'Kingsley',
-        'last_name' => 'Nyirenda',
-        'email' => 'support@ultrashots.net',
-        'phone_number' => '+265 996 727 163',
-        'socials' =>  json_encode([
-          'twitter' => '@ultrashoots',
-          'facebook' => 'ultrashotz',
-          'behance' => '@ultrashots',
-        ]),
-      ],
-    ];
-  }*/
+    parent::boot();
+
+    static::created(function ($user) {
+
+      if (static::count() === 1) {
+
+        $user->role = 'admin';
+
+        $user->save();
+
+      }
+
+    });
+
+  }
 }

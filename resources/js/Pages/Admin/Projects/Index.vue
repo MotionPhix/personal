@@ -3,13 +3,14 @@
 import { Head, Link } from '@inertiajs/vue3';
 import Navheader from '@/Components/Backend/Navheader.vue';
 import AuthLayout from "@/Layouts/AuthLayout.vue";
-import { IconDeviceProjector, IconDots, IconPhotoX, IconPencil, IconAppWindow } from '@tabler/icons-vue';
+import { IconDeviceProjector, IconDots, IconPhotoX, IconPencil, IconAppWindow, IconPlus } from '@tabler/icons-vue';
 import {Project} from "@/types";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import IconContacts from "@/Components/Icon/IconContacts.vue";
 
 defineProps<{
   projects: Project[],
+  can?: Object
 }>()
 
 defineOptions({
@@ -36,7 +37,7 @@ defineOptions({
 
       </Link>
 
-      <h2 v-else class="text-xl font-semibold py-1.5">
+      <h2 v-else class="text-xl font-semibold dark:text-gray-300">
         Explore projects
       </h2>
 
@@ -68,10 +69,10 @@ defineOptions({
       <Link
         as="button"
         :href="route('auth.projects.create')"
-        class="inline-flex items-center px-5 py-3 mt-6 text-sm font-medium text-white bg-indigo-600 rounded-md shadow hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-indigo-700 dark:hover:bg-indigo-600"
+        class="inline-flex items-center gap-2 px-5 py-3 mt-6 text-sm font-medium text-white rounded-md shadow bg-lime-600 hover:bg-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500 dark:bg-lime-700 dark:hover:bg-lime-600"
       >
-        <IconDeviceProjector class="w-5 h-5 mr-2" />
-        Add a Project
+        <IconPlus class="size-5" />
+        Add Project
       </Link>
 
     </div>

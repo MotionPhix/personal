@@ -6,8 +6,9 @@
     "build": "vue-tsc && vite build"
   },
   "devDependencies": {
+    "@antv/g2plot": "^2.4.32",
     "@headlessui/vue": "^1.7.22",
-    "@inertiajs/vue3": "^1.0.0",
+    "@inertiajs/vue3": "^1.2.0",
     "@inertiaui/modal-vue": "^0.3.0",
     "@popperjs/core": "^2.11.8",
     "@tabler/icons-vue": "^3.14.0",

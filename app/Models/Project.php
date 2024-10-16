@@ -33,27 +33,10 @@ class Project extends Model implements HasMedia
     ];
   }
 
-  protected function production(): Attribute
+  public function completionDate(): Attribute
   {
-    return Attribute::make(
-      get: fn($value) => \Carbon\Carbon::parse($value)->format('F, Y'),
-      /*set: function($value) {
-        // Trim the input to remove any extra spaces
-        $value = trim($value);
-
-        // Check if the value is empty
-        if (empty($value)) {
-            return null; // or handle as needed
-        }
-
-        // Attempt to create a date from the format
-        try {
-            return \Carbon\Carbon::createFromFormat('F, Y', $value)->toDateString();
-        } catch (\Exception $e) {
-            // Handle the error, log it, or throw a custom exception
-            throw new \InvalidArgumentException('Invalid date format provided: ' . $value);
-        }
-    }*/
+    return new Attribute(
+      get: fn() => $this->production->format('F, Y')
     );
   }
 
@@ -61,17 +44,6 @@ class Project extends Model implements HasMedia
   {
     return $this->belongsTo(Customer::class);
   }
-
-  /*// Define media conversions (thumbnail generation)
-  public function registerMediaConversions(Media $media = null): void
-  {
-    // Generate thumbnail conversion for images
-    $this->addMediaConversion('thumb')
-      ->width(150) // Width for the thumbnail
-      ->height(150) // Height for the thumbnail
-      ->sharpen(10) // Optional: Sharpen the thumbnail
-      ->nonQueued(); // This ensures it's processed immediately (optional)
-  }*/
 
   protected static function boot()
   {

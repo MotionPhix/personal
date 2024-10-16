@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import DangerButton from '@/Components/DangerButton.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import Modal from '@/Components/Modal.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
+import MazBtn from 'maz-ui/components/MazBtn'
 import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
@@ -66,31 +65,38 @@ const closeModal = () => {
         </p>
 
         <div class="mt-6">
-          <InputLabel for="password"
-                      value="Password"
-                      class="sr-only" />
+          <InputLabel
+            for="password"
+            value="Password"
+            class="sr-only" />
 
-          <TextInput id="password"
-                     ref="passwordInput"
-                     v-model="form.password"
-                     type="password"
-                     class="block w-3/4 mt-1"
-                     placeholder="Password"
-                     @keyup.enter="deleteUser" />
+          <TextInput
+            id="password"
+            ref="passwordInput"
+            v-model="form.password"
+            type="password"
+            class="block w-3/4 mt-1"
+            placeholder="Password"
+            @keyup.enter="deleteUser" />
 
-          <InputError :message="form.errors.password"
-                      class="mt-2" />
+          <InputError
+            :message="form.errors.password"
+              class="mt-2" />
         </div>
 
         <div class="flex justify-end mt-6">
-          <SecondaryButton @click="closeModal"> Cancel </SecondaryButton>
+          <MazBtn
+            @click="closeModal">
+            Cancel
+          </MazBtn>
 
-          <DangerButton class="ms-3"
-                        :class="{ 'opacity-25': form.processing }"
-                        :disabled="form.processing"
-                        @click="deleteUser">
+          <MazBtn
+            class="ms-3"
+            :class="{ 'opacity-25': form.processing }"
+            :disabled="form.processing"
+            @click="deleteUser">
             Delete Account
-          </DangerButton>
+          </MazBtn>
         </div>
       </div>
     </Modal>

@@ -56,6 +56,7 @@ const FilePondInput = vueFilePond(
 
 const projectGalleryPond = ref<FilePond | null>(null);
 const projectImages = ref([]);
+const tiptapComponent = ref()
 
 const form = useForm({
   name: props.project.name,
@@ -103,6 +104,7 @@ function onSubmit() {
       onSuccess: () => {
         form.reset();
         projectGalleryPond.value?.removeFiles();
+        tiptapComponent.value.resetEditor()
       }
     });
 
@@ -144,6 +146,11 @@ function onAssignContact () {
 
 }
 
+function reset() {
+  form.reset()
+  tiptapComponent.value.resetEditorContent();
+}
+
 onBeforeUnmount(() => {
   projectGalleryPond.value?.destroy
 })
@@ -163,7 +170,7 @@ defineOptions({
       <nav
         class="flex items-center w-full gap-1 mx-auto dark:text-white dark:border-gray-700"
       >
-      <h2 class="text-xl font-semibold dark:text-gray-300 sm:inline-flex gap-2">
+      <h2 class="gap-2 text-xl font-semibold dark:text-gray-300 sm:inline-flex">
         <span>
           {{ project.pid ? 'Editing' : 'New' }}
         </span>
@@ -174,6 +181,10 @@ defineOptions({
       </h2>
 
       <span class="flex-1"></span>
+
+      <button @click="reset()">
+        Reset
+      </button>
 
       <button
         type="submit"
@@ -234,52 +245,56 @@ defineOptions({
               <InputError :message="form.errors.name" />
             </div>
 
-            <div class="relative">
+            <div>
               <label
                 for="company"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                 Customer
               </label>
 
-              <MazSelect
-                v-model="form.customer_id"
-                :options="customers"
-                v-slot="{ option, isSelected }"
-                placeholder="Pick a project's customer"
-                rounded-size="md"
-                size="lg"
-                search
-                block
-              >
-                <div
-                  class="dark:text-gray-200"
-                  :class="isSelected ? 'dark:text-gray-800 font-semibold' : ''"
-                  style="width: 100%; gap: 1rem">
+              <div class="relative">
 
-                  <strong class="block">
-                    {{ option.label }}
-                  </strong>
+                <MazSelect
+                  v-model="form.customer_id"
+                  :options="customers"
+                  v-slot="{ option, isSelected }"
+                  placeholder="Pick a project's customer"
+                  :search="customers.length > 5"
+                  rounded-size="md"
+                  size="lg"
+                  block
+                >
+                  <div
+                    class="dark:text-gray-200"
+                    :class="isSelected ? 'dark:text-gray-800 font-semibold' : ''"
+                    style="width: 100%; gap: 1rem">
 
-                  <span class="block text-sm font-light">
-                    {{ option.company }}
+                    <strong class="block">
+                      {{ option.label }}
+                    </strong>
+
+                    <span class="block text-sm font-light">
+                      {{ option.company }}
+                    </span>
+
+                  </div>
+                </MazSelect>
+
+                <ModalLink
+                  :href="route('auth.customer.create')"
+                  class="absolute z-10 flex items-center justify-center transition duration-200 bg-gray-700 rounded-lg right-2 bottom-2 size-10 hover:hover:bg-gray-500"
+                  :data="{ 'modal': 'show' }"
+                  @close="onAssignContact"
+                  preserve-scroll
+                  as="button">
+
+                  <span
+                    class="left-0 block font-semibold text-gray-300 truncate dark:text-gray-300">
+                    <IconPlus class="size-5" />
                   </span>
+                </ModalLink>
 
-                </div>
-              </MazSelect>
-
-              <ModalLink
-                :href="route('auth.customer.create')"
-                class="absolute right-2 bottom-2 z-10 flex items-center size-10 justify-center bg-gray-700 rounded-lg transition duration-200 hover:hover:bg-gray-500"
-                :data="{ 'modal': 'show' }"
-                @close="onAssignContact"
-                preserve-scroll
-                as="button">
-
-                <span
-                  class="left-0 block font-semibold text-gray-300 truncate dark:text-gray-300">
-                  <IconPlus class="size-5" />
-                </span>
-              </ModalLink>
+              </div>
 
               <InputError :message="form.errors.customer_id" />
             </div>
@@ -318,6 +333,7 @@ defineOptions({
             </label>
 
             <PreTap
+              ref="tiptapComponent"
               v-model="form.description"
               placeholder="Say a few things worthy noting about the project" />
 
@@ -377,7 +393,7 @@ defineOptions({
 
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 .m-select .m-select-list__scroll-wrapper {
   @apply scrollbar scrollbar-none;
 }

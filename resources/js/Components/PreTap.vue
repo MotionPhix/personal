@@ -124,6 +124,14 @@ onBeforeUnmount(() => {
 watch(() => editor.value?.getHTML(), (newValue) => {
   model.value = newValue as any
 })
+
+function resetEditorContent() {
+  editor.value?.commands.setContent('') // Or any default content
+}
+
+defineExpose({
+  resetEditorContent,
+})
 </script>
 
 <template>

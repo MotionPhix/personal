@@ -4,7 +4,7 @@ import { Link, router } from '@inertiajs/vue3';
 import { IconFileExport, IconPencil, IconTrash } from '@tabler/icons-vue';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
-import Checkbox from '@/Components/Checkbox.vue';
+import MazCheckbox from 'maz-ui/components/MazCheckbox';
 import { Customer } from '@/types';
 
 const props = defineProps<{
@@ -70,11 +70,12 @@ router.on('navigate', (e) => {
       </span>
 
       <span
-        class="transition duration-300 group-hover:inline-flex"
-        :class="selectedContacts.length ? 'inline-flex' : 'hidden'">
-        <Checkbox
+        class="ml-2 transition duration-300 group-hover:inline-flex"
+        :class="selectedContacts.length ? 'flex' : 'hidden'">
+        <MazCheckbox
           @click="onContactSelect(props.contact.cid as string)"
-          :checked="isSelected(props.contact.cid as string)" />
+          :checked="isSelected(props.contact.cid as string)"
+          color="success" />
       </span>
     </div>
 
