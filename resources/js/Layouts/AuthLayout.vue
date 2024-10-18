@@ -10,7 +10,7 @@ import ToastList from '@/Components/Backend/ToastList.vue';
 import { useDark } from '@vueuse/core';
 import Footnote from '@/Components/Front/Footnote.vue';
 import { ModalRoot } from '@inertiaui/modal-vue'
-import {Menu, MenuButton, MenuItem, MenuItems} from "@headlessui/vue";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import {
   IconPlus,
   IconUserPlus,

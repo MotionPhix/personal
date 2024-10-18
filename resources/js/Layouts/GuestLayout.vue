@@ -12,7 +12,7 @@ const isDark = useDark()
 
     <div>
 
-      <Link href="/">
+      <Link href="/" as="button">
 
         <ApplicationLogo class="w-20 h-20 text-gray-500 fill-current" />
 

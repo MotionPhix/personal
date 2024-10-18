@@ -8,6 +8,7 @@ import { IconAlertCircle } from "@tabler/icons-vue";
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { onMounted, ref } from "vue";
+import { ModalLink } from '@inertiaui/modal-vue'
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -101,14 +102,25 @@ defineOptions({
 
       <h1
         class="text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
-        Download vectorized logos of leading companies in Malawi
+        Vectorised logos.
       </h1>
 
       <p
         class="mt-6 text-lg text-zinc-600 dark:text-zinc-400">
-        Explore my collection of high-quality, vectorized logos from top companies and organisations
-        across Malawi. These logos are optimized for various design and branding needs, ensuring scalability
-        and clarity across all media.
+        Explore my collection of high-quality, vectorised logos from top companies and organisations across Malawi. These logos are optimized for various design and branding needs, ensuring scalability and clarity across all media.
+      </p>
+
+      <p
+        class="mt-6 text-lg text-zinc-600 dark:text-zinc-400">
+        Is your logo pixelated and can't be used in print-production? No worries,
+        <ModalLink
+          :href="route('fix-logo-form')"
+          class="inline-flex items-center text-sm font-medium text-blue-600 gap-x-1 decoration-2 hover:underline focus:outline-none focus:underline dark:text-blue-500"
+          as="button">
+          <strong>
+            get help
+          </strong>
+        </ModalLink> now!
       </p>
 
     </header>

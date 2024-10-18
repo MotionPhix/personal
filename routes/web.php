@@ -52,8 +52,19 @@ Route::group(['prefix' => 'downloads'], function () {
 
   Route::get(
     '/',
-    [\App\Http\Controllers\DownloadController::class, 'index'],
+    \App\Http\Controllers\Logos\Index::class,
   )->name('downloads.index');
+
+  Route::get(
+    '/fix-my-logo',
+    \App\Http\Controllers\Logos\Upload::class,
+  )->name('fix-my-logo');
+
+  Route::post(
+    '/upload-my-logo',
+    \App\Http\Controllers\Logos\Fixer::class,
+  )->name('upload-my-logo');
+
 });
 
 require __DIR__ . '/auth.php';

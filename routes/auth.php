@@ -190,29 +190,29 @@ Route::middleware('auth')->group(function () {
 
       Route::get(
         '/',
-        [\App\Http\Controllers\DownloadController::class, 'listing'],
+        \App\Http\Controllers\Logos\Listing::class,
       )->name('auth.downloads.index');
 
       Route::get(
         '/n/logo',
-        [\App\Http\Controllers\DownloadController::class, 'create'],
+        \App\Http\Controllers\Logos\Create::class,
       )->name('auth.downloads.create');
 
       Route::post(
         '/s',
-        [\App\Http\Controllers\DownloadController::class, 'store'],
+        \App\Http\Controllers\Logos\Store::class,
       )
       ->name('auth.downloads.store')
       ->middleware('verified');
 
       Route::delete(
         '/r/{logo:lid}',
-        [\App\Http\Controllers\DownloadController::class, 'destroy'],
+        \App\Http\Controllers\Logos\Destroy::class,
       )->name('auth.downloads.destroy');
 
       Route::get(
         '/d/{logo:lid}',
-        [\App\Http\Controllers\DownloadController::class, 'show'],
+        \App\Http\Controllers\Logos\Download::class,
       )->name('auth.downloads.show');
     });
 
