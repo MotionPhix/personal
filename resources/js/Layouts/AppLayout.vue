@@ -3,6 +3,7 @@ import Navbar from '@/Components/Front/Navbar.vue';
 import Footnote from '@/Components/Front/Footnote.vue';
 import { useDark } from '@vueuse/core';
 import ToastList from '@/Components/Backend/ToastList.vue';
+import BetterNav from '@/Components/Front/BetterNav.vue';
 
 const isDark = useDark()
 </script>
@@ -13,7 +14,7 @@ const isDark = useDark()
 
   <div>
 
-    <Navbar />
+    <BetterNav />
 
     <!-- Page Content -->
     <main>

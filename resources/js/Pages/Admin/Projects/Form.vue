@@ -129,6 +129,7 @@ function onSubmit() {
       form.reset()
       projectGalleryPond.value?.removeFiles();
     },
+
   });
 }
 

@@ -6,7 +6,8 @@ defineProps<{
 </script>
 
 <template>
-  <div class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
+  <div class="flex flex-col bg-white border shadow-sm rounded-lg dark:bg-neutral-900 dark:border-neutral-800">
+
     <div class="p-4 md:p-5 flex gap-x-4">
 
       <div class="shrink-0 flex justify-center items-center size-[46px] bg-gray-100 rounded-lg dark:bg-neutral-800">

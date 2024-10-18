@@ -42,10 +42,10 @@ defineOptions({
 
   </Navheader>
 
-  <article class="w-full max-w-2xl px-4 py-10 mx-auto md:pt-16 sm:px-6 lg:px-8">
+  <article class="w-full max-w-2xl py-10 mx-auto md:pt-16 sm:px-6">
 
     <div
-      class="w-full p-6 mx-auto overflow-hidden text-gray-900 bg-gray-100 shadow-sm dark:bg-gray-800 sm:rounded-lg dark:text-gray-100">
+      class="w-full py-6 px-2.5 sm:px-6 mx-auto overflow-hidden text-gray-900 bg-gray-100 shadow-sm dark:bg-gray-800 sm:rounded-lg dark:text-gray-100">
 
       <div class="grid sm:grid-cols-2 grid-cols-1 gap-4">
 

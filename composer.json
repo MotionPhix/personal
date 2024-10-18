@@ -11,6 +11,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "propaganistas/laravel-phone": "^5.3",
+        "samuelmwangiw/africastalking-laravel": "^1.5",
         "spatie/laravel-medialibrary": "^11.9",
         "stevebauman/purify": "^6.2",
         "tightenco/ziggy": "^2.0"

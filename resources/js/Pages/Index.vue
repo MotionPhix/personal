@@ -68,22 +68,22 @@ defineOptions({ layout: AppLayout })
     <h1
       ref="headlineRef"
       class="mt-8 text-3xl font-bold tracking-tight text-zinc-800 sm:text-4xl dark:text-zinc-100">
-      Hi, I'm Kingsley, a self-taught graphic designer and front-end web developer based in Lilongwe, Malawi.
+      Hi, I'm Kingsley, a creative graphic designer and front-end web developer based in Lilongwe, Malawi.
     </h1>
 
     <!-- About -->
     <div
       ref="aboutRef"
-      class="mt-8">
-      <p class="text-base text-gray-600 dark:text-neutral-400">
+      class="mt-8 text-base text-gray-600 dark:text-neutral-300">
+      <p>
         With over 10 years of experience, I've honed my skills in creating stunning, user-focused designs that don't just look good but also work seamlessly. From crafting intuitive UI designs to developing cohesive design systems and custom illustrations, I'm passionate about turning creative ideas into digital realities. My goal is always to create designs that are not only visually appealing but also functional, helping clients elevate their brand and deliver exceptional user experiences.
       </p>
 
-      <p class="mt-3 text-base text-gray-600 dark:text-neutral-400">
+      <p class="mt-3">
         Throughout my career, I've collaborated with diverse clients to breathe life into their products/services. I believe that great design is a blend of creativity and strategy, and I approach every project with this mindset. Whether it's building websites from the ground up or enhancing existing platforms, I focus on delivering results that matter.
       </p>
 
-      <p class="mt-3 text-base text-gray-600 dark:text-neutral-400">
+      <p class="mt-3">
         I'm always learning, adapting to new trends, and pushing the boundaries of what's possible in both design and front-end development. Let's create something amazing together!
       </p>
 
