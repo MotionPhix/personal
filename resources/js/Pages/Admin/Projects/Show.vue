@@ -4,7 +4,7 @@ import Navheader from '@/Components/Backend/Navheader.vue';
 import { Project } from "@/types";
 import {Head, Link} from "@inertiajs/vue3";
 import AuthLayout from "@/Layouts/AuthLayout.vue";
-import { IconDots, IconPhotoX, IconPencil, IconTableShortcut, IconApps, IconArrowLeft } from '@tabler/icons-vue';
+import { IconDots, IconPhotoX, IconPencil, IconApps, IconArrowLeft, IconTrashX } from '@tabler/icons-vue';
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import { random } from 'lodash';
 
@@ -15,11 +15,6 @@ const props = defineProps<{
 defineOptions({
   layout: AuthLayout
 })
-
-// Function to find a specific image by ID
-// const getImageById = (id: number) => {
-//   return props.project.media?.find(media => media.id === id)?.original_url || '';
-// };
 
 const getRandomImage = () => {
   const media = props.project.media;
@@ -39,6 +34,7 @@ const getRandomImage = () => {
 
     <nav
       class="flex items-center w-full gap-6 dark:text-white dark:border-gray-700">
+
       <!-- Back to Projects Button -->
       <Link
         as="button"
@@ -65,7 +61,8 @@ const getRandomImage = () => {
 
   </Navheader>
 
-  <article class="relative w-full max-w-2xl px-4 mx-auto mt-8 mb-10 sm:mb-14 sm:px-8 sm:mt-16 lg:px-8">
+  <article
+    class="relative w-full max-w-2xl px-4 mx-auto mt-8 mb-10 sm:mb-14 sm:px-8 sm:mt-16 lg:px-8">
 
     <div
       class="w-full h-full max-w-full my-10 bg-center bg-cover min-h-80 rounded-xl"
@@ -178,7 +175,7 @@ const getRandomImage = () => {
               leave-to-class="transform scale-95 opacity-0"
             >
               <MenuItems
-                class="absolute right-0 w-24 -mt-8 origin-bottom-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black/5 focus:outline-none"
+                class="absolute right-0 -mt-8 origin-bottom-right bg-white divide-y divide-gray-100 rounded-md shadow-lg w-28 ring-1 ring-black/5 focus:outline-none"
                 style="direction: ltr"
               >
                 <div class="px-1 py-1">
@@ -188,16 +185,16 @@ const getRandomImage = () => {
                       method="delete"
                       :class="[
                         active ? 'bg-violet-500 text-white' : 'text-gray-900',
-                        'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                        'flex w-full items-center rounded-md p-2 text-sm',
                       ]"
                       :href="route(
                         'auth.projects.destroy',
                         project.pid
                       )"
                     >
-                      <IconTableShortcut
+                      <IconTrashX
                         :active="active"
-                        class="w-5 h-5 mr-2 text-violet-400"
+                        class="mr-2 shrink-0 size-6 text-violet-400"
                         aria-hidden="true"
                       />
                       Project
@@ -210,7 +207,7 @@ const getRandomImage = () => {
                       method="delete"
                       :class="[
                         active ? 'bg-violet-500 text-white' : 'text-gray-900',
-                        'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                        'flex w-full items-center rounded-md p-2 text-sm',
                       ]"
                       :href="route(
                         'auth.projects.destroy',
@@ -219,7 +216,7 @@ const getRandomImage = () => {
                     >
                       <IconPhotoX
                         :active="active"
-                        class="w-5 h-5 mr-2 text-violet-400"
+                        class="mr-2 shrink-0 size-6 text-violet-400"
                         aria-hidden="true"
                       />
                       Image

@@ -195,10 +195,12 @@ defineOptions({
 
           <InputError :message="$page.props.errors.last_name" />
         </div>
-    </section>
+
+      </section>
 
       <section
         class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
         <div>
           <label
             class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
@@ -241,6 +243,7 @@ defineOptions({
         <div class="col-span-1 sm:col-span-2">
           <AddressInput v-model="form.address" />
         </div>
+
       </section>
     </form>
 

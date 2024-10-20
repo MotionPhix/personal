@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { Project } from '@/types';
+
 defineProps<{
-  data: Object
+  data: Project[]
 }>()
 </script>
 
@@ -13,7 +15,7 @@ defineProps<{
       <div class="p-1.5 min-w-full inline-block align-middle">
 
         <div
-          class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden dark:bg-neutral-900 dark:border-neutral-700">
+          class="overflow-hidden bg-white border border-gray-200 shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-700">
 
           <!-- Header -->
           <div class="px-6 py-4 border-b border-gray-200 dark:border-neutral-700">
@@ -37,15 +39,15 @@ defineProps<{
               <tr>
 
                 <th scope="col"
-                    class="px-6 py-3 text-start whitespace-pre-wrap min-w-36">
-                  <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
+                    class="px-6 py-3 whitespace-pre-wrap text-start min-w-36">
+                  <span class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
                     Project
                   </span>
                 </th>
 
                 <th scope="col"
                     class="px-6 py-3 text-start whitespace-nowrap">
-                  <span class="text-xs font-semibold uppercase tracking-wide text-gray-800 dark:text-neutral-200">
+                  <span class="text-xs font-semibold tracking-wide text-gray-800 uppercase dark:text-neutral-200">
                     Completion date
                   </span>
                 </th>
@@ -57,19 +59,19 @@ defineProps<{
               class="divide-y divide-gray-200 dark:divide-neutral-700">
 
               <tr v-for="project in data">
-                <td class="size-px whitespace-nowrap px-6 py-3">
+                <td class="px-6 py-3">
 
                   <span class="text-sm text-gray-800 dark:text-white">
-                    {{ project.name }}
+                    {{ project?.name }}
                   </span>
 
                   <span class="block text-xs text-gray-400 dark:text-neutral-400">
-                    {{ project.customer.name }}
+                    {{ project?.customer?.name }}
                   </span>
 
                 </td>
 
-                <td class="size-px whitespace-nowrap px-6 py-3">
+                <td class="px-6 py-3 size-px whitespace-nowrap">
                   <span class="text-sm text-gray-500 dark:text-neutral-400">
                     {{ project.completion_date }}
                   </span>

@@ -42,7 +42,7 @@ const Uploader = VueFilePond(
 );
 
 // FilePond instance
-const posterPond = ref<FilePond>();
+const thumbnailPond = ref<FilePond>();
 const logoPond = ref<FilePond>();
 
 // Define accepted file types
@@ -63,7 +63,7 @@ const form = useForm({
 // Handle file selection for poster
 const handleAddPoster = () => {
 
-  const fileItem = posterPond.value?.getFile(); // Check if there's a file
+  const fileItem = thumbnailPond.value?.getFile(); // Check if there's a file
 
   if (fileItem && fileItem.file) {
     // Only assign if the file exists
@@ -95,7 +95,7 @@ const submit = () => {
   form.post(route('auth.downloads.store'), {
     preserveScroll: true,
     onSuccess: () => {
-      posterPond.value = undefined;
+      thumbnailPond.value = undefined;
       logoPond.value = undefined;
 
       form.reset()
@@ -143,15 +143,15 @@ const submit = () => {
 
       <div>
         <Uploader
-          name="logo"
-          ref="posterPond"
+          name="thumbnail"
+          ref="thumbnailPond"
           credits="false"
           @addfile="handleAddPoster"
           acceptedFileTypes="image/png, image/jpeg"
-          labelMaxFileSizeExceeded="The poster is too large"
-          labelMaxFileSize="Max poster size is {filesize}"
+          labelMaxFileSizeExceeded="The thumbnail is too large"
+          labelMaxFileSize="Max thumbnail size is {filesize}"
           maxFileSize="1MB"
-          labelIdle='Upload your poster or <span class="filepond--label-action">Browse</span>'
+          labelIdle='Drop a logo thumbnail or <span class="filepond--label-action">Browse</span>'
           :allowMultiple="false"
           class="mt-1 filepond dark:border-gray-700 dark:bg-gray-900 dark:text-white"
         />

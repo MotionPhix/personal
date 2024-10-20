@@ -95,11 +95,11 @@ defineOptions({
           class="w-full rounded-lg shadow-lg">
 
         <div
-          class="absolute top-1.5 right-1.5">
+          class="absolute top-1.5 right-1.5 hidden group-hover:block">
 
           <Menu
             as="div"
-            class="relative hidden z-10 text-left rounded size-6 items-center bg-neutral-100 dark:bg-neutral-800 group:hover:flex">
+            class="relative z-20 items-center text-left rounded size-6 bg-neutral-100 dark:bg-neutral-800">
 
             <MenuButton
               class="inline-flex justify-center w-full"
@@ -119,7 +119,7 @@ defineOptions({
               leave-to-class="transform scale-95 opacity-0"
             >
               <MenuItems
-                class="absolute w-24 mt-24 origin-bottom-right dark:bg-black/90 bg-white divide-y divide-gray-100 rounded-md shadow-lg right-1 ring-1 ring-black/5 focus:outline-none"
+                class="absolute w-24 -mt-5 origin-bottom-right bg-white divide-y divide-gray-100 rounded-md shadow-lg dark:bg-black/90 right-1 ring-1 ring-black/5 focus:outline-none"
               >
                 <div class="px-1 py-1">
                   <MenuItem v-slot="{ active }">
@@ -186,19 +186,22 @@ defineOptions({
 
         </div>
 
-        <div class="absolute bottom-0 inset-x-0 z-10">
+        <Link
+          class="absolute inset-x-0 bottom-0 z-10 hidden text-left transition duration-200 bg-gradient-to-t from-black/90 group-hover:block to-transparent"
+          :href="route('auth.projects.detail', project.pid)"
+          as="button">
 
           <div class="flex flex-col p-2 text-sm">
-            <h3 class=" text-white group-hover:text-white/80 group-focus:text-white/80">
+            <h3 class="text-white">
               {{ `${project.customer?.first_name} ${project.customer?.last_name}` }}
             </h3>
 
-            <p class="text-xs mt-2 text-white/80">
+            <p class="text-xs text-white/80">
               {{ project.name }}
             </p>
           </div>
 
-        </div>
+        </Link>
 
       </div>
 

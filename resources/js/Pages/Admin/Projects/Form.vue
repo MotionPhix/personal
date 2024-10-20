@@ -56,7 +56,7 @@ const FilePondInput = vueFilePond(
 
 const projectGalleryPond = ref<FilePond | null>(null);
 const projectImages = ref([]);
-const tiptapComponent = ref()
+const tipTapRef = ref()
 
 const form = useForm({
   name: props.project.name,
@@ -104,7 +104,6 @@ function onSubmit() {
       onSuccess: () => {
         form.reset();
         projectGalleryPond.value?.removeFiles();
-        tiptapComponent.value.resetEditor()
       }
     });
 
@@ -128,6 +127,7 @@ function onSubmit() {
     onSuccess: () => {
       form.reset()
       projectGalleryPond.value?.removeFiles();
+      tipTapRef.value.resetEditorContent();
     },
 
   });
@@ -145,11 +145,6 @@ function onAssignContact () {
 
   form.customer_id = props.project.customer_id
 
-}
-
-function reset() {
-  form.reset()
-  tiptapComponent.value.resetEditorContent();
 }
 
 onBeforeUnmount(() => {
@@ -182,10 +177,6 @@ defineOptions({
       </h2>
 
       <span class="flex-1"></span>
-
-      <button @click="reset()">
-        Reset
-      </button>
 
       <button
         type="submit"
@@ -334,7 +325,7 @@ defineOptions({
             </label>
 
             <PreTap
-              ref="tiptapComponent"
+              ref="tipTapRef"
               v-model="form.description"
               placeholder="Say a few things worthy noting about the project" />
 

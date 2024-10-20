@@ -27,16 +27,26 @@ import Bold from "@tiptap/extension-bold"
 
 import Underline from "@tiptap/extension-underline"
 
-import { onBeforeUnmount, onMounted, watch } from 'vue'
+import { onBeforeUnmount, watch } from 'vue'
 
 const model = defineModel({ default: '' })
 
-const props = defineProps({
-  placeholder: {
-    type: String,
-    default: 'Start typing...'
+const props = withDefaults(
+  defineProps<{
+
+    placeholder?: string;
+    customHeight?: string;
+
+  }>(),
+
+  {
+
+    placeholder: 'Start typing...',
+
+    customHeight: 'h-[20rem]',
+
   }
-})
+)
 
 const editor = useEditor({
   editorProps: {
@@ -107,13 +117,10 @@ const editor = useEditor({
 // Toolbar actions using editor commands
 const toggleHeading = (heading: any)=> editor.value?.chain().focus().toggleHeading({ level: heading }).run()
 const toggleBold = () => editor.value?.chain().focus().toggleBold().run()
-const toggleItalic = () => editor.value?.chain().focus().toggleItalic().run()
 const toggleUnderline = () => editor.value?.chain().focus().toggleUnderline().run()
-const toggleStrike = () => editor.value?.chain().focus().toggleStrike().run()
 const toggleOrderedList = () => editor.value?.chain().focus().toggleOrderedList().run()
 const toggleBulletList = () => editor.value?.chain().focus().toggleBulletList().run()
 const toggleBlockquote = () => editor.value?.chain().focus().toggleBlockquote().run()
-const toggleCode = () => editor.value?.chain().focus().toggleCode().run()
 const setHorizontalRule = () => editor.value?.chain().focus().setHorizontalRule().run()
 
 onBeforeUnmount(() => {
@@ -178,7 +185,8 @@ defineExpose({
         <button
           type="button"
           @click="toggleBold"
-          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-bold="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
+          data-hs-editor-bold>
           <svg
             class="shrink-0 size-4"
             xmlns="http://www.w3.org/2000/svg"
@@ -190,10 +198,10 @@ defineExpose({
           </svg>
         </button>
 
-        <button
+        <!-- <button
           type="button"
           @click="toggleItalic"
-          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-italic="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-italic>
           <svg
             class="shrink-0 size-4"
             xmlns="http://www.w3.org/2000/svg"
@@ -204,12 +212,12 @@ defineExpose({
             <line x1="14" x2="5" y1="20" y2="20"></line>
             <line x1="15" x2="9" y1="4" y2="20"></line>
           </svg>
-        </button>
+        </button> -->
 
         <button
           type="button"
           @click="toggleUnderline"
-          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-underline="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-underline>
           <svg
             fill="currentColor"
             class="shrink-0 size-3.5"
@@ -220,10 +228,10 @@ defineExpose({
             <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <rect x="62.877" y="330" width="234.245" height="30"></rect> <path d="M180,290c61.825,0,112.123-50.298,112.123-112.122V0h-30v177.878C262.123,223.16,225.283,260,180,260 s-82.123-36.84-82.123-82.122V0h-30v177.878C67.877,239.702,118.175,290,180,290z"></path> </g> </g></svg>
         </button>
 
-        <button
+        <!-- <button
           type="button"
           @click="toggleStrike"
-          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-strike="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-strike>
           <svg
             class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg"
             width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -233,12 +241,13 @@ defineExpose({
             <path d="M14 12a4 4 0 0 1 0 8H6"></path>
             <line x1="4" x2="20" y1="12" y2="12"></line>
           </svg>
-        </button>
+        </button> -->
 
         <button
           type="button"
           @click="toggleOrderedList"
-          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-ol="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
+          data-hs-editor-ol>
           <svg
             class="shrink-0 size-4" xmlns="http://www.w3.org/2000/svg"
             width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -256,7 +265,8 @@ defineExpose({
         <button
           type="button"
           @click="toggleBulletList"
-          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-ul="">
+          class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
+          data-hs-editor-ul>
           <svg
             class="shrink-0 size-4"
             xmlns="http://www.w3.org/2000/svg"
@@ -289,7 +299,7 @@ defineExpose({
           </svg>
         </button>
 
-        <button
+        <!-- <button
           type="button"
           @click="toggleCode"
           class="inline-flex items-center justify-center text-sm font-semibold text-gray-800 border border-transparent rounded-full size-8 gap-x-2 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" data-hs-editor-code="">
@@ -298,7 +308,7 @@ defineExpose({
             <path d="m6 8-4 4 4 4"></path>
             <path d="m14.5 4-5 16"></path>
           </svg>
-        </button>
+        </button> -->
 
         <button
           type="button"
@@ -317,7 +327,8 @@ defineExpose({
       <EditorContent
         id="hs-editor-tiptap"
         :editor="editor"
-        class="h-[20rem] scroll-smooth scrollbar-none overflow-auto px-4 dark:text-gray-200 text-gray-800"
+        :class="customHeight"
+        class="px-4 overflow-auto text-gray-800 scroll-smooth scrollbar-none dark:text-gray-200"
         data-hs-editor-field />
     </div>
 

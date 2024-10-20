@@ -16,6 +16,7 @@ import {
   IconBuildingEstate,
   IconBalloon,
 } from "@tabler/icons-vue";
+import { ModalLink } from '@inertiaui/modal-vue';
 
 const showingNavigationDropdown = ref(false);
 
@@ -72,7 +73,7 @@ const isDark = useDark()
               <div class="flex-1 inline-block sm:hidden" />
 
               <div class="flex items-center ml-6">
-                <Menu as="div" class="relative z-40 inline-block mt-2 text-left">
+                <Menu as="div" class="relative inline-block mt-2 text-left">
                   <div>
                     <MenuButton
                       class="inline-flex justify-center w-full"
@@ -94,7 +95,7 @@ const isDark = useDark()
                     leave-to-class="transform scale-95 opacity-0"
                   >
                     <MenuItems
-                      class="absolute left-0 w-40 -mt-10 bg-white divide-y divide-gray-100 rounded-md shadow-lg sm:right-0 ring-1 ring-black/5 focus:outline-none"
+                      class="absolute left-0 z-30 w-40 -mt-10 bg-white divide-y divide-gray-100 rounded-md shadow-lg sm:right-0 ring-1 ring-black/5 focus:outline-none"
                     >
                     <div class="px-1 py-1">
                       <MenuItem v-slot="{ active }">
@@ -135,7 +136,7 @@ const isDark = useDark()
                       </MenuItem>
 
                       <MenuItem v-slot="{ active }">
-                        <Link
+                        <ModalLink
                           as="button"
                           :class="[
                             active ? 'bg-violet-500 text-white' : 'text-gray-900',
@@ -149,7 +150,7 @@ const isDark = useDark()
                             aria-hidden="true"
                           />
                           <span>Add logo</span>
-                        </Link>
+                        </ModalLink>
                       </MenuItem>
                     </div>
 

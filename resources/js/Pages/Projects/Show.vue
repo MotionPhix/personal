@@ -4,6 +4,7 @@ import AppLayout from "@/Layouts/AppLayout.vue";
 import { Project } from "@/types";
 import {Head, Link} from "@inertiajs/vue3";
 import { IconArrowLeft } from "@tabler/icons-vue";
+import { vFullscreenImg } from 'maz-ui'
 
 const props = defineProps<{
   project: Project;
@@ -29,7 +30,7 @@ const getImageById = (id: number) => {
     <Link
       as="button"
       :href="route('projects.index')"
-      class="flex items-center gap-2 text-base text-blue-600 transition-all duration-300 ease-in-out transform group dark:text-blue-400 hover:-translate-x-1 hover:text-blue-800 dark:hover:text-blue-600"
+      class="flex items-center gap-2 text-base font-bold transition-all duration-300 ease-in-out transform text-lime-600 group dark:text-lime-400 hover:-translate-x-1 hover:text-lime-800 dark:hover:text-lime-600"
     >
       <IconArrowLeft size="24" class="hidden group-hover:inline-block" />
 
@@ -66,7 +67,7 @@ const getImageById = (id: number) => {
             <ul>
 
               <li class="text-sm font-bold text-gray-800 dark:text-neutral-200">
-                {{ project?.customer?.first_name + ' ' + project?.customer?.last_name }}
+                {{ project?.customer?.name }}
               </li>
 
               <li class="text-xs text-gray-800 dark:text-neutral-200">
@@ -112,6 +113,7 @@ const getImageById = (id: number) => {
         :key="index" class="break-inside-avoid">
         <img
           loading="lazy"
+          v-fullscreen-img
           decoding="async" data-nimg="1"
           :src="image?.original_url"
           @contextmenu.prevent

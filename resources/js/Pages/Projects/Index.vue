@@ -72,7 +72,7 @@ defineOptions({ layout: AppLayout });
   <Head title="Projects" />
 
   <div
-    class="w-full max-w-2xl lg:px-12 mx-auto px-8 mt-16"
+    class="w-full max-w-2xl px-8 mx-auto mt-16 lg:px-12"
     ref="projectListRef">
 
     <!-- Header Section -->
@@ -81,8 +81,7 @@ defineOptions({ layout: AppLayout });
         Things I've made trying to put my dent in the universe.
       </h1>
       <p class="mt-6 text-lg text-zinc-600 dark:text-zinc-400">
-        I've worked on tons of little projects over the years but these are the ones that I'm most proud of.
-        Many of them are just simple artworks, not an entire case-study.
+        I've worked on tons of little projects over the years but these are the ones that I'm most proud of. Enjoy!
       </p>
     </header>
 
@@ -96,7 +95,7 @@ defineOptions({ layout: AppLayout });
         <li
           v-for="(project, index) in projects"
           :key="project.pid"
-          class="relative flex flex-col items-start project-card group"
+          class="relative flex flex-col items-start project-card"
           ref="el => projectsRef.value[index] = el"
         >
           <Card :project="project" />

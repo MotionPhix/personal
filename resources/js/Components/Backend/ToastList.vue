@@ -1,28 +1,21 @@
 <script setup>
 import ToastListItem from "@/Components/Backend/ToastListItem.vue";
-import {onUnmounted, ref} from "vue";
-import toast from "@/Stores/toast"
-import {router, usePage} from "@inertiajs/vue3";
+import { ref, watch } from "vue";
+import toast from "@/Stores/toast";
+import { usePage } from "@inertiajs/vue3";
 
 const page = usePage();
+const open = ref(true);
 
-const open = ref(true)
-
-let removeFinshEventListener = router.on("finish", () => {
-  if (page.props.notify) {
+watch(() => page.props.notify, (newNotify) => {
+  if (newNotify) {
     toast.add({
-      type: page.props.notify.type,
-      message: page.props.notify.message,
-      title: page.props.notify.title,
+      type: newNotify.type,
+      message: newNotify.message,
+      title: newNotify.title,
     });
   }
 });
-
-onUnmounted(() => removeFinshEventListener());
-
-function remove(index) {
-  toast.remove(index);
-}
 </script>
 
 <template>
@@ -32,7 +25,7 @@ function remove(index) {
     enter-active-class="duration-500"
     leave-active-class="duration-500"
     leave-to-class="translate-x-full opacity-0"
-    class="fixed top-4 right-4 w-full max-w-xs space-y-4"
+    class="fixed w-full max-w-xs space-y-4 top-4 right-4"
     style="z-index: 9999">
     <ToastListItem
       v-for="(item, index) in toast.items"
@@ -40,8 +33,7 @@ function remove(index) {
       :intent="item.type"
       :title="item.title"
       :show="open"
-      :duration="5000"
-      :on-dismiss="remove">
+      :dismiss="toast.remove(index)">
       {{ item.message }}
     </ToastListItem>
   </TransitionGroup>

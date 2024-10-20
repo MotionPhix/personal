@@ -59,6 +59,7 @@ export interface Address {
 export interface Customer {
   id?: number;
   cid?: string;
+  name?: string;
   first_name: string;
   last_name: string;
   job_title?: string;

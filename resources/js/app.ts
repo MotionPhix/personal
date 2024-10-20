@@ -12,19 +12,7 @@ import Lenis from 'lenis'
 
 import { createPinia } from 'pinia'
 
-import { type IStaticMethods } from "preline/preline";
-
 import { ModalRoot } from '@inertiaui/modal-vue';
-
-declare global {
-  interface Window {
-    HSStaticMethods: IStaticMethods;
-  }
-}
-
-setTimeout(() => {
-  window.HSStaticMethods.autoInit();
-}, 100)
 
 const appName = import.meta.env.VITE_APP_NAME || 'Ultrahots';
 
@@ -43,7 +31,6 @@ createInertiaApp({
   title: (title) => `${title} - ${appName}`,
   resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')),
   setup({ el, App, props, plugin }) {
-    // createApp({ render: () => h(App, props) })
     createApp({ render: () => h(ModalRoot, () => h(App, props)) })
       .use(plugin)
       .use(ZiggyVue)

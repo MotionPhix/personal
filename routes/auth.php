@@ -194,7 +194,7 @@ Route::middleware('auth')->group(function () {
       )->name('auth.downloads.index');
 
       Route::get(
-        '/n/logo',
+        '/c',
         \App\Http\Controllers\Logos\Create::class,
       )->name('auth.downloads.create');
 
