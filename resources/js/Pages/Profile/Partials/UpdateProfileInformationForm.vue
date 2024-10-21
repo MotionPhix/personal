@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import MazBtn from 'maz-ui/components/MazBtn'
+import MazInput from 'maz-ui/components/MazInput'
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 
 defineProps<{
@@ -37,13 +37,16 @@ const form = useForm({
           for="first_name"
           value="First Name" />
 
-        <TextInput
+        <MazInput
           id="first_name"
           type="text"
-          class="block w-full mt-1"
+          class="mt-1"
           v-model="form.first_name"
           required
-          autofocus />
+          autofocus
+          rounded-size="md"
+          size="lg"
+          block />
 
         <InputError
           class="mt-2"
@@ -55,11 +58,14 @@ const form = useForm({
           for="last_name"
           value="Last Name" />
 
-        <TextInput
+        <MazInput
           id="last_name"
           type="text"
-          class="block w-full mt-1"
+          class="mt-1"
           v-model="form.last_name"
+          rounded-size="md"
+          size="lg"
+          block
           required/>
 
         <InputError
@@ -72,11 +78,14 @@ const form = useForm({
           for="email"
           value="Email" />
 
-        <TextInput
+        <MazInput
           id="email"
           type="email"
-          class="block w-full mt-1"
+          class="mt-1"
           v-model="form.email"
+          rounded-size="md"
+          size="lg"
+          block
           required />
 
         <InputError
@@ -104,7 +113,12 @@ const form = useForm({
       </div>
 
       <div class="flex items-center gap-4">
-        <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+        <MazBtn
+        :disabled="form.processing"
+          rounded-size="md"
+          size="md">
+        Save
+      </MazBtn>
 
         <Transition enter-active-class="transition ease-in-out"
                     enter-from-class="opacity-0"

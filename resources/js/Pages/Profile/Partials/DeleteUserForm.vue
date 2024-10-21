@@ -3,9 +3,10 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import Modal from '@/Components/Modal.vue';
 import MazBtn from 'maz-ui/components/MazBtn'
-import TextInput from '@/Components/TextInput.vue';
+import MazInput from 'maz-ui/components/MazInput'
 import { useForm } from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
+import Spinner from '@/Components/Spinner.vue';
 
 const confirmingUserDeletion = ref(false);
 const passwordInput = ref<HTMLInputElement | null>(null);
@@ -49,7 +50,12 @@ const closeModal = () => {
       </p>
     </header>
 
-    <DangerButton @click="confirmUserDeletion">Delete Account</DangerButton>
+    <MazBtn
+      color="danger"
+      @click="confirmUserDeletion"
+      rounded-size="md">
+      Delete Account
+    </MazBtn>
 
     <Modal
       :show="confirmingUserDeletion"
@@ -70,14 +76,17 @@ const closeModal = () => {
             value="Password"
             class="sr-only" />
 
-          <TextInput
+          <MazInput
             id="password"
             ref="passwordInput"
             v-model="form.password"
-            type="password"
-            class="block w-3/4 mt-1"
             placeholder="Password"
-            @keyup.enter="deleteUser" />
+            @keyup.enter="deleteUser"
+            rounded-size="md"
+            type="password"
+            class="mt-1"
+            size="lg"
+            block />
 
           <InputError
             :message="form.errors.password"
@@ -86,7 +95,9 @@ const closeModal = () => {
 
         <div class="flex justify-end mt-6">
           <MazBtn
-            @click="closeModal">
+            @click="closeModal"
+            rounded-size="md"
+            pastel>
             Cancel
           </MazBtn>
 
@@ -94,8 +105,16 @@ const closeModal = () => {
             class="ms-3"
             :class="{ 'opacity-25': form.processing }"
             :disabled="form.processing"
-            @click="deleteUser">
-            Delete Account
+            @click="deleteUser"
+            rounded-size="md"
+            color="danger">
+            <template #left-icon>
+              <Spinner
+                class="text-white"
+                v-if="form.processing" />
+            </template>
+
+            Delete
           </MazBtn>
         </div>
       </div>

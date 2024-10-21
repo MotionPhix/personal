@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
+import MazBtn from 'maz-ui/components/MazBtn'
+import MazInput from 'maz-ui/components/MazInput'
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
@@ -10,28 +10,28 @@ const passwordInput = ref<HTMLInputElement | null>(null);
 const currentPasswordInput = ref<HTMLInputElement | null>(null);
 
 const form = useForm({
-    current_password: '',
-    password: '',
-    password_confirmation: '',
+  current_password: '',
+  password: '',
+  password_confirmation: '',
 });
 
 const updatePassword = () => {
-    form.put(route('password.update'), {
-        preserveScroll: true,
-        onSuccess: () => {
-            form.reset();
-        },
-        onError: () => {
-            if (form.errors.password) {
-                form.reset('password', 'password_confirmation');
-                passwordInput.value?.focus();
-            }
-            if (form.errors.current_password) {
-                form.reset('current_password');
-                currentPasswordInput.value?.focus();
-            }
-        },
-    });
+  form.put(route('password.update'), {
+    preserveScroll: true,
+    onSuccess: () => {
+      form.reset();
+    },
+    onError: () => {
+      if (form.errors.password) {
+        form.reset('password', 'password_confirmation');
+        passwordInput.value?.focus();
+      }
+      if (form.errors.current_password) {
+        form.reset('current_password');
+        currentPasswordInput.value?.focus();
+      }
+    },
+  });
 };
 </script>
 
@@ -49,13 +49,15 @@ const updatePassword = () => {
             <div>
                 <InputLabel for="current_password" value="Current Password" />
 
-                <TextInput
-                    id="current_password"
-                    ref="currentPasswordInput"
-                    v-model="form.current_password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="current-password"
+                <MazInput
+                  id="current_password"
+                  ref="currentPasswordInput"
+                  v-model="form.current_password"
+                  rounded-size="md"
+                  type="password"
+                  size="lg"
+                  class="mt-1"
+                  block
                 />
 
                 <InputError :message="form.errors.current_password" class="mt-2" />
@@ -64,13 +66,15 @@ const updatePassword = () => {
             <div>
                 <InputLabel for="password" value="New Password" />
 
-                <TextInput
-                    id="password"
-                    ref="passwordInput"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
+                <MazInput
+                  id="password"
+                  ref="passwordInput"
+                  v-model="form.password"
+                  rounded-size="md"
+                  type="password"
+                  size="lg"
+                  class="mt-1"
+                  block
                 />
 
                 <InputError :message="form.errors.password" class="mt-2" />
@@ -79,19 +83,26 @@ const updatePassword = () => {
             <div>
                 <InputLabel for="password_confirmation" value="Confirm Password" />
 
-                <TextInput
+                <MazInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
+                    rounded-size="md"
                     type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="new-password"
+                    size="lg"
+                    class="mt-1"
+                    block
                 />
 
                 <InputError :message="form.errors.password_confirmation" class="mt-2" />
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+                <MazBtn
+                  :disabled="form.processing"
+                  rounded-size="md"
+                  color="success">
+                  Save
+                </MazBtn>
 
                 <Transition
                     enter-active-class="transition ease-in-out"

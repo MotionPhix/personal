@@ -28,20 +28,19 @@ defineOptions({
   </Navheader>
 
   <div class="py-12">
-    <div class="max-w-3xl mx-auto space-y-6 sm:px-6 lg:px-8">
+    <div class="space-y-6 sm:px-6 lg:px-8">
       <div
         class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
         <UpdateProfileInformationForm :must-verify-email="mustVerifyEmail"
-        :status="status"
-        class="max-w-xl" />
+        :status="status" />
       </div>
 
       <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
-        <UpdatePasswordForm class="max-w-xl" />
+        <UpdatePasswordForm />
       </div>
 
       <div class="p-4 bg-white shadow sm:p-8 dark:bg-gray-800 sm:rounded-lg">
-        <DeleteUserForm class="max-w-xl" />
+        <DeleteUserForm />
       </div>
     </div>
   </div>
