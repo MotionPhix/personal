@@ -9,14 +9,14 @@ defineProps<{
 </script>
 
 <template>
-  <div class="relative group">
+  <div class="relative overflow-hidden bg-white rounded-lg group">
 
     <a
-      class="relative block w-full overflow-hidden rounded-lg group"
+      class="relative block w-full"
       :href="route('auth.downloads.show', logoFile.lid)">
 
       <img
-        class="object-cover w-full bg-gray-100 rounded-lg size-40 dark:bg-neutral-800"
+        class="object-contain w-full px-2 rounded-lg sm:object-cover size-40"
         :src="logoFile.poster_url" :alt="logoFile.brand">
 
       <div

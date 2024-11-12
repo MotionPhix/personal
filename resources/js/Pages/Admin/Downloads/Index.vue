@@ -68,7 +68,7 @@ defineOptions({
       <ul
         role="list"
         v-if="logoFiles.length"
-        class="grid grid-cols-3 gap-2 lg:grid-cols-4">
+        class="grid grid-cols-2 gap-4 sm:grid-cols-4">
 
         <li
           class="relative flex flex-col items-start group"

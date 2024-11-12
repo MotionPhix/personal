@@ -168,10 +168,10 @@ defineOptions({
       <ul
         role="list"
         v-if="logoFiles.length"
-        class="grid grid-cols-3 gap-2 lg:grid-cols-4">
+        class="grid grid-cols-2 gap-2 md:grid-cols-3">
 
         <li
-          class="relative flex flex-col items-start group"
+          class="relative flex flex-col items-start"
           v-for="logo in logoFiles" :key="logo.lid">
 
           <LogoCard :logo-file="logo" />
