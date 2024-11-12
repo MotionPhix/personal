@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { IconPhotoDown, IconTrashFilled } from "@tabler/icons-vue";
-import { Logo } from "@/types";
 import { Link } from "@inertiajs/vue3";
+import { Logo } from "@/types";
 
 defineProps<{
   logoFile: Logo;
@@ -13,10 +13,10 @@ defineProps<{
 
     <a
       class="relative block w-full"
-      :href="route('auth.downloads.show', logoFile.lid)">
+      :href="route('downloads.show', logoFile.lid)">
 
       <img
-        class="object-contain w-full px-2 rounded-lg sm:object-cover size-40"
+        class="object-contain w-full px-2 rounded-lg size-40"
         :src="logoFile.poster_url" :alt="logoFile.brand">
 
       <div

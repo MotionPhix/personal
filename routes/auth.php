@@ -209,11 +209,6 @@ Route::middleware('auth')->group(function () {
         '/r/{logo:lid}',
         \App\Http\Controllers\Logos\Destroy::class,
       )->name('auth.downloads.destroy');
-
-      Route::get(
-        '/d/{logo:lid}',
-        \App\Http\Controllers\Logos\Download::class,
-      )->name('auth.downloads.show');
     });
 
     Route::get(

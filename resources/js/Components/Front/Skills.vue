@@ -71,7 +71,7 @@ onMounted(() => {
 <template>
 <div class="my-10 sm:my-14" ref="skillsRef">
 
-  <h2 class="mb-5 font-medium text-gray-800 dark:text-neutral-200">
+  <h2 class="mb-5 uppercase font-medium text-gray-800 dark:text-neutral-200">
     Skills
   </h2>
 

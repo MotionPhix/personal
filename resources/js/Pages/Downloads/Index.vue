@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { Head } from "@inertiajs/vue3"
+import { Head, usePoll } from "@inertiajs/vue3";
 import { Logo } from "@/types";
 import LogoCard from "@/Components/Front/LogoCard.vue";
 import { IconAlertCircle } from "@tabler/icons-vue";
@@ -85,6 +85,12 @@ onMounted(() => {
     }
   }
 });
+
+usePoll(2000, {
+  onStart() {
+      console.log('Polling request started')
+  },
+})
 
 defineOptions({
   layout: AppLayout

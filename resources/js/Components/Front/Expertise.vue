@@ -80,8 +80,8 @@ onMounted(() => {
 <template>
 <div class="mt-10 sm:mt-14" ref="expertiseRef">
 
-  <h2 class="mb-5 font-medium text-gray-800 dark:text-neutral-200">
-    My Area of Expertise
+  <h2 class="mb-5 uppercase font-medium text-gray-800 dark:text-neutral-200">
+    Area of Expertise
   </h2>
 
   <!-- Timeline -->

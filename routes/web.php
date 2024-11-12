@@ -65,6 +65,11 @@ Route::group(['prefix' => 'downloads'], function () {
     \App\Http\Controllers\Logos\Fixer::class,
   )->name('upload-my-logo');
 
+  Route::get(
+    '/d/{logo:lid}',
+    \App\Http\Controllers\Logos\Download::class,
+  )->name('downloads.show');
+
 });
 
 require __DIR__ . '/auth.php';

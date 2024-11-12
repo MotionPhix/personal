@@ -18,8 +18,4 @@ export default defineConfig({
       },
     }),
   ],
-
-  resolve: {
-    dedupe: ['@inertiajs/vue3']
-  }
 });

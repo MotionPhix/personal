@@ -76,15 +76,15 @@ defineOptions({ layout: AppLayout })
       ref="aboutRef"
       class="mt-8 text-base text-gray-600 dark:text-neutral-300">
       <p>
-        With over 10 years of experience, I've honed my skills in creating stunning, user-focused designs that don't just look good but also work seamlessly. From crafting intuitive UI designs to developing cohesive design systems and custom illustrations, I'm passionate about turning creative ideas into digital realities. My goal is always to create designs that are not only visually appealing but also functional, helping clients elevate their brand and deliver exceptional user experiences.
+        With more than a decade of experience, I have refined my abilities to produce visually appealing, user-centric designs that function seamlessly. I am enthusiastic about transforming creative concepts into digital realities, from the creation of intuitive user interface designs to the development of cohesive design systems and custom illustrations. My objective is to consistently generate designs that are not only visually compelling but also functional, thereby assisting clients in enhancing their brand and providing exceptional user experiences.
       </p>
 
       <p class="mt-3">
-        Throughout my career, I've collaborated with diverse clients to breathe life into their products/services. I believe that great design is a blend of creativity and strategy, and I approach every project with this mindset. Whether it's building websites from the ground up or enhancing existing platforms, I focus on delivering results that matter.
+        I have worked with a variety of clients to revitalize their products and services over the course of my career. I am of the opinion that exceptional design is a combination of strategy and creativity, and I approach each assignment with this perspective. Regardless of whether I am developing websites from the ground up or improving existing platforms, my primary objective is to produce tangible outcomes.
       </p>
 
       <p class="mt-3">
-        I'm always learning, adapting to new trends, and pushing the boundaries of what's possible in both design and front-end development. Let's create something amazing together!
+        I am perpetually in the process of learning, adapting to new trends, and expanding the boundaries of what is feasible in both front-end development and design. Join me in the creation of something truly remarkable!
       </p>
 
       <ul class="flex gap-2 mt-10 sm:gap-x-4">

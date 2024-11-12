@@ -51,14 +51,14 @@ onUnmounted(() => {
 <template>
   <!-- Projects -->
   <div class="mt-10 sm:mt-14">
-    <h2 class="mb-5 font-medium text-gray-800 dark:text-neutral-200">
+    <h2 class="mb-5 uppercase font-medium text-gray-800 dark:text-neutral-200">
       Projects
     </h2>
 
     <!-- Image Grid -->
     <div
       ref="main"
-      class="grid gap-2"
+      class="grid gap-4"
       :class="smallColumns ? 'grid-cols-3' : 'grid-cols-2'">
 
       <Link
