@@ -1,4 +1,5 @@
 import './bootstrap';
+import './echo'
 import 'maz-ui/styles'
 import 'lenis/dist/lenis.css'
 import '../css/app.css';
@@ -26,6 +27,13 @@ function raf(time: any) {
 }
 
 requestAnimationFrame(raf)
+
+window.Echo.channel('logos')
+  .listen('LogoDeleted', (e) => {
+    console.log(e)
+  })
+
+console.log(window.Pusher)
 
 createInertiaApp({
   title: (title) => `${title} - ${appName}`,

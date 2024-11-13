@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Logos;
 
+use App\Events\LogoUploaded;
 use App\Http\Controllers\Controller;
 use App\Models\Logo;
 use Illuminate\Http\Request;
@@ -43,6 +44,8 @@ class Store extends Controller
     if ($request->hasFile('file_path')) {
       $logo->addMediaFromRequest('file_path')->toMediaCollection('logos');
     }
+
+    broadcast(new LogoUploaded($logo));
 
     return redirect()->route('auth.downloads.index')->with('notify', [
       'type' => 'success',

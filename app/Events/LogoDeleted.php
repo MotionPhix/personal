@@ -2,14 +2,13 @@
 
 namespace App\Events;
 
-use App\Models\Logo;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class LogoUploaded implements ShouldBroadcast
+class LogoDeleted implements ShouldBroadcast
 {
   use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -17,7 +16,7 @@ class LogoUploaded implements ShouldBroadcast
    * Create a new event instance.
    */
   public function __construct(
-    public Logo $logo
+    public int $logoId
   ) {}
 
   /**
