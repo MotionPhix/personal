@@ -29,12 +29,10 @@ onMounted(() => {
 
   window.Echo.channel('logos')
     .listen('LogoUploaded', (e) => {
-      console.log(e)
       logos.value.push(e.logo);
     })
     .listen('LogoDeleted', (e) => {
-      console.log('Logo deleted:', e.logoId); // Debugging log
-      logos.value = logos.value.filter(logo => logo.id !== e.logoId); // Notify user about logo deletion
+      logos.value = logos.value.filter(logo => logo.lid !== e.logoId);
     });
 
   // Animate the header

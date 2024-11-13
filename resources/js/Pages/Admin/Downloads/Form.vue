@@ -164,11 +164,11 @@ const submit = () => {
           name="logo"
           ref="logoPond"
           credits="false"
+          maxFileSize="2MB"
           @addfile="handleAddLogo"
           :acceptedFileTypes="acceptedFileTypes"
           labelMaxFileSizeExceeded="Your logo is too large"
           labelMaxFileSize="Max logo size is {filesize}"
-          maxFileSize="2MB"
           labelIdle='Drop your logo or <span class="filepond--label-action">Browse</span>'
           :allowMultiple="false"
           class="mt-4 filepond dark:border-gray-700 dark:bg-gray-900 dark:text-white"

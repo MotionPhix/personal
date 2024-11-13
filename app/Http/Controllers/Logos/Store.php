@@ -45,7 +45,11 @@ class Store extends Controller
       $logo->addMediaFromRequest('file_path')->toMediaCollection('logos');
     }
 
-    broadcast(new LogoUploaded($logo));
+    broadcast(new LogoUploaded([
+      'lid' => $logo->lid,
+      'brand' => $logo->brand,
+      'poster_url' => $logo->getFirstMediaUrl('posters', 'thumb'),
+    ]))->toOthers();
 
     return redirect()->route('auth.downloads.index')->with('notify', [
       'type' => 'success',

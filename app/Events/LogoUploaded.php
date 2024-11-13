@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\Logo;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
@@ -17,7 +16,7 @@ class LogoUploaded implements ShouldBroadcast
    * Create a new event instance.
    */
   public function __construct(
-    public Logo $logo
+    public $logo
   ) {}
 
   /**
@@ -28,7 +27,7 @@ class LogoUploaded implements ShouldBroadcast
   public function broadcastOn(): array
   {
     return [
-      new Channel('logos'),
+      new Channel('logos')
     ];
   }
 }

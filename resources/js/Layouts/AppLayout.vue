@@ -21,11 +21,6 @@ onMounted(() => {
 
     window.HSStaticMethods.autoInit();
 
-    window.Echo.channel('logos')
-      .listen('LogoUploaded', (e) => {
-        console.log(e)
-      })
-
   }, 100)
 
 })

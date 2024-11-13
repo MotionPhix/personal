@@ -12,7 +12,7 @@ class Destroy extends Controller
   {
     $logo->delete();
 
-    broadcast(new LogoDeleted($logo->id));
+    broadcast(new LogoDeleted($logo->lid))->toOthers();
 
     return redirect()->back()->with('notify', [
       'type' => 'success',

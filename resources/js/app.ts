@@ -28,13 +28,6 @@ function raf(time: any) {
 
 requestAnimationFrame(raf)
 
-window.Echo.channel('logos')
-  .listen('LogoDeleted', (e) => {
-    console.log(e)
-  })
-
-console.log(window.Pusher)
-
 createInertiaApp({
   title: (title) => `${title} - ${appName}`,
   resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')),
