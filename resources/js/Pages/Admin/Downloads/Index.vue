@@ -52,13 +52,13 @@ defineOptions({
 
       <h1
         class="text-3xl text-zinc-800 sm:text-4xl dark:text-zinc-100">
-        All logos
+        Uploaded logos
       </h1>
 
       <p
         class="mt-6 text-lg text-zinc-600 dark:text-zinc-400">
-        Explore a collection of high-quality, vectorized logos from top companies and organisations across Malawi. These logos are optimized for various design and branding needs, ensuring scalability
-        and clarity across all media.
+        Upload and manage logos here. Ensure your logos are optimized for various design and
+        branding needs, providing scalability and clarity across all media.
       </p>
 
     </header>
