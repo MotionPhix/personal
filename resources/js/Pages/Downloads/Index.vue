@@ -1,21 +1,21 @@
-<script setup lang="ts">
+<script setup>
 
 import AppLayout from "@/Layouts/AppLayout.vue";
 import {Head} from "@inertiajs/vue3";
-import {Logo} from "@/types";
 import LogoCard from "@/Components/Front/LogoCard.vue";
 import {IconAlertCircle} from "@tabler/icons-vue";
 import {gsap} from 'gsap';
 import {ScrollTrigger} from 'gsap/ScrollTrigger';
 import {onBeforeUnmount, onMounted, ref} from "vue";
 import {ModalLink} from '@inertiaui/modal-vue'
-// import '@/echo'
 
 gsap.registerPlugin(ScrollTrigger);
 
-const props = defineProps<{
-  logoFiles: Logo[]
-}>()
+const props = defineProps({
+  logoFiles: {
+    type: Array,
+  }
+})
 
 const headerRef = ref(null);
 const logoListRef = ref(null);
@@ -23,9 +23,9 @@ const helpSectionRef = ref(null);
 const logos = ref([...props.logoFiles]);
 
 onMounted(() => {
-  const header = headerRef.value as any;
-  const logoList = logoListRef.value as any;
-  const helpSection = helpSectionRef.value as any;
+  const header = headerRef.value;
+  const logoList = logoListRef.value;
+  const helpSection = helpSectionRef.value;
 
   window.Echo.channel('logos')
     .listen('LogoUploaded', (e) => {
@@ -65,7 +65,7 @@ onMounted(() => {
 
   // Animate logo cards
   if (props.logoFiles?.length) {
-    gsap.utils.toArray('.logo-card').forEach((card: any, index) => {
+    gsap.utils.toArray('.logo-card').forEach((card, index) => {
       gsap.from(card, {
         opacity: 0,
         y: 30,
