@@ -98,7 +98,7 @@ Route::middleware('auth')->group(function () {
   Route::group(['prefix' => 'auth'], function () {
 
     Route::get(
-      '/dashboard',
+      '/',
       \App\Http\Controllers\DashboardController::class
     )->name('dashboard');
 

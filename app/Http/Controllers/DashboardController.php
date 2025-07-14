@@ -114,7 +114,7 @@ class DashboardController extends Controller
 
     $logosPercentageChange = $this->calculatePercentageChange($previousMonthLogos, $currentMonthLogos);
 
-    return Inertia::render('Admin/Dashboard', [
+    return Inertia::render('admin/Dashboard', [
       'customersCount' => $customersCount,
       'projectsCount' => $projectsCount,
       'downloadsCount' => $downloadsCount,

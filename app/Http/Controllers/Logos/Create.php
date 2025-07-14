@@ -10,7 +10,7 @@ class Create extends Controller
   public function __invoke()
   {
 
-    return Inertia::render('Admin/Downloads/Form');
+    return Inertia::render('admin/downloads/Form');
 
   }
 }

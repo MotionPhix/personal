@@ -16,7 +16,7 @@ class CustomerController extends Controller
   {
     $customers = Customer::all();
 
-    return Inertia::render('Admin/Customers/Index', [
+    return Inertia::render('admin/customers/Index', [
       'customers' => $customers,
     ]);
   }
@@ -26,7 +26,7 @@ class CustomerController extends Controller
    */
   public function edit(Customer $customer): Response
   {
-    return Inertia::render('Admin/Customers/Form', [
+    return Inertia::render('admin/customers/Form', [
       'customer' => $customer,
     ]);
   }
@@ -51,11 +51,11 @@ class CustomerController extends Controller
       ],
     ];
 
-    $template = 'Admin/Customers/Form';
+    $template = 'admin/customers/Form';
 
     if ($request->query->get('modal')) {
 
-      $template = 'Admin/Customers/FormModal';
+      $template = 'admin/customers/FormModal';
 
     }
 

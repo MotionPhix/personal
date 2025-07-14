@@ -30,7 +30,7 @@ requestAnimationFrame(raf)
 
 createInertiaApp({
   title: (title) => `${title} - ${appName}`,
-  resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')),
+  resolve: (name) => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob<DefineComponent>('./pages/**/*.vue')),
   setup({ el, App, props, plugin }) {
     createApp({ render: renderApp(App, props) }) // () => h(ModalRoot, () => h(App, props))
       .use(plugin)

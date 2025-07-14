@@ -14,7 +14,7 @@ class IndexController extends Controller
    */
   public function __invoke(Request $request)
   {
-    return Inertia::render('Ask/Hello', [
+    return Inertia::render('ask/Hello', [
       'user' => fn() => User::select(['phone_number', 'email'])->first()
     ]);
   }

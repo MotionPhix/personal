@@ -19,7 +19,7 @@ class Listing extends Controller
       ];
     });
 
-    return Inertia::render('Admin/Downloads/Index', [
+    return Inertia::render('admin/downloads/Index', [
       'logoFiles' => $logoFiles,
     ]);
 

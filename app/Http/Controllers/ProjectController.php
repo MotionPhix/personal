@@ -18,7 +18,7 @@ class ProjectController extends Controller
   {
     $projects = Project::with('media')->get(['id', 'pid']);
 
-    return Inertia::render('Projects/Index', [
+    return Inertia::render('projects/Index', [
       'projects' => $projects,
     ]);
   }
@@ -42,7 +42,7 @@ class ProjectController extends Controller
 
     // $projects = Project::with('customer')->get();
 
-    return Inertia::render('Admin/Projects/Index', [
+    return Inertia::render('admin/projects/Index', [
 
       'can' => [
         'create_project' => Auth::user()->can('create'),
@@ -73,7 +73,7 @@ class ProjectController extends Controller
       'media' => $project->getMedia('bucket'),
     ];
 
-    return Inertia::render('Projects/Show', [
+    return Inertia::render('projects/Show', [
       'project' => $modify_project
     ]);
   }
@@ -99,7 +99,7 @@ class ProjectController extends Controller
       'media' => $project->getMedia('bucket'),
     ];
 
-    return Inertia::render('Admin/Projects/Show', [
+    return Inertia::render('admin/projects/Show', [
       'project' => $modify_project
     ]);
   }
@@ -133,7 +133,7 @@ class ProjectController extends Controller
         ];
       });
 
-    return Inertia::render('Admin/Projects/Form', [
+    return Inertia::render('admin/projects/Form', [
       'project' => fn() => $project,
       'customers' => fn() => $customers
     ]);
@@ -163,7 +163,7 @@ class ProjectController extends Controller
         ];
       });
 
-    return Inertia::render('Admin/Projects/Form', [
+    return Inertia::render('admin/projects/Form', [
       'project' => $project,
       'customers' => $customers
     ]);

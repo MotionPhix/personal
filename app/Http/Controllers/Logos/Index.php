@@ -21,7 +21,7 @@ class Index extends Controller
       ];
     });
 
-    return Inertia::render('Downloads/Index', [
+    return Inertia::render('downloads/Index', [
       'logoFiles' => $logoFiles,
     ]);
 
