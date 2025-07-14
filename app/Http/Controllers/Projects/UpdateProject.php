@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Projects;
 
+use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\Project;
-use App\Rules\ImageOrUrl;
 use Illuminate\Http\Request;
 
 class UpdateProject extends Controller
@@ -144,5 +144,74 @@ class UpdateProject extends Controller
       'title' => 'Update succeeded',
       'message' => 'Project has been successfully updated!'
     ]);
+  }
+}
+
+
+namespace App\Http\Controllers;
+
+use App\Models\Project;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
+
+class UpdateProject extends Controller
+{
+  /**
+   * Handle the incoming request.
+   */
+  public function __invoke(Request $request, Project $project)
+  {
+    $validator = Validator::make($request->all(), [
+      'customer_id' => 'sometimes|required|exists:customers,id',
+      'name' => 'sometimes|required|string|max:255',
+      'slug' => ['nullable', 'string', 'max:255', Rule::unique('projects')->ignore($project->id)],
+      'description' => 'nullable|string',
+      'short_description' => 'nullable|string|max:500',
+      'production_type' => 'nullable|string|max:255',
+      'category' => 'nullable|string|max:255',
+      'status' => ['nullable', Rule::in(['not_started', 'in_progress', 'on_hold', 'completed', 'cancelled'])],
+      'priority' => ['nullable', Rule::in(['low', 'medium', 'high', 'urgent'])],
+      'start_date' => 'nullable|date',
+      'end_date' => 'nullable|date|after_or_equal:start_date',
+      'estimated_hours' => 'nullable|numeric|min:0',
+      'actual_hours' => 'nullable|numeric|min:0',
+      'budget' => 'nullable|numeric|min:0',
+      'technologies' => 'nullable|array',
+      'technologies.*' => 'string|max:255',
+      'features' => 'nullable|array',
+      'features.*' => 'string|max:255',
+      'challenges' => 'nullable|string',
+      'solutions' => 'nullable|string',
+      'results' => 'nullable|string',
+      'client_feedback' => 'nullable|string',
+      'is_featured' => 'boolean',
+      'is_public' => 'boolean',
+      'sort_order' => 'nullable|integer|min:0',
+      'meta_title' => 'nullable|string|max:255',
+      'meta_description' => 'nullable|string',
+      'live_url' => 'nullable|url|max:255',
+      'github_url' => 'nullable|url|max:255',
+      'figma_url' => 'nullable|url|max:255',
+      'behance_url' => 'nullable|url|max:255',
+      'dribbble_url' => 'nullable|url|max:255',
+    ]);
+
+    if ($validator->fails()) {
+      return back()->withErrors($validator)->withInput();
+    }
+
+    $data = $validator->validated();
+
+    // Update slug if name changed
+    if (isset($data['name']) && empty($data['slug'])) {
+      $data['slug'] = Str::slug($data['name']);
+    }
+
+    $project->update($data);
+
+    return redirect()->route('auth.projects.index')
+      ->with('success', 'Project updated successfully.');
   }
 }

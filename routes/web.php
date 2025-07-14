@@ -9,12 +9,12 @@ Route::get(
 
 Route::get(
   '/get-in-touch',
-  \App\Http\Controllers\Contact\IndexController::class,
+  \App\Http\Controllers\Customer\IndexController::class,
 )->name('contact.index');
 
 Route::post(
   '/get-in-touch',
-  \App\Http\Controllers\Contact\AskController::class,
+  \App\Http\Controllers\Customer\AskController::class,
 )->name('contact.send');
 
 Route::group(['prefix' => 'subscribe'], function () {
@@ -39,12 +39,12 @@ Route::group(['prefix' => 'projects'], function () {
 
   Route::get(
     '/',
-    [\App\Http\Controllers\ProjectController::class, 'index'],
+    [\App\Http\Controllers\Projects\ProjectController::class, 'index'],
   )->name('projects.index');
 
   Route::get(
     '/{project:pid}',
-    [\App\Http\Controllers\ProjectController::class, 'show'],
+    [\App\Http\Controllers\Projects\ProjectController::class, 'show'],
   )->name('projects.show');
 });
 

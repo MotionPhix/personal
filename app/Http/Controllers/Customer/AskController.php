@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Contact;
+namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Mail\ContactMe;
