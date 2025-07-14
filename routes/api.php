@@ -3,141 +3,93 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+/*
+|--------------------------------------------------------------------------
+| Authenticated API Routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth:sanctum')->group(function () {
 
-  Route::group(
-    ['prefix' => 'customers'],
-    function () {
+    // Customer API routes
+    Route::prefix('customers')->name('api.customers.')->group(function () {
+        Route::get('/', \App\Http\Controllers\Api\Customers\CustomerController::class . '@index')->name('index');
+        Route::post('/', \App\Http\Controllers\Api\Customers\CustomerController::class . '@store')->name('store');
+        Route::get('/{customer:cid}', \App\Http\Controllers\Api\Customers\CustomerController::class . '@show')->name('show');
+        Route::put('/{customer:cid}', \App\Http\Controllers\Api\Customers\CustomerController::class . '@update')->name('update');
+        Route::delete('/{customer:cid}', \App\Http\Controllers\Api\Customers\CustomerController::class . '@destroy')->name('destroy');
+        Route::get('/stats', \App\Http\Controllers\Api\Customers\CustomerController::class . '@stats')->name('stats');
+    });
 
-      Route::get(
-        '/',
-        \App\Http\Controllers\Api\Customers\Index::class
-      )->name('api.customers.index');
-    }
-  );
+    // Project API routes
+    Route::prefix('projects')->name('api.projects.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\Projects\ProjectController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Api\Projects\ProjectController::class, 'store'])->name('store');
+        Route::get('/{project:pid}', [\App\Http\Controllers\Api\Projects\ProjectController::class, 'show'])->name('show');
+        Route::put('/{project:pid}', [\App\Http\Controllers\Api\Projects\ProjectController::class, 'update'])->name('update');
+        Route::delete('/{project:pid}', [\App\Http\Controllers\Api\Projects\ProjectController::class, 'destroy'])->name('destroy');
 
+        // Project utilities
+        Route::get('/stats', [\App\Http\Controllers\Api\Projects\ProjectController::class, 'stats'])->name('stats');
+        Route::get('/production-types', [\App\Http\Controllers\Api\Projects\ProjectController::class, 'productionTypes'])->name('production-types');
+        Route::get('/categories', [\App\Http\Controllers\Api\Projects\ProjectController::class, 'categories'])->name('categories');
+        Route::get('/technologies', [\App\Http\Controllers\Api\Projects\ProjectController::class, 'technologies'])->name('technologies');
+
+        // Media upload
+        Route::post('/{project:pid}/media', [\App\Http\Controllers\Api\Projects\ProjectController::class, 'uploadMedia'])->name('upload-media');
+
+        // Reorder projects
+        Route::post('/reorder', [\App\Http\Controllers\Api\Projects\ProjectController::class, 'reorder'])->name('reorder');
+
+        // Restore soft-deleted project
+        Route::post('/{pid}/restore', [\App\Http\Controllers\Api\Projects\ProjectController::class, 'restore'])->name('restore');
+    });
 });
 
+/*
+|--------------------------------------------------------------------------
+| Public API Routes (No Authentication Required)
+|--------------------------------------------------------------------------
+*/
+Route::prefix('public')->name('api.public.')->group(function () {
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+    // Public portfolio projects
+    Route::prefix('projects')->name('projects.')->group(function () {
+        Route::get('/', \App\Http\Controllers\Api\Public\ProjectController::class . '@index')->name('index');
+        Route::get('/{project:pid}', \App\Http\Controllers\Api\Public\ProjectController::class . '@show')->name('show');
+    });
 
-Route::middleware('auth:sanctum')->group(function () {
+    // Portfolio statistics
+    Route::get('/stats', \App\Http\Controllers\Api\Public\StatsController::class)->name('stats');
 
-  // Customer API routes
-  Route::group(['prefix' => 'customers'], function () {
-    Route::get(
-      '/',
-      \App\Http\Controllers\Api\Customers\Index::class
-    )->name('api.customers.index');
+    // Public metadata endpoints
+    Route::get('/production-types', function () {
+        return response()->json(
+            \App\Models\Project::distinct()
+                ->whereNotNull('production_type')
+                ->where('is_public', true)
+                ->pluck('production_type')
+                ->sort()
+                ->values()
+        );
+    })->name('production-types');
 
-    Route::post(
-      '/',
-      \App\Http\Controllers\Api\Customers\Store::class
-    )->name('api.customers.store');
-
-    Route::get(
-      '/{customer:cid}',
-      \App\Http\Controllers\Api\Customers\Show::class
-    )->name('api.customers.show');
-
-    Route::put(
-      '/{customer:cid}',
-      \App\Http\Controllers\Api\Customers\Update::class
-    )->name('api.customers.update');
-
-    Route::delete(
-      '/{customer:cid}',
-      \App\Http\Controllers\Api\Customers\Destroy::class
-    )->name('api.customers.destroy');
-
-    Route::get(
-      '/stats',
-      \App\Http\Controllers\Api\Customers\Stats::class
-    )->name('api.customers.stats');
-  });
-
-  // Project API routes
-  Route::group(['prefix' => 'projects'], function () {
-    Route::get(
-      '/',
-      \App\Http\Controllers\Api\Projects\ProjectController::class . '@index'
-    )->name('api.projects.index');
-
-    Route::post(
-      '/',
-      \App\Http\Controllers\Api\Projects\ProjectController::class . '@store'
-    )->name('api.projects.store');
-
-    Route::get(
-      '/{project:pid}',
-      \App\Http\Controllers\Api\Projects\ProjectController::class . '@show'
-    )->name('api.projects.show');
-
-    Route::put(
-      '/{project:pid}',
-      \App\Http\Controllers\Api\Projects\ProjectController::class . '@update'
-    )->name('api.projects.update');
-
-    Route::delete(
-      '/{project:pid}',
-      \App\Http\Controllers\Api\Projects\ProjectController::class . '@destroy'
-    )->name('api.projects.destroy');
-
-    // Project utilities
-    Route::get(
-      '/stats',
-      \App\Http\Controllers\Api\Projects\ProjectController::class . '@stats'
-    )->name('api.projects.stats');
-
-    Route::get(
-      '/production-types',
-      \App\Http\Controllers\Api\Projects\ProjectController::class . '@productionTypes'
-    )->name('api.projects.production-types');
-
-    Route::get(
-      '/categories',
-      \App\Http\Controllers\Api\Projects\ProjectController::class . '@categories'
-    )->name('api.projects.categories');
-
-    Route::get(
-      '/technologies',
-      \App\Http\Controllers\Api\Projects\ProjectController::class . '@technologies'
-    )->name('api.projects.technologies');
-
-    // Media upload
-    Route::post(
-      '/{project:pid}/media',
-      \App\Http\Controllers\Api\Projects\ProjectController::class . '@uploadMedia'
-    )->name('api.projects.upload-media');
-
-    // Reorder projects
-    Route::post(
-      '/reorder',
-      \App\Http\Controllers\Api\Projects\ProjectController::class . '@reorder'
-    )->name('api.projects.reorder');
-  });
-
+    Route::get('/categories', function () {
+        return response()->json(
+            \App\Models\Project::distinct()
+                ->whereNotNull('category')
+                ->where('is_public', true)
+                ->pluck('category')
+                ->sort()
+                ->values()
+        );
+    })->name('categories');
 });
 
-// Public API routes (no authentication required)
-Route::group(['prefix' => 'public'], function () {
-
-  // Public portfolio projects
-  Route::get(
-    '/projects',
-    \App\Http\Controllers\Api\Public\ProjectController::class . '@index'
-  )->name('api.public.projects.index');
-
-  Route::get(
-    '/projects/{project:pid}',
-    \App\Http\Controllers\Api\Public\ProjectController::class . '@show'
-  )->name('api.public.projects.show');
-
-  // Portfolio statistics
-  Route::get(
-    '/stats',
-    \App\Http\Controllers\Api\Public\StatsController::class
-  )->name('api.public.stats');
-
+/*
+|--------------------------------------------------------------------------
+| User Info Route
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
 });
