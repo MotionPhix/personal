@@ -12,7 +12,19 @@ export interface User {
   email: string;
   email_verified_at?: string;
   phone_number?: string;
+  bio?: string;
+  website?: string;
+  location?: string;
+  timezone?: string;
   socials?: Socials;
+  preferences?: Record<string, any>;
+  last_login_at?: string;
+  is_active?: boolean;
+  avatar_url?: string;
+  cover_image_url?: string;
+  full_name?: string;
+  initials?: string;
+  is_online?: boolean;
 }
 
 export interface Image {
@@ -64,20 +76,84 @@ export interface Customer {
   last_name: string;
   job_title?: string;
   company_name?: string;
+  email?: string;
+  phone_number?: string;
+  website?: string;
   address?: Address;
+  notes?: string;
+  status?: 'active' | 'inactive' | 'prospect';
+  avatar_url?: string;
+  created_at?: string;
+  updated_at?: string;
+  projects_count?: number;
+}
+
+export interface GalleryImage {
+  id: number;
+  name: string;
+  file_name: string;
+  mime_type: string;
+  size: number;
+  url: string;
+  thumb_url: string;
+  medium_url: string;
+  large_url: string;
 }
 
 export interface Project {
   id: number;
-  pid: string;
+  uuid: string;
+  pid?: string;
   name: string;
-  poster_url: string|File;
-  production?: Date;
-  completion_date?: string;
+  slug?: string;
   description?: string;
+  short_description?: string;
+  production_type?: string;
+  category?: string;
+  status?: 'not_started' | 'in_progress' | 'on_hold' | 'completed' | 'cancelled';
+  priority?: 'low' | 'medium' | 'high' | 'urgent';
+  start_date?: string;
+  end_date?: string;
+  estimated_hours?: number;
+  actual_hours?: number;
+  budget?: number;
+  technologies?: string[];
+  features?: string[];
+  challenges?: string;
+  solutions?: string;
+  results?: string;
+  client_feedback?: string;
+  is_featured?: boolean;
+  is_public?: boolean;
+  sort_order?: number;
+  meta_title?: string;
+  meta_description?: string;
+  poster_url?: string;
+  live_url?: string;
+  github_url?: string;
+  figma_url?: string;
+  behance_url?: string;
+  dribbble_url?: string;
   media?: MediaItem[];
-  customer_id: number;
-  customer?: Customer;
+  customer_id?: number;
+  customer?: {
+    id?: number;
+    name?: string;
+    first_name?: string;
+    last_name?: string;
+    company_name?: string;
+  };
+  created_at?: string;
+  updated_at?: string;
+  // Computed properties
+  duration?: number;
+  progress?: number;
+  status_color?: string;
+  priority_color?: string;
+  main_technologies?: string[];
+  hours_variance?: number;
+  is_overdue?: boolean;
+  gallery_images?: GalleryImage[];
 }
 
 export interface Logo {

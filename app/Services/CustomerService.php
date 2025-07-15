@@ -29,7 +29,7 @@ class CustomerService
   public function getActiveCustomers(): Collection
   {
     return Customer::active()
-      ->select(['cid', 'first_name', 'last_name', 'company_name'])
+      ->select(['uuid', 'first_name', 'last_name', 'company_name'])
       ->get()
       ->transform(function ($customer) {
         return [
@@ -58,8 +58,8 @@ class CustomerService
   public function createCustomer(array $data): Customer
   {
     // Generate CID if not provided
-    if (empty($data['cid'])) {
-      $data['cid'] = $this->generateUniqueCid();
+    if (empty($data['uuid'])) {
+      $data['uuid'] = $this->generateUniqueCid();
     }
 
     return Customer::create($data);
@@ -150,10 +150,6 @@ class CustomerService
    */
   private function generateUniqueCid(): string
   {
-    do {
-      $cid = 'CUS-' . strtoupper(Str::random(8));
-    } while (Customer::where('cid', $cid)->exists());
-
-    return $cid;
+    return Str::orderedUuid();
   }
 }

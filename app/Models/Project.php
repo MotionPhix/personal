@@ -22,7 +22,7 @@ class Project extends Model implements HasMedia
    * @var array<int, string>
    */
   protected $fillable = [
-    'pid',
+    'uuid',
     'customer_id',
     'name',
     'slug',
@@ -88,8 +88,8 @@ class Project extends Model implements HasMedia
     parent::boot();
 
     static::creating(function ($project) {
-      if (empty($project->pid)) {
-        $project->pid = (string) Str::uuid();
+      if (empty($project->uuid)) {
+        $project->uuid = (string) Str::orderedUuid();
       }
 
       if (empty($project->slug)) {
@@ -113,7 +113,7 @@ class Project extends Model implements HasMedia
    */
   public function getRouteKeyName(): string
   {
-    return 'pid';
+    return 'uuid';
   }
 
   /**

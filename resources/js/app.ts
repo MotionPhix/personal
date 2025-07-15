@@ -15,6 +15,9 @@ import { createPinia } from 'pinia'
 
 import { renderApp } from '@inertiaui/modal-vue';
 
+// ApexCharts
+import VueApexCharts from 'vue3-apexcharts';
+
 const appName = import.meta.env.VITE_APP_NAME || 'Ultrahots';
 
 const lenis = new Lenis()
@@ -36,6 +39,7 @@ createInertiaApp({
       .use(plugin)
       .use(ZiggyVue)
       .use(createPinia())
+      .component('VueApexCharts', VueApexCharts)
       .mount(el);
   },
   progress: {

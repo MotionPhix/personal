@@ -23,11 +23,10 @@ class CustomerSeeder extends Seeder
       ->create()
       ->each(function ($customer) {
         // Each tech customer gets 2-4 projects
-        $customer->projects()->createMany(
-          Project::factory(rand(2, 4))->make()->toArray()
-        )->each(function ($project) {
+        for ($i = 0; $i < rand(2, 4); $i++) {
+          $project = $customer->projects()->create(Project::factory()->make()->toArray());
           $this->addProjectMedia($project);
-        });
+        }
       });
 
     // Creative industry customers (4)
@@ -37,11 +36,10 @@ class CustomerSeeder extends Seeder
       ->create()
       ->each(function ($customer) {
         // Each creative customer gets 1-3 projects
-        $customer->projects()->createMany(
-          Project::factory(rand(1, 3))->make()->toArray()
-        )->each(function ($project) {
+        for ($i = 0; $i < rand(1, 3); $i++) {
+          $project = $customer->projects()->create(Project::factory()->make()->toArray());
           $this->addProjectMedia($project);
-        });
+        }
       });
 
     // Individual clients (3)
@@ -51,11 +49,10 @@ class CustomerSeeder extends Seeder
       ->create()
       ->each(function ($customer) {
         // Individual clients typically have 1-2 projects
-        $customer->projects()->createMany(
-          Project::factory(rand(1, 2))->make()->toArray()
-        )->each(function ($project) {
+        for ($i = 0; $i < rand(1, 2); $i++) {
+          $project = $customer->projects()->create(Project::factory()->make()->toArray());
           $this->addProjectMedia($project);
-        });
+        }
       });
 
     // Prospect customers (2) - no projects yet
@@ -69,11 +66,8 @@ class CustomerSeeder extends Seeder
       ->create()
       ->each(function ($customer) {
         if (rand(0, 1)) {
-          $customer->projects()->createMany(
-            Project::factory(1)->make()->toArray()
-          )->each(function ($project) {
-            $this->addProjectMedia($project);
-          });
+          $project = $customer->projects()->create(Project::factory()->make()->toArray());
+          $this->addProjectMedia($project);
         }
       });
 
@@ -107,20 +101,19 @@ class CustomerSeeder extends Seeder
     ]);
 
     // Create flagship projects for this customer
-    $techCustomer->projects()->createMany([
-      Project::factory()->make([
-        'name' => 'Corporate Website Redesign',
-        'production' => 'Web Development',
-        'description' => 'Complete redesign and development of corporate website with modern UI/UX, improved performance, and mobile responsiveness.',
-      ])->toArray(),
-      Project::factory()->make([
-        'name' => 'Brand Identity System',
-        'production' => 'Branding',
-        'description' => 'Comprehensive brand identity including logo design, color palette, typography, and brand guidelines.',
-      ])->toArray(),
-    ])->each(function ($project) {
-      $this->addProjectMedia($project);
-    });
+    $project1 = $techCustomer->projects()->create(Project::factory()->make([
+      'name' => 'Corporate Website Redesign',
+      'production_type' => 'Web Development',
+      'description' => 'Complete redesign and development of corporate website with modern UI/UX, improved performance, and mobile responsiveness.',
+    ])->toArray());
+    $this->addProjectMedia($project1);
+
+    $project2 = $techCustomer->projects()->create(Project::factory()->make([
+      'name' => 'Brand Identity System',
+      'production_type' => 'Branding',
+      'description' => 'Comprehensive brand identity including logo design, color palette, typography, and brand guidelines.',
+    ])->toArray());
+    $this->addProjectMedia($project2);
 
     // Creative agency
     $creativeCustomer = Customer::factory()->create([
@@ -142,13 +135,14 @@ class CustomerSeeder extends Seeder
       'notes' => 'Creative agency specializing in digital art and interactive experiences. Values innovative design solutions.',
     ]);
 
-    $creativeCustomer->projects()->create(
+    $project3 = $creativeCustomer->projects()->create(
       Project::factory()->make([
         'name' => 'Interactive Portfolio Platform',
-        'production' => 'Web Application',
+        'production_type' => 'Web Application',
         'description' => 'Custom portfolio platform with interactive galleries, client management, and project showcase features.',
       ])->toArray()
     );
+    $this->addProjectMedia($project3);
   }
 
   /**
@@ -156,27 +150,62 @@ class CustomerSeeder extends Seeder
    */
   private function addProjectMedia($project): void
   {
-    for ($i = 0; $i < rand(2, 7); $i++) {
-      $faker = \Faker\Factory::create();
-      $faker->addProvider(new \Smknstd\FakerPicsumImages\FakerPicsumImagesProvider($faker));
+    // Create temp directory if it doesn't exist
+    $tempDir = storage_path('app/temp');
+    if (!file_exists($tempDir)) {
+      mkdir($tempDir, 0755, true);
+    }
 
-      // Randomly choose image size
-      $sizes = [
-        [640, 480],
-        [800, 600],
-        [1024, 768],
-        [480, 640],
-        [600, 800],
-        [768, 1024],
-        [1280, 720],
-        [720, 1280]
-      ];
+    // Add gallery images
+    for ($i = 0; $i < rand(2, 5); $i++) {
+      try {
+        // Use a simple approach to create placeholder images
+        $width = rand(800, 1200);
+        $height = rand(600, 900);
 
-      [$width, $height] = $faker->randomElement($sizes);
+        // Create a simple placeholder image URL (this won't actually download)
+        $imageUrl = "https://picsum.photos/{$width}/{$height}";
 
-      // Generate image and add to Spatie Media Library
-      $imagePath = $faker->image('public/tmp', $width, $height);
-      $project->addMedia($imagePath)->toMediaCollection('bucket');
+        // For seeding purposes, we'll create a simple text file as placeholder
+        $fileName = "project_{$project->id}_image_{$i}.jpg";
+        $filePath = $tempDir . '/' . $fileName;
+
+        // Create a simple placeholder file
+        file_put_contents($filePath, "Placeholder image for project {$project->name}");
+
+        // Add to media library
+        if (file_exists($filePath)) {
+          $project->addMedia($filePath)
+            ->usingName("Project Image " . ($i + 1))
+            ->usingFileName($fileName)
+            ->toMediaCollection('gallery');
+
+          // Clean up temp file
+          unlink($filePath);
+        }
+      } catch (\Exception $e) {
+        // Skip this image if there's an error
+        continue;
+      }
+    }
+
+    // Add a poster image
+    try {
+      $posterFileName = "project_{$project->id}_poster.jpg";
+      $posterPath = $tempDir . '/' . $posterFileName;
+
+      file_put_contents($posterPath, "Poster image for project {$project->name}");
+
+      if (file_exists($posterPath)) {
+        $project->addMedia($posterPath)
+          ->usingName("Project Poster")
+          ->usingFileName($posterFileName)
+          ->toMediaCollection('poster');
+
+        unlink($posterPath);
+      }
+    } catch (\Exception $e) {
+      // Skip poster if there's an error
     }
   }
 }

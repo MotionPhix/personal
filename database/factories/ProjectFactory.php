@@ -50,7 +50,6 @@ class ProjectFactory extends Factory
       null;
 
     return [
-      'pid' => (string) Str::uuid(),
       'customer_id' => Customer::factory(),
       'name' => $name,
       'slug' => Str::slug($name),

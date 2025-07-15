@@ -62,8 +62,8 @@ class ProjectService
     }
 
     // Generate PID if not provided
-    if (empty($data['pid'])) {
-      $data['pid'] = (string)Str::uuid();
+    if (empty($data['uuid'])) {
+      $data['uuid'] = (string)Str::uuid();
     }
 
     return Project::create($data);
@@ -140,7 +140,7 @@ class ProjectService
   /**
    * Get distinct production types.
    */
-  public function getProductionTypes(bool $publicOnly = false): Collection
+  public function getProductionTypes(bool $publicOnly = false): \Illuminate\Support\Collection
   {
     $query = Project::distinct()->whereNotNull('production_type');
 
@@ -154,7 +154,7 @@ class ProjectService
   /**
    * Get distinct categories.
    */
-  public function getCategories(bool $publicOnly = false): Collection
+  public function getCategories(bool $publicOnly = false): \Illuminate\Support\Collection
   {
     $query = Project::distinct()->whereNotNull('category');
 

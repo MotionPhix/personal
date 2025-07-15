@@ -13,7 +13,7 @@ return new class extends Migration
   {
     Schema::create('logos', function (Blueprint $table) {
       $table->id();
-      $table->uuid('lid')->nullable();
+      $table->uuid('uuid')->unique();
       $table->string('brand');
       $table->timestamps();
     });

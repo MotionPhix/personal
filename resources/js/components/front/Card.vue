@@ -15,7 +15,7 @@ const getImageById = (id: number) => {
 <template>
   <Link
     class="relative block w-full overflow-hidden rounded-lg group"
-    :href="route('projects.show', project.pid)">
+    :href="route('projects.show', project.uuid)">
 
     <img
       loading="lazy"

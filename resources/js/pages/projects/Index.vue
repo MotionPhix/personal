@@ -94,7 +94,7 @@ defineOptions({ layout: AppLayout });
       >
         <li
           v-for="(project, index) in projects"
-          :key="project.pid"
+          :key="project.uuid"
           class="relative flex flex-col items-start project-card"
           ref="el => projectsRef.value[index] = el"
         >

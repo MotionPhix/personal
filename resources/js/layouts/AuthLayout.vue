@@ -5,6 +5,7 @@ import Dropdown from '@/components/Dropdown.vue';
 import DropdownLink from '@/components/DropdownLink.vue';
 import NavLink from '@/components/NavLink.vue';
 import ResponsiveNavLink from '@/components/ResponsiveNavLink.vue';
+import NotificationContainer from '@/components/ui/NotificationContainer.vue';
 import { Link } from '@inertiajs/vue3';
 import ToastList from '@/components/backend/ToastList.vue';
 import { useDark } from '@vueuse/core';
@@ -29,6 +30,7 @@ const isDark = useDark()
   <div>
 
     <ToastList />
+    <NotificationContainer />
 
     <div class="min-h-screen">
       <nav class="bg-white border-b border-gray-100 dark:bg-gray-800 dark:border-gray-700">
@@ -38,7 +40,7 @@ const isDark = useDark()
             <div class="flex">
               <!-- Logo -->
               <div class="flex items-center shrink-0">
-                <Link :href="route('dashboard')">
+                <Link :href="route('admin.dashboard')">
                 <ApplicationLogo class="block w-auto text-gray-800 fill-current h-9 dark:text-gray-200" />
                 </Link>
               </div>
@@ -52,20 +54,20 @@ const isDark = useDark()
                 </NavLink>
 
                 <NavLink
-                  :href="route('auth.customer.index')"
-                  :active="$page.url.startsWith('/auth/customers')">
+                  :href="route('admin.customers.index')"
+                  :active="$page.url.startsWith('/admin/customers')">
                   Customers
                 </NavLink>
 
                 <NavLink
-                  :href="route('auth.projects.index')"
-                  :active="$page.url.startsWith('/auth/projects')">
+                  :href="route('admin.projects.index')"
+                  :active="$page.url.startsWith('/admin/projects')">
                   Projects
                 </NavLink>
 
                 <NavLink
-                  :href="route('auth.downloads.index')"
-                  :active="$page.url.startsWith('/auth/downloads')">
+                  :href="route('admin.downloads.index')"
+                  :active="$page.url.startsWith('/admin/downloads')">
                   Downloads
                 </NavLink>
               </div>
@@ -142,7 +144,7 @@ const isDark = useDark()
                             active ? 'bg-violet-500 text-white' : 'text-gray-900',
                             'group flex gap-2 w-full items-center rounded-md px-2 py-2 text-sm',
                           ]"
-                          :href="route('auth.downloads.create')"
+                          :href="route('admin.downloads.create')"
                         >
                           <IconBalloon
                             :active="active"
@@ -187,7 +189,7 @@ const isDark = useDark()
                   </template>
 
                   <template #content>
-                    <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
+                    <DropdownLink :href="route('admin.profile.edit')"> Profile </DropdownLink>
                     <DropdownLink :href="route('logout')"
                                   method="post"
                                   as="button">
@@ -239,22 +241,23 @@ const isDark = useDark()
           </div>
 
           <div class="pt-2 pb-3 space-y-1">
-            <ResponsiveNavLink :href="route('auth.customer.index')"
-                               :active="$page.url.startsWith('/auth/customers')">
+            <ResponsiveNavLink :href="route('admin.customers.index')"
+                               :active="$page.url.startsWith('/admin/customers')">
               Customers
             </ResponsiveNavLink>
           </div>
 
           <div class="pt-2 pb-3 space-y-1">
-            <ResponsiveNavLink :href="route('auth.projects.index')"
-                               :active="$page.url.startsWith('/auth/projects')">
+            <ResponsiveNavLink :href="route('admin.projects.index')"
+                               :active="$page.url.startsWith('/admin/projects')">
               Projects
             </ResponsiveNavLink>
           </div>
 
           <div class="pt-2 pb-3 space-y-1">
-            <ResponsiveNavLink :href="route('auth.downloads.index')"
-                              :active="$page.url.startsWith('/auth/downloads')">
+            <ResponsiveNavLink
+              :href="route('admin.downloads.index')"
+              :active="$page.url.startsWith('/admin/downloads')">
               Downloads
             </ResponsiveNavLink>
           </div>
@@ -270,13 +273,14 @@ const isDark = useDark()
             </div>
 
             <div class="mt-3 space-y-1">
-              <ResponsiveNavLink :href="route('profile.edit')">
+              <ResponsiveNavLink :href="route('admin.profile.edit')">
                 Profile
               </ResponsiveNavLink>
 
-              <ResponsiveNavLink :href="route('logout')"
-                                 method="post"
-                                 as="button">
+              <ResponsiveNavLink
+                :href="route('logout')"
+                method="post"
+                as="button">
                 Log Out
               </ResponsiveNavLink>
             </div>

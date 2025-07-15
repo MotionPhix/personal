@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Customer>
@@ -30,7 +29,6 @@ class CustomerFactory extends Factory
     $companyName = fake()->boolean(70) ? fake()->company() : null;
 
     return [
-      'cid' => (string) Str::uuid(),
       'first_name' => $firstName,
       'last_name' => $lastName,
       'job_title' => fake()->jobTitle(),
