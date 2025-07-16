@@ -73,8 +73,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('/', [\App\Http\Controllers\Projects\ProjectController::class, 'listing'])->name('index');
     Route::get('/create/{customer:uuid?}', [\App\Http\Controllers\Projects\ProjectController::class, 'create'])->name('create');
     Route::post('/', [\App\Http\Controllers\Projects\ProjectCrudController::class, 'store'])->name('store');
-    Route::get('/{project:uuid}', [\App\Http\Controllers\Projects\ProjectController::class, 'detail'])->name('show');
-    Route::get('/{project:uuid}/edit', [\App\Http\Controllers\Projects\ProjectController::class, 'edit'])->name('edit');
+    Route::get('/s/{project:uuid}', [\App\Http\Controllers\Projects\ProjectController::class, 'detail'])->name('show');
+    Route::get('/e/{project:uuid}', [\App\Http\Controllers\Projects\ProjectController::class, 'edit'])->name('edit');
     Route::put('/{project:uuid}', [\App\Http\Controllers\Projects\ProjectCrudController::class, 'update'])->name('update');
     Route::delete('/{project:uuid}', [\App\Http\Controllers\Projects\ProjectCrudController::class, 'destroy'])->name('destroy');
   });

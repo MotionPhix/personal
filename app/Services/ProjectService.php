@@ -23,7 +23,7 @@ class ProjectService
     $this->applyFilters($query, $request);
     $query->ordered();
 
-    return $query->paginate($request->get('per_page', 12));
+    return $query->paginate($request->get('per_page', 10));
   }
 
   /**

@@ -23,7 +23,9 @@ import {
 import {Project, Customer} from "@/types";
 import {useStorage} from "@vueuse/core";
 import {cn} from '@/lib/utils';
+import {Input} from '@/components/ui/input'
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 interface ProjectStats {
   total_projects: number;
@@ -82,7 +84,7 @@ const selectedCategory = ref(props.filters.category || '');
 
 // Computed properties
 const statusOptions = [
-  {value: '', label: 'All Status'},
+  {value: null, label: 'All Status'},
   {value: 'not_started', label: 'Not Started'},
   {value: 'in_progress', label: 'In Progress'},
   {value: 'on_hold', label: 'On Hold'},
@@ -252,15 +254,15 @@ const handleFilter = () => {
       </div>
 
       <!-- Filters -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
+      <div class="rounded-lg border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <div class="flex flex-col sm:flex-row gap-4">
           <!-- Search -->
           <div class="flex-1">
             <div class="relative">
               <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400"/>
-              <input
+              <Input
                 v-model="searchQuery"
-                @keyup.enter="handleSearch"
+                @update:model-value="handleSearch"
                 type="text"
                 placeholder="Search projects..."
                 class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -270,29 +272,44 @@ const handleFilter = () => {
 
           <!-- Status Filter -->
           <div class="sm:w-48">
-            <select
+            <Select
               v-model="selectedStatus"
-              @change="handleFilter"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option v-for="option in statusOptions" :key="option.value" :value="option.value">
-                {{ option.label }}
-              </option>
-            </select>
+              @update:model-value="handleFilter">
+              <SelectTrigger class="w-full">
+                <SelectValue placeholder="Filter by status" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem
+                  v-for="option in statusOptions"
+                  :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <!-- Category Filter -->
           <div class="sm:w-48">
-            <select
+            <Select
               v-model="selectedCategory"
-              @change="handleFilter"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">All Categories</option>
-              <option v-for="category in categories" :key="category" :value="category">
-                {{ category }}
-              </option>
-            </select>
+              @update:model-value="handleFilter">
+              <SelectTrigger class="w-full">
+                <SelectValue placeholder="Filter by category" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem :value="null">
+                  All Categories
+                </SelectItem>
+
+                <SelectItem
+                  v-for="category in categories"
+                  :key="category" :value="category">
+                  {{ category }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
       </div>
@@ -346,6 +363,7 @@ const handleFilter = () => {
               >
                 <Eye class="h-4 w-4"/>
               </Link>
+
               <Link
                 :href="route('admin.projects.edit', project.uuid)"
                 class="p-2 bg-white rounded-full text-gray-700 hover:bg-gray-100 transition-colors"
@@ -377,40 +395,28 @@ const handleFilter = () => {
                 </DropdownMenuTrigger>
 
                 <DropdownMenuContent>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem as-child>
                     <Link
-                      :href="route('admin.projects.show', project.uuid)"
-                      :class="[
-                        active ? 'bg-gray-100 dark:bg-gray-700' : '',
-                        'flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300'
-                      ]">
-                      <Eye class="h-4 w-4 mr-3"/>
+                      :href="route('admin.projects.show', project.uuid)">
+                      <Eye />
                       View Details
                     </Link>
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem>
+                  <DropdownMenuItem as-child>
                     <Link
-                      :href="route('admin.projects.edit', project.uuid)"
-                      :class="[
-                          active ? 'bg-gray-100 dark:bg-gray-700' : '',
-                          'flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300'
-                        ]">
-                      <Edit class="h-4 w-4 mr-3"/>
+                      :href="route('admin.projects.edit', project.uuid)">
+                      <Edit />
                       Edit Project
                     </Link>
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem>
+                  <DropdownMenuItem as-child>
                     <Link
                       :href="route('admin.projects.destroy', project.uuid)"
                       method="delete"
-                      as="button"
-                      :class="[
-                        active ? 'bg-red-50 dark:bg-red-900' : '',
-                        'flex items-center w-full px-4 py-2 text-sm text-red-700 dark:text-red-300'
-                      ]">
-                      <Trash2 class="h-4 w-4 mr-3"/>
+                      as="button">
+                      <Trash2 />
                       Delete Project
                     </Link>
                   </DropdownMenuItem>
@@ -523,63 +529,40 @@ const handleFilter = () => {
                 {{ new Date(project.created_at || '').toLocaleDateString() }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <Menu as="div" class="relative inline-block text-left">
-                  <MenuButton class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                    <MoreVertical class="h-4 w-4"/>
-                  </MenuButton>
-                  <transition
-                    enter-active-class="transition duration-100 ease-out"
-                    enter-from-class="transform scale-95 opacity-0"
-                    enter-to-class="transform scale-100 opacity-100"
-                    leave-active-class="transition duration-75 ease-in"
-                    leave-from-class="transform scale-100 opacity-100"
-                    leave-to-class="transform scale-95 opacity-0"
-                  >
-                    <MenuItems
-                      class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
-                      <div class="py-1">
-                        <MenuItem v-slot="{ active }">
-                          <Link
-                            :href="route('admin.projects.show', project.uuid)"
-                            :class="[
-                                active ? 'bg-gray-100 dark:bg-gray-700' : '',
-                                'flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300'
-                              ]"
-                          >
-                            <Eye class="h-4 w-4 mr-3"/>
-                            View Details
-                          </Link>
-                        </MenuItem>
-                        <MenuItem v-slot="{ active }">
-                          <Link
-                            :href="route('admin.projects.edit', project.uuid)"
-                            :class="[
-                                active ? 'bg-gray-100 dark:bg-gray-700' : '',
-                                'flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300'
-                              ]"
-                          >
-                            <Edit class="h-4 w-4 mr-3"/>
-                            Edit Project
-                          </Link>
-                        </MenuItem>
-                        <MenuItem v-slot="{ active }">
-                          <Link
-                            :href="route('admin.projects.destroy', project.uuid)"
-                            method="delete"
-                            as="button"
-                            :class="[
-                                active ? 'bg-red-50 dark:bg-red-900' : '',
-                                'flex items-center w-full px-4 py-2 text-sm text-red-700 dark:text-red-300'
-                              ]"
-                          >
-                            <Trash2 class="h-4 w-4 mr-3"/>
-                            Delete Project
-                          </Link>
-                        </MenuItem>
-                      </div>
-                    </MenuItems>
-                  </transition>
-                </Menu>
+                <DropdownMenu>
+                  <DropdownMenuTrigger class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                    <MoreVertical />
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent>
+                    <DropdownMenuItem as-child>
+                      <Link
+                        :href="route('admin.projects.show', project.uuid)">
+                        <Eye />
+                        View Details
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem as-child>
+                      <Link
+                        :href="route('admin.projects.edit', project.uuid)">
+                        <Edit />
+                        Edit Project
+                      </Link>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem as-child>
+                      <Link
+                        :href="route('admin.projects.destroy', project.uuid)"
+                        method="delete"
+                        as="button">
+                        <Trash2 />
+                        Delete Project
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+
+                </DropdownMenu>
               </td>
             </tr>
             </tbody>
