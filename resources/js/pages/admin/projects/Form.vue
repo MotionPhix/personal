@@ -417,18 +417,18 @@ defineOptions({
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               <!-- Production Type -->
               <div>
-                <label for="production_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Label for="production_type">
                   Production Type
-                </label>
-                <select
-                  v-model="form.production_type"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
+                </Label>
+
+                <Select
+                  v-model="form.production_type">
+                  <SelectTrigger></SelectTrigger>
                   <option value="">Select type</option>
                   <option v-for="type in productionTypeOptions" :key="type.value" :value="type.value">
                     {{ type.label }}
                   </option>
-                </select>
+                </Select>
                 <InputError :message="form.errors.production_type" />
               </div>
 
