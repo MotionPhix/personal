@@ -336,7 +336,7 @@ const handleFilter = () => {
       </div>
 
       <!-- Grid View -->
-      <div v-else-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div v-else-if="viewMode === 'grid'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div
           v-for="project in projects.data"
           :key="project.uuid"
@@ -394,7 +394,7 @@ const handleFilter = () => {
                   <MoreVertical class="h-4 w-4"/>
                 </DropdownMenuTrigger>
 
-                <DropdownMenuContent>
+                <DropdownMenuContent align="end">
                   <DropdownMenuItem as-child>
                     <Link
                       :href="route('admin.projects.show', project.uuid)">

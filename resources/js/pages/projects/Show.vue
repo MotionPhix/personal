@@ -214,7 +214,7 @@ onMounted(() => {
         class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-neutral-400 dark:hover:text-neutral-200 group"
       >
         <IconArrowLeft size="16" class="transition-transform group-hover:-translate-x-1" />
-        <span>Back to Projects</span>
+        <span>All projects</span>
       </Link>
     </div>
 

@@ -132,3 +132,7 @@
 }
 
 html body { overflow: auto !important; padding-right: 0 !important; }
+
+input, button[role=combobox], button[aria-haspopup=dialog] {
+  @apply !h-11;
+}

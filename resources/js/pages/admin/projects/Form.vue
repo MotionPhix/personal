@@ -63,6 +63,7 @@ import {
   NumberFieldDecrement,
   NumberFieldIncrement, NumberFieldInput
 } from "@/components/ui/number-field";
+import {Button} from "@/components/ui/button";
 interface FormProps {
   project: Partial<Project>;
   customers: Customer[];
@@ -296,16 +297,16 @@ defineOptions({
             >
               Cancel
             </Link>
-            <button
+
+            <Button
               type="submit"
+              variant="default"
               @click.prevent="onSubmit"
-              :disabled="form.processing"
-              class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Loader2 v-if="form.processing" class="h-4 w-4 mr-2 animate-spin" />
-              <Save v-else class="h-4 w-4 mr-2" />
+              :disabled="form.processing">
+              <Loader2 v-if="form.processing" class="animate-spin" />
+              <Save v-else />
               {{ isEditing ? 'Update Project' : 'Create Project' }}
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -376,6 +377,7 @@ defineOptions({
                     :data="{ 'modal': 'show' }"
                     @close="onAssignContact"
                     preserve-scroll
+                    type="button"
                     as="button">
                     <Plus class="h-4 w-4" />
                   </ModalLink>
@@ -423,61 +425,87 @@ defineOptions({
 
                 <Select
                   v-model="form.production_type">
-                  <SelectTrigger></SelectTrigger>
-                  <option value="">Select type</option>
-                  <option v-for="type in productionTypeOptions" :key="type.value" :value="type.value">
-                    {{ type.label }}
-                  </option>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectItem
+                      v-for="type in productionTypeOptions"
+                      :key="type.value" :value="type.value">
+                      {{ type.label }}
+                    </SelectItem>
+                  </SelectContent>
                 </Select>
+
                 <InputError :message="form.errors.production_type" />
               </div>
 
               <!-- Category -->
               <div>
-                <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Label for="category">
                   Category
-                </label>
-                <select
-                  v-model="form.category"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select category</option>
-                  <option v-for="category in categoryOptions" :key="category.value" :value="category.value">
-                    {{ category.label }}
-                  </option>
-                </select>
+                </Label>
+
+                <Select
+                  v-model="form.category">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select category" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectItem
+                      v-for="category in categoryOptions"
+                      :key="category.value" :value="category.value">
+                      {{ category.label }}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+
                 <InputError :message="form.errors.category" />
               </div>
 
               <!-- Status -->
               <div>
-                <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Label for="status">
                   Status
-                </label>
-                <select
-                  v-model="form.status"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option v-for="status in statusOptions" :key="status.value" :value="status.value">
-                    {{ status.label }}
-                  </option>
-                </select>
+                </Label>
+
+                <Select
+                  v-model="form.status">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectItem v-for="status in statusOptions" :key="status.value" :value="status.value">
+                      {{ status.label }}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+
                 <InputError :message="form.errors.status" />
               </div>
 
               <!-- Priority -->
               <div>
-                <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Label for="priority">
                   Priority
-                </label>
-                <select
-                  v-model="form.priority"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option v-for="priority in priorityOptions" :key="priority.value" :value="priority.value">
-                    {{ priority.label }}
-                  </option>
-                </select>
+                </Label>
+
+                <Select
+                  v-model="form.priority">
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectItem v-for="priority in priorityOptions" :key="priority.value" :value="priority.value">
+                      {{ priority.label }}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+
                 <InputError :message="form.errors.priority" />
               </div>
             </div>
@@ -548,52 +576,60 @@ defineOptions({
 
               <!-- Estimated Hours -->
               <div>
-                <label for="estimated_hours" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Estimated Hours
-                </label>
-                <div class="relative">
-                  <Clock class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
-                    id="estimated_hours"
-                    v-model="form.estimated_hours"
-                    type="number"
-                    placeholder="0"
-                    class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
+                <NumberField
+                  id="estimated_hours"
+                  v-model="form.estimated_hours"
+                  :format-options="{
+                    style: 'decimal',
+                    trailingZeroDisplay: 'auto'
+                  }"
+                  :min="0">
+                  <Label for="estimated_hours">Estimated Hours</Label>
+                  <NumberFieldContent>
+                    <NumberFieldDecrement />
+                    <NumberFieldInput />
+                    <NumberFieldIncrement />
+                  </NumberFieldContent>
+                </NumberField>
+
                 <InputError :message="form.errors.estimated_hours" />
               </div>
 
               <!-- Actual Hours -->
               <div>
-                <label for="actual_hours" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Actual Hours
-                </label>
-                <div class="relative">
-                  <Clock class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
-                    id="actual_hours"
-                    v-model="form.actual_hours"
-                    type="number"
-                    placeholder="0"
-                    class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
+                <NumberField
+                  id="actual_hours"
+                  v-model="form.estimated_hours"
+                  :format-options="{
+                    style: 'decimal',
+                    trailingZeroDisplay: 'auto'
+                  }"
+                  :min="0">
+                  <Label for="actual_hours">Actual Hours</Label>
+                  <NumberFieldContent>
+                    <NumberFieldDecrement />
+                    <NumberFieldInput />
+                    <NumberFieldIncrement />
+                  </NumberFieldContent>
+                </NumberField>
+
                 <InputError :message="form.errors.actual_hours" />
               </div>
 
               <!-- Sort Order -->
               <div>
-                <label for="sort_order" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Sort Order
-                </label>
-                <input
-                  id="sort_order"
+                <NumberField
+                  id="actual_hours"
                   v-model="form.sort_order"
-                  type="number"
-                  placeholder="0"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+                  :min="0">
+                  <Label for="sort_order">Sort Order</Label>
+                  <NumberFieldContent>
+                    <NumberFieldDecrement />
+                    <NumberFieldInput />
+                    <NumberFieldIncrement />
+                  </NumberFieldContent>
+                </NumberField>
+
                 <InputError :message="form.errors.sort_order" />
               </div>
             </div>
@@ -613,21 +649,23 @@ defineOptions({
 
             <div class="space-y-4">
               <!-- Add Technology -->
-              <div class="flex gap-2">
-                <input
+              <div class="flex gap-x-2">
+                <Input
                   v-model="newTechnology"
                   type="text"
                   placeholder="Add a technology (e.g., Laravel, Vue.js)"
-                  class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="flex-1"
                   @keyup.enter="addTechnology"
                 />
-                <button
+
+                <Button
+                  v-if="newTechnology !== ''"
+                  size="icon"
                   type="button"
-                  @click="addTechnology"
-                  class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <Plus class="h-4 w-4" />
-                </button>
+                  variant="ghost"
+                  @click="addTechnology">
+                  <Plus />
+                </Button>
               </div>
 
               <!-- Technology Tags -->
@@ -665,20 +703,20 @@ defineOptions({
             <div class="space-y-4">
               <!-- Add Feature -->
               <div class="flex gap-2">
-                <input
+                <Input
                   v-model="newFeature"
                   type="text"
                   placeholder="Add a key feature"
-                  class="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  class="flex-1"
                   @keyup.enter="addFeature"
                 />
-                <button
+
+                <Button
+                  v-if="newFeature !== ''"
                   type="button"
-                  @click="addFeature"
-                  class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <Plus class="h-4 w-4" />
-                </button>
+                  @click="addFeature">
+                  <Plus />
+                </Button>
               </div>
 
               <!-- Feature List -->
