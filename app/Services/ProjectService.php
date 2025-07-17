@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Project;
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -196,8 +197,11 @@ class ProjectService
   /**
    * Upload media for a project.
    */
-  public function uploadMedia(Project $project, array $files, string $collection = 'gallery'): array
+  public function uploadMedia(Project $project, array|UploadedFile $files, string $collection = 'gallery'): array
   {
+    // Normalize to array if single file is passed
+    $files = is_array($files) ? $files : [$files];
+
     $uploadedFiles = [];
 
     foreach ($files as $file) {

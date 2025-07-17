@@ -71,6 +71,15 @@ class ProjectCrudController extends Controller
         );
       }
 
+      // Handle project poster upload if present
+      if ($request->hasFile('poster_image')) {
+        $this->projectService->uploadMedia(
+          $project,
+          $request->file('poster_image'),
+          'poster'
+        );
+      }
+
       return redirect()
         ->route('admin.projects.show', $project)
         ->with('notify', [

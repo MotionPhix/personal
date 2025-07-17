@@ -83,8 +83,12 @@ const FilePondInput = vueFilePond(
 );
 
 // Refs
+const projectPosterPond = ref<FilePond | null>(null);
+const projectImage = ref();
+
 const projectGalleryPond = ref<FilePond | null>(null);
 const projectImages = ref([]);
+
 const tipTapRef = ref();
 
 // Form setup
@@ -138,6 +142,7 @@ const form = useForm({
 
   // Media
   captured_media: [] as File[],
+  poster_image: props.project.poster_url as File
 });
 
 const productionTypeOptions = computed(() =>
@@ -190,6 +195,15 @@ const removeFeature = (index: number) => {
 };
 
 // File upload handling
+const handlePosterPondInit = () => {
+  if (props.project.poster_url) {
+    projectImage.value = ({
+      source: props.project.poster_url,
+      options: { type: 'server' },
+    }) as any;
+  }
+};
+
 const handlePondInit = () => {
   if (props.project.gallery_images && props.project.gallery_images.length > 0) {
     projectImages.value = props.project.gallery_images.map((image: GalleryImage) => ({
@@ -209,6 +223,7 @@ const onSubmit = () => {
   const formData = {
     ...form.data(),
     captured_media: projectGalleryPond.value?.getFiles().map((file) => file.file) || [],
+    poster_image: projectPosterPond.value?.getFile().file
   };
 
   if (props.isEditing && props.project.uuid) {
@@ -249,6 +264,7 @@ watch(() => form.name, (newName) => {
 // Lifecycle
 onMounted(() => {
   handlePondInit();
+  handlePosterPondInit()
 });
 
 defineOptions({
@@ -316,8 +332,13 @@ defineOptions({
               </div>
 
               <div>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Basic Information</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Essential project details and client information</p>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  Basic Information
+                </h2>
+
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Essential project details and client information
+                </p>
               </div>
             </div>
 
@@ -961,15 +982,51 @@ defineOptions({
             </div>
           </div>
 
-          <!-- Project Media -->
+          <!-- Project Poster -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+            <div class="flex items-center space-x-3 mb-6">
+              <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                <ImageIcon class="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              </div>
+
+              <div>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  Project Poster
+                </h2>
+
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Upload the main poster/hero image for this project
+                </p>
+              </div>
+            </div>
+
+            <FilePondInput
+              name="poster_image"
+              ref="projectPosterPond"
+              :files="posterImage"
+              max-file-size="5MB"
+              credits="false"
+              :store-as-file="true"
+              accepted-file-types="image/*"
+              label-idle="Drop poster image here or <span class='filepond--label-action'>Browse</span>"
+              :allow-multiple="false"
+              :allow-image-preview="true"
+              :allow-paste="true"
+              @init="handlePosterPondInit"
+            />
+
+            <InputError :message="form.errors.poster_image" />
+          </div>
+
+          <!-- Project Gallery -->
           <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center space-x-3 mb-6">
               <div class="p-2 bg-red-100 dark:bg-red-900 rounded-lg">
                 <ImageIcon class="h-5 w-5 text-red-600 dark:text-red-400" />
               </div>
               <div>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Project Media</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Upload project images and screenshots</p>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Project Gallery</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Upload additional project images and screenshots</p>
               </div>
             </div>
 
@@ -977,7 +1034,7 @@ defineOptions({
               name="project_images"
               ref="projectGalleryPond"
               :files="projectImages"
-              max-file-size="10MB"
+              max-file-size="5MB"
               credits="false"
               :store-as-file="true"
               accepted-file-types="image/*"

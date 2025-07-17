@@ -785,16 +785,17 @@ console.log(props.project)
 
     <!-- Image Modal -->
     <Dialog v-model:open="isImageDialogOpen">
-      <DialogContent class="max-w-4xl">
+      <DialogContent class="max-w-xl">
         <DialogHeader>
           <DialogTitle>{{ selectedImage?.name || 'Project Image' }}</DialogTitle>
           <DialogDescription>
             {{ formatFileSize(selectedImage?.size || 0) }} • {{ selectedImage?.mime_type }}
           </DialogDescription>
         </DialogHeader>
+
         <div v-if="selectedImage" class="mt-4">
           <img
-            :src="selectedImage.large_url || selectedImage.url"
+            :src="selectedImage.url"
             :alt="selectedImage.name"
             class="w-full h-auto rounded-lg"
           />

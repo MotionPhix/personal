@@ -2,24 +2,54 @@
 import AppLayout from "@/layouts/AppLayout.vue";
 import { Project } from "@/types";
 import { Head, Link } from "@inertiajs/vue3";
-import {
-  IconArrowLeft,
-  IconExternalLink,
-  IconBrandGithub,
-  IconBrandFigma,
-  IconBrandBehance,
-  IconBrandDribbble,
-  IconCalendar,
-  IconClock,
-  IconUser,
-  IconTag,
-  IconCode,
-  IconStar
-} from "@tabler/icons-vue";
-import { vFullscreenImg } from 'maz-ui';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, nextTick } from 'vue';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { cn } from '@/lib/utils';
+
+// Shadcn-Vue Components
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+// Icons
+import {
+  ArrowLeft,
+  ExternalLink,
+  Github,
+  Figma,
+  Eye,
+  Calendar,
+  User,
+  Tag,
+  Code,
+  Star,
+  Globe,
+  Target,
+  CheckCircle2,
+  AlertCircle,
+  Zap,
+  Download,
+  ImageIcon,
+  Award,
+  Layers,
+  Heart,
+  Share2,
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Maximize2
+} from "lucide-vue-next";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -39,9 +69,15 @@ defineOptions({
 });
 
 // Refs for animations
-const heroRef = ref(null);
-const contentRef = ref(null);
-const galleryRef = ref(null);
+const heroRef = ref<HTMLElement>();
+const contentRef = ref<HTMLElement>();
+const galleryRef = ref<HTMLElement>();
+const techStackRef = ref<HTMLElement>();
+const featuresRef = ref<HTMLElement>();
+
+// State
+const selectedImageIndex = ref(0);
+const isImageDialogOpen = ref(false);
 
 // Computed properties
 const projectData = computed(() => props.project.data);
@@ -56,10 +92,6 @@ const heroImage = computed(() => {
     return projectData.value.gallery_images[0].large_url || projectData.value.gallery_images[0].url;
   }
 
-  if (projectData.value.media && projectData.value.media.length > 0) {
-    return projectData.value.media[0].original_url;
-  }
-
   return '/assets/placeholder-project.jpg';
 });
 
@@ -67,41 +99,17 @@ const galleryImages = computed(() => {
   if (projectData.value.gallery_images && projectData.value.gallery_images.length > 0) {
     return projectData.value.gallery_images;
   }
-
-  // Fallback to legacy media format
-  if (projectData.value.media && projectData.value.media.length > 0) {
-    return projectData.value.media.map(media => ({
-      id: media.id,
-      name: media.name,
-      url: media.original_url,
-      thumb_url: media.original_url,
-      medium_url: media.original_url,
-      large_url: media.original_url
-    }));
-  }
-
   return [];
 });
 
 const customerName = computed(() => {
   const customer = projectData.value.customer;
-
-  if (customer?.display_name) {
-    return customer.display_name;
-  }
-
-  if (customer?.company_name) {
-    return customer.company_name;
-  }
-
-  if (customer?.full_name) {
-    return customer.full_name;
-  }
-
+  if (customer?.display_name) return customer.display_name;
+  if (customer?.company_name) return customer.company_name;
+  if (customer?.full_name) return customer.full_name;
   if (customer?.first_name || customer?.last_name) {
     return `${customer.first_name || ''} ${customer.last_name || ''}`.trim();
   }
-
   return 'Client';
 });
 
@@ -109,11 +117,9 @@ const projectYear = computed(() => {
   if (projectData.value.end_date) {
     return new Date(projectData.value.end_date).getFullYear();
   }
-
   if (projectData.value.created_at) {
     return new Date(projectData.value.created_at).getFullYear();
   }
-
   return new Date().getFullYear();
 });
 
@@ -125,8 +131,8 @@ const externalLinks = computed(() => {
     links.push({
       name: 'Live Site',
       url: project.live_url,
-      icon: IconExternalLink,
-      color: 'text-blue-600 hover:text-blue-800'
+      icon: ExternalLink,
+      variant: 'default' as const
     });
   }
 
@@ -134,8 +140,8 @@ const externalLinks = computed(() => {
     links.push({
       name: 'GitHub',
       url: project.github_url,
-      icon: IconBrandGithub,
-      color: 'text-gray-800 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white'
+      icon: Github,
+      variant: 'outline' as const
     });
   }
 
@@ -143,48 +149,123 @@ const externalLinks = computed(() => {
     links.push({
       name: 'Figma',
       url: project.figma_url,
-      icon: IconBrandFigma,
-      color: 'text-purple-600 hover:text-purple-800'
-    });
-  }
-
-  if (project.behance_url) {
-    links.push({
-      name: 'Behance',
-      url: project.behance_url,
-      icon: IconBrandBehance,
-      color: 'text-blue-500 hover:text-blue-700'
-    });
-  }
-
-  if (project.dribbble_url) {
-    links.push({
-      name: 'Dribbble',
-      url: project.dribbble_url,
-      icon: IconBrandDribbble,
-      color: 'text-pink-500 hover:text-pink-700'
+      icon: Figma,
+      variant: 'outline' as const
     });
   }
 
   return links;
 });
 
-// Animations
-onMounted(() => {
-  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+const statusConfig = computed(() => {
+  const configs = {
+    'not_started': { color: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300', icon: AlertCircle },
+    'in_progress': { color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300', icon: Zap },
+    'on_hold': { color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300', icon: AlertCircle },
+    'completed': { color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300', icon: CheckCircle2 },
+    'cancelled': { color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300', icon: X }
+  };
+  return configs[projectData.value.status as keyof typeof configs] || configs.completed;
+});
 
-  tl.from(heroRef.value, { opacity: 0, scale: 1.1, duration: 1.2 })
-    .from(contentRef.value, { opacity: 0, y: 50, duration: 1 }, '-=0.6');
+// Methods
+const openImageModal = (index: number) => {
+  selectedImageIndex.value = index;
+  isImageDialogOpen.value = true;
+};
+
+const nextImage = () => {
+  selectedImageIndex.value = (selectedImageIndex.value + 1) % galleryImages.value.length;
+};
+
+const prevImage = () => {
+  selectedImageIndex.value = selectedImageIndex.value === 0
+    ? galleryImages.value.length - 1
+    : selectedImageIndex.value - 1;
+};
+
+const getCustomerInitials = (customer: any) => {
+  if (!customer) return 'CL';
+  return `${customer.first_name?.[0] || ''}${customer.last_name?.[0] || ''}`.toUpperCase();
+};
+
+// Animations
+onMounted(async () => {
+  await nextTick();
+
+  // Hero animation
+  if (heroRef.value) {
+    gsap.fromTo(heroRef.value,
+      { opacity: 0, scale: 1.1 },
+      { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }
+    );
+  }
+
+  // Content stagger animation
+  if (contentRef.value) {
+    gsap.fromTo(contentRef.value.children,
+      { opacity: 0, y: 50 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: 'power3.out',
+        delay: 0.3
+      }
+    );
+  }
+
+  // Tech stack animation
+  if (techStackRef.value) {
+    gsap.fromTo('.tech-badge',
+      { opacity: 0, scale: 0.8, y: 20 },
+      {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: 'back.out(1.7)',
+        scrollTrigger: {
+          trigger: techStackRef.value,
+          start: 'top bottom-=100',
+          toggleActions: 'play none none reverse'
+        }
+      }
+    );
+  }
+
+  // Features animation
+  if (featuresRef.value) {
+    gsap.fromTo('.feature-item',
+      { opacity: 0, x: -30 },
+      {
+        opacity: 1,
+        x: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: featuresRef.value,
+          start: 'top bottom-=100',
+          toggleActions: 'play none none reverse'
+        }
+      }
+    );
+  }
 
   // Gallery animation
   if (galleryRef.value) {
     gsap.fromTo('.gallery-item',
-      { opacity: 0, y: 30 },
+      { opacity: 0, y: 30, scale: 0.9 },
       {
         opacity: 1,
         y: 0,
+        scale: 1,
         duration: 0.6,
         stagger: 0.1,
+        ease: 'power2.out',
         scrollTrigger: {
           trigger: galleryRef.value,
           start: 'top bottom-=100',
@@ -193,11 +274,25 @@ onMounted(() => {
       }
     );
   }
+
+  // Parallax effect for hero image
+  if (heroRef.value) {
+    gsap.to(heroRef.value.querySelector('img'), {
+      yPercent: -20,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroRef.value,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: true
+      }
+    });
+  }
 });
 </script>
 
 <template>
-  <Head :title="`${projectData.name} - Project Details`">
+  <Head :title="`${projectData.name} - Portfolio Project`">
     <meta name="description" :content="projectData.short_description || projectData.description?.substring(0, 160)" />
     <meta property="og:title" :content="projectData.name" />
     <meta property="og:description" :content="projectData.short_description || projectData.description?.substring(0, 160)" />
@@ -205,288 +300,394 @@ onMounted(() => {
     <meta property="og:type" content="article" />
   </Head>
 
-  <article class="w-full max-w-4xl px-4 mx-auto mt-8 mb-16 sm:px-8 sm:mt-16">
-
-    <!-- Back Navigation -->
-    <div class="mb-8">
-      <Link
-        :href="route('projects.index')"
-        class="inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-neutral-400 dark:hover:text-neutral-200 group"
-      >
-        <IconArrowLeft size="16" class="transition-transform group-hover:-translate-x-1" />
-        <span>All projects</span>
-      </Link>
+  <div class="min-h-screen bg-background">
+    <!-- Navigation -->
+    <div class="max-w-7xl mx-auto px-4 py-6">
+      <Button variant="ghost" size="sm" asChild class="group">
+        <Link :href="route('projects.index')">
+          <ArrowLeft class="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-1" />
+          Portfolio
+        </Link>
+      </Button>
     </div>
 
     <!-- Hero Section -->
-    <div ref="heroRef" class="mb-12">
-      <div class="relative overflow-hidden rounded-2xl bg-gray-100 dark:bg-neutral-800 aspect-video">
-        <img
-          :src="heroImage"
-          :alt="`${projectData.name} hero image`"
-          class="object-cover w-full h-full"
-          loading="eager" />
+    <section ref="heroRef" class="relative overflow-hidden">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="relative aspect-[16/9] lg:aspect-[21/9] rounded-2xl overflow-hidden bg-muted">
+          <img
+            :src="heroImage"
+            :alt="`${projectData.name} hero image`"
+            class="w-full h-full object-cover"
+          />
 
-        <!-- Featured badge -->
-        <div v-if="projectData.is_featured"
-             class="absolute top-4 right-4 flex items-center gap-1 px-3 py-1 bg-yellow-500/90 text-white text-sm font-medium rounded-full backdrop-blur-sm">
-          <IconStar size="14" />
-          <span>Featured</span>
-        </div>
-      </div>
-    </div>
+          <!-- Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
 
-    <!-- Content Section -->
-    <div ref="contentRef" class="grid gap-12 lg:grid-cols-3">
-
-      <!-- Main Content -->
-      <div class="lg:col-span-2">
-
-        <!-- Project Header -->
-        <header class="mb-8">
-          <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-white mb-4">
-            {{ projectData.name }}
-          </h1>
-
-          <p v-if="projectData.short_description"
-             class="text-xl text-gray-600 dark:text-neutral-300 leading-relaxed">
-            {{ projectData.short_description }}
-          </p>
-        </header>
-
-        <!-- Project Description -->
-        <section v-if="projectData.description" class="mb-12">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">About This Project</h2>
-          <div class="prose prose-lg dark:prose-invert max-w-none">
-            <div v-html="projectData.description"></div>
-          </div>
-        </section>
-
-        <!-- Technologies -->
-        <section v-if="projectData.technologies && projectData.technologies.length > 0" class="mb-12">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Technologies Used</h2>
-          <div class="flex flex-wrap gap-2">
-            <span
-              v-for="tech in projectData.technologies"
-              :key="tech"
-              class="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded-full dark:bg-blue-900/30 dark:text-blue-300">
-              <IconCode size="14" />
-              {{ tech }}
-            </span>
-          </div>
-        </section>
-
-        <!-- Features -->
-        <section v-if="projectData.features && projectData.features.length > 0" class="mb-12">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Key Features</h2>
-          <ul class="space-y-2">
-            <li v-for="feature in projectData.features" :key="feature"
-                class="flex items-start gap-2 text-gray-700 dark:text-neutral-300">
-              <span class="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
-              <span>{{ feature }}</span>
-            </li>
-          </ul>
-        </section>
-
-        <!-- Challenges & Solutions -->
-        <div v-if="projectData.challenges || projectData.solutions" class="grid gap-8 mb-12">
-          <section v-if="projectData.challenges">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Challenges</h2>
-            <p class="text-gray-700 dark:text-neutral-300">{{ projectData.challenges }}</p>
-          </section>
-
-          <section v-if="projectData.solutions">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Solutions</h2>
-            <p class="text-gray-700 dark:text-neutral-300">{{ projectData.solutions }}</p>
-          </section>
-        </div>
-
-        <!-- Results -->
-        <section v-if="projectData.results" class="mb-12">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Results</h2>
-          <p class="text-gray-700 dark:text-neutral-300">{{ projectData.results }}</p>
-        </section>
-
-        <!-- Client Feedback -->
-        <section v-if="projectData.client_feedback" class="mb-12">
-          <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Client Feedback</h2>
-          <blockquote class="border-l-4 border-blue-500 pl-6 italic text-gray-700 dark:text-neutral-300">
-            "{{ projectData.client_feedback }}"
-          </blockquote>
-        </section>
-
-      </div>
-
-      <!-- Sidebar -->
-      <div class="lg:col-span-1">
-        <div class="sticky top-8 space-y-8">
-
-          <!-- Project Info -->
-          <div class="bg-gray-50 dark:bg-neutral-800 rounded-xl p-6">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Project Details</h3>
-
-            <dl class="space-y-4">
-              <!-- Client -->
-              <div>
-                <dt class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-neutral-400 mb-1">
-                  <IconUser size="16" />
-                  Client
-                </dt>
-                <dd class="text-gray-900 dark:text-white">{{ customerName }}</dd>
+          <!-- Content Overlay -->
+          <div class="absolute bottom-0 left-0 right-0 p-6 lg:p-12">
+            <div class="max-w-4xl">
+              <div class="flex items-center space-x-3 mb-4">
+                <Badge v-if="projectData.is_featured" variant="secondary" class="bg-yellow-500/90 text-white">
+                  <Star class="h-3 w-3 mr-1" />
+                  Featured
+                </Badge>
+                <Badge :class="statusConfig.color" variant="secondary">
+                  <component :is="statusConfig.icon" class="h-3 w-3 mr-1" />
+                  {{ projectData.status?.replace('_', ' ') }}
+                </Badge>
               </div>
 
+              <h1 class="text-3xl lg:text-5xl font-bold text-white mb-4">
+                {{ projectData.name }}
+              </h1>
+
+              <p v-if="projectData.short_description" class="text-lg lg:text-xl text-white/90 max-w-2xl">
+                {{ projectData.short_description }}
+              </p>
+
+              <!-- External Links -->
+              <div v-if="externalLinks.length > 0" class="flex flex-wrap gap-3 mt-6">
+                <Button
+                  v-for="link in externalLinks"
+                  :key="link.name"
+                  :variant="link.variant"
+                  size="lg"
+                  asChild
+                  class="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
+                >
+                  <a :href="link.url" target="_blank" rel="noopener noreferrer">
+                    <component :is="link.icon" class="h-4 w-4 mr-2" />
+                    {{ link.name }}
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Main Content -->
+        <div ref="contentRef" class="lg:col-span-2 space-y-6">
+
+          <!-- Project Description -->
+          <Card v-if="projectData.description">
+            <CardHeader>
+              <CardTitle class="flex items-center">
+                <Target class="h-5 w-5 mr-2" />
+                About This Project
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              <div
+                class="prose dark:prose-invert max-w-none"
+                v-html="projectData.description">
+              </div>
+            </CardContent>
+          </Card>
+
+          <!-- Technologies -->
+          <Card v-if="projectData.technologies && projectData.technologies.length > 0" ref="techStackRef">
+            <CardHeader>
+              <CardTitle class="flex items-center">
+                <Code class="h-5 w-5 mr-2" />
+                Technologies Used
+              </CardTitle>
+              <CardDescription>Technical stack and tools used in this project</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div class="flex flex-wrap gap-2">
+                <Badge
+                  v-for="tech in projectData.technologies"
+                  :key="tech"
+                  variant="secondary"
+                  class="tech-badge bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                >
+                  {{ tech }}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <!-- Features -->
+          <Card v-if="projectData.features && projectData.features.length > 0" ref="featuresRef">
+            <CardHeader>
+              <CardTitle class="flex items-center">
+                <Award class="h-5 w-5 mr-2" />
+                Key Features
+              </CardTitle>
+              <CardDescription>Highlight important project features and capabilities</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul class="space-y-3">
+                <li
+                  v-for="feature in projectData.features"
+                  :key="feature"
+                  class="feature-item flex items-center"
+                >
+                  <CheckCircle2 class="h-4 w-4 mr-3 text-green-600 flex-shrink-0" />
+                  <span>{{ feature }}</span>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
+
+          <!-- Project Journey -->
+          <Card v-if="projectData.challenges || projectData.solutions || projectData.results">
+            <CardHeader>
+              <CardTitle class="flex items-center">
+                <Zap class="h-5 w-5 mr-2" />
+                Project Journey
+              </CardTitle>
+              <CardDescription>
+                Challenges faced, solutions implemented, and results achieved
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent>
+              <div class="grid grid-cols-1 gap-6">
+                <div v-if="projectData.challenges">
+                  <h4 class="font-medium mb-2 flex items-center">
+                    <AlertCircle class="h-4 w-4 mr-2 text-red-600" />
+                    Challenges
+                  </h4>
+                  <p class="text-muted-foreground text-sm">{{ projectData.challenges }}</p>
+                </div>
+
+                <Separator v-if="projectData.solutions" />
+
+                <div v-if="projectData.solutions">
+                  <h4 class="font-medium mb-2 flex items-center">
+                    <Target class="h-4 w-4 mr-2 text-blue-600" />
+                    Solutions
+                  </h4>
+                  <p class="text-muted-foreground text-sm">{{ projectData.solutions }}</p>
+                </div>
+
+                <Separator v-if="projectData.results" />
+
+                <div v-if="projectData.results">
+                  <h4 class="font-medium mb-2 flex items-center">
+                    <CheckCircle2 class="h-4 w-4 mr-2 text-green-600" />
+                    Results
+                  </h4>
+                  <p class="text-muted-foreground text-sm">{{ projectData.results }}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <!-- Client Feedback -->
+          <Card v-if="projectData.client_feedback">
+            <CardHeader>
+              <CardTitle class="flex items-center">
+                <Heart class="h-5 w-5 mr-2" />
+                Client Feedback
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <blockquote class="border-l-4 border-primary pl-4 italic text-lg">
+                "{{ projectData.client_feedback }}"
+              </blockquote>
+            </CardContent>
+          </Card>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+
+          <!-- Project Details -->
+          <Card>
+            <CardHeader>
+              <CardTitle>Project Details</CardTitle>
+            </CardHeader>
+            <CardContent class="space-y-4">
+              <!-- Client -->
+              <div v-if="projectData.customer" class="flex items-center space-x-3">
+                <Avatar>
+                  <AvatarImage :src="projectData.customer.avatar_url" />
+                  <AvatarFallback>{{ getCustomerInitials(projectData.customer) }}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <div class="font-medium">{{ customerName }}</div>
+                  <div class="text-sm text-muted-foreground">Client</div>
+                </div>
+              </div>
+
+              <Separator />
+
               <!-- Year -->
-              <div>
-                <dt class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-neutral-400 mb-1">
-                  <IconCalendar size="16" />
-                  Year
-                </dt>
-                <dd class="text-gray-900 dark:text-white">{{ projectYear }}</dd>
+              <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <Calendar class="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span class="text-sm text-muted-foreground">Year</span>
+                </div>
+                <span class="text-sm font-medium">{{ projectYear }}</span>
               </div>
 
               <!-- Category -->
-              <div v-if="projectData.category">
-                <dt class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-neutral-400 mb-1">
-                  <IconTag size="16" />
-                  Category
-                </dt>
-                <dd class="text-gray-900 dark:text-white">{{ projectData.category }}</dd>
+              <div v-if="projectData.category" class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <Tag class="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span class="text-sm text-muted-foreground">Category</span>
+                </div>
+                <Badge variant="secondary">{{ projectData.category }}</Badge>
               </div>
 
               <!-- Production Type -->
-              <div v-if="projectData.production_type">
-                <dt class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-neutral-400 mb-1">
-                  <IconCode size="16" />
-                  Type
-                </dt>
-                <dd class="text-gray-900 dark:text-white">{{ projectData.production_type }}</dd>
+              <div v-if="projectData.production_type" class="flex items-center justify-between">
+                <div class="flex items-center">
+                  <Layers class="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span class="text-sm text-muted-foreground">Type</span>
+                </div>
+                <Badge variant="secondary">{{ projectData.production_type }}</Badge>
               </div>
+            </CardContent>
+          </Card>
 
-              <!-- Duration -->
-              <div v-if="projectData.duration">
-                <dt class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-neutral-400 mb-1">
-                  <IconClock size="16" />
-                  Duration
-                </dt>
-                <dd class="text-gray-900 dark:text-white">{{ projectData.duration }} days</dd>
+          <!-- Share Project -->
+          <Card>
+            <CardHeader>
+              <CardTitle class="flex items-center">
+                <Share2 class="h-5 w-5 mr-2" />
+                Share Project
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" size="sm" class="w-full" @click="navigator.share?.({ title: projectData.name, url: window.location.href }) || navigator.clipboard?.writeText(window.location.href)">
+                <Share2 class="h-4 w-4 mr-2" />
+                Share This Project
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      <!-- Project Gallery -->
+      <section v-if="galleryImages.length > 0" ref="galleryRef" class="mt-20">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold mb-4">Project Gallery</h2>
+          <p class="text-muted-foreground max-w-2xl mx-auto">
+            Explore the visual journey of this project through detailed screenshots and design iterations.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            v-for="(image, index) in galleryImages"
+            :key="image.id"
+            class="gallery-item group cursor-pointer"
+            @click="openImageModal(index)">
+            <div class="relative aspect-video bg-muted rounded-lg overflow-hidden">
+              <img
+                :src="image.url"
+                :alt="image.name || `Project image ${index + 1}`"
+                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Button size="sm" variant="secondary">
+                    <Maximize2 class="h-4 w-4 mr-2" />
+                    View Full Size
+                  </Button>
+                </div>
               </div>
-
-              <!-- Budget -->
-              <div v-if="projectData.budget">
-                <dt class="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-neutral-400 mb-1">
-                  <IconTag size="16" />
-                  Budget
-                </dt>
-                <dd class="text-gray-900 dark:text-white">${{ Number(projectData.budget).toLocaleString() }}</dd>
-              </div>
-            </dl>
-          </div>
-
-          <!-- External Links -->
-          <div v-if="externalLinks.length > 0" class="bg-gray-50 dark:bg-neutral-800 rounded-xl p-6">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">View Project</h3>
-            <div class="space-y-3">
-              <a
-                v-for="link in externalLinks"
-                :key="link.name"
-                :href="link.url"
-                target="_blank"
-                rel="noopener noreferrer"
-                :class="link.color"
-                class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-neutral-700 hover:bg-white dark:hover:bg-neutral-700 transition-colors">
-                <component :is="link.icon" size="20" />
-                <span class="font-medium">{{ link.name }}</span>
-              </a>
             </div>
           </div>
-
-          <!-- Project Stats -->
-          <div class="bg-gray-50 dark:bg-neutral-800 rounded-xl p-6">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Project Stats</h3>
-
-            <dl class="space-y-3">
-              <!-- Status -->
-              <div class="flex items-center justify-between">
-                <dt class="text-sm text-gray-500 dark:text-neutral-400">Status</dt>
-                <dd>
-                  <span :class="`bg-${projectData.status_color}-100 text-${projectData.status_color}-800 dark:bg-${projectData.status_color}-900/30 dark:text-${projectData.status_color}-300`"
-                        class="px-2 py-1 text-xs font-medium rounded-full capitalize">
-                    {{ projectData.status?.replace('_', ' ') }}
-                  </span>
-                </dd>
-              </div>
-
-              <!-- Hours -->
-              <div v-if="projectData.estimated_hours || projectData.actual_hours" class="flex items-center justify-between">
-                <dt class="text-sm text-gray-500 dark:text-neutral-400">Hours</dt>
-                <dd class="text-sm text-gray-900 dark:text-white">
-                  <span v-if="projectData.actual_hours">{{ projectData.actual_hours }}h</span>
-                  <span v-else-if="projectData.estimated_hours">~{{ projectData.estimated_hours }}h</span>
-                </dd>
-              </div>
-
-              <!-- Progress -->
-              <div v-if="projectData.progress !== undefined" class="flex items-center justify-between">
-                <dt class="text-sm text-gray-500 dark:text-neutral-400">Progress</dt>
-                <dd class="text-sm text-gray-900 dark:text-white">{{ projectData.progress }}%</dd>
-              </div>
-            </dl>
-          </div>
-
         </div>
-      </div>
+      </section>
 
+      <!-- Related Projects -->
+      <section v-if="relatedProjectsData.length > 0" class="mt-20">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold mb-4">Related Projects</h2>
+          <p class="text-muted-foreground max-w-2xl mx-auto">
+            Discover more projects from my portfolio that showcase similar skills and technologies.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card
+            v-for="relatedProject in relatedProjectsData"
+            :key="relatedProject.uuid"
+            class="group cursor-pointer hover:shadow-lg transition-shadow duration-300"
+            asChild
+          >
+            <Link :href="route('projects.show', relatedProject.uuid)">
+              <div class="aspect-video bg-muted rounded-t-lg overflow-hidden">
+                <img
+                  :src="relatedProject.poster_url || '/assets/placeholder-project.jpg'"
+                  :alt="relatedProject.name"
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+              <CardContent class="p-4">
+                <h3 class="font-semibold group-hover:text-primary transition-colors">
+                  {{ relatedProject.name }}
+                </h3>
+                <p v-if="relatedProject.production_type" class="text-sm text-muted-foreground mt-1">
+                  {{ relatedProject.production_type }}
+                </p>
+              </CardContent>
+            </Link>
+          </Card>
+        </div>
+      </section>
     </div>
 
-    <!-- Project Gallery -->
-    <section v-if="galleryImages.length > 1" ref="galleryRef" class="mt-16">
-      <h2 class="text-3xl font-semibold text-gray-900 dark:text-white mb-8">Project Gallery</h2>
+    <!-- Image Modal -->
+    <Dialog v-model:open="isImageDialogOpen">
+      <DialogContent class="max-w-2xl p-0">
+        <div class="relative">
+          <img
+            v-if="galleryImages[selectedImageIndex]"
+            :src="galleryImages[selectedImageIndex].url"
+            :alt="galleryImages[selectedImageIndex].name || `Project image ${selectedImageIndex + 1}`"
+            class="w-full h-auto max-h-[80vh] object-contain"
+          />
 
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div
-          v-for="(image, index) in galleryImages.slice(1)"
-          :key="image.id || index"
-          class="gallery-item group cursor-pointer">
-          <div class="relative overflow-hidden rounded-lg bg-gray-100 dark:bg-neutral-800 aspect-square">
-            <img
-              v-fullscreen-img
-              :src="image.medium_url || image.url"
-              :alt="`${projectData.name} gallery image ${index + 2}`"
-              class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-              loading="lazy" />
+          <!-- Navigation -->
+          <div v-if="galleryImages.length > 1" class="absolute inset-y-0 left-0 flex items-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              class="ml-2 bg-black/20 hover:bg-black/40 text-white"
+              @click="prevImage"
+            >
+              <ChevronLeft class="h-4 w-4" />
+            </Button>
+          </div>
+
+          <div v-if="galleryImages.length > 1" class="absolute inset-y-0 right-0 flex items-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              class="mr-2 bg-black/20 hover:bg-black/40 text-white"
+              @click="nextImage"
+            >
+              <ChevronRight class="h-4 w-4" />
+            </Button>
+          </div>
+
+          <!-- Image Info -->
+          <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+            <div class="text-white">
+              <h3 class="font-medium">{{ galleryImages[selectedImageIndex]?.name || `Image ${selectedImageIndex + 1}` }}</h3>
+              <p class="text-sm text-white/80">{{ selectedImageIndex + 1 }} of {{ galleryImages.length }}</p>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- Related Projects -->
-    <section v-if="relatedProjectsData.length > 0" class="mt-16">
-      <h2 class="text-3xl font-semibold text-gray-900 dark:text-white mb-8">Related Projects</h2>
-
-      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <Link
-          v-for="relatedProject in relatedProjectsData"
-          :key="relatedProject.uuid"
-          :href="route('projects.show', relatedProject.uuid)"
-          class="group">
-          <div class="relative overflow-hidden rounded-lg bg-gray-100 dark:bg-neutral-800 aspect-square mb-3">
-            <img
-              :src="relatedProject.poster_url || '/assets/placeholder-project.jpg'"
-              :alt="relatedProject.name"
-              class="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
-              loading="lazy" />
-          </div>
-          <h3 class="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-            {{ relatedProject.name }}
-          </h3>
-          <p v-if="relatedProject.production_type" class="text-sm text-gray-600 dark:text-neutral-400">
-            {{ relatedProject.production_type }}
-          </p>
-        </Link>
-      </div>
-    </section>
-
-  </article>
+      </DialogContent>
+    </Dialog>
+  </div>
 </template>
 
 <style scoped>
