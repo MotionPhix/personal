@@ -19,6 +19,8 @@ const props = defineProps<EditProps>();
 defineOptions({
   layout: AuthLayout,
 });
+
+console.log(props.project)
 </script>
 
 <template>
@@ -28,6 +30,7 @@ defineOptions({
     :project="props.project.data"
     :customers="customers"
     :production-types="productionTypes"
+    :selected-customer="project.data.customer"
     :categories="categories"
     :is-editing="true"
   />

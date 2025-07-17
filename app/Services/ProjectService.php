@@ -74,6 +74,8 @@ class ProjectService
    */
   public function updateProject(Project $project, array $data): Project
   {
+    $data['customer_id'] = Customer::where('uuid', $data['customer_id'])?->first()->id;
+
     // Update slug if name changed and slug not provided
     if (isset($data['name']) && empty($data['slug'])) {
       $data['slug'] = $this->generateUniqueSlug($data['name'], $project->id);

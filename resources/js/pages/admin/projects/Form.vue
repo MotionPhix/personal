@@ -4,7 +4,6 @@ import { computed, onMounted, ref, watch } from "vue";
 import { Customer, Project, GalleryImage } from "@/types";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import InputError from "@/components/InputError.vue";
-import { cn } from '@/lib/utils';
 
 // Icons
 import {
@@ -39,7 +38,6 @@ import {
 
 // UI Components
 import DatePicker from '@/components/DatePicker.vue';
-import { UseDark } from "@vueuse/components";
 import { ModalLink } from '@inertiaui/modal-vue';
 
 // File upload
@@ -64,6 +62,8 @@ import {
   NumberFieldIncrement, NumberFieldInput
 } from "@/components/ui/number-field";
 import {Button} from "@/components/ui/button";
+import {Switch} from "@/components/ui/switch";
+
 interface FormProps {
   project: Partial<Project>;
   customers: Customer[];
@@ -93,7 +93,7 @@ const form = useForm({
   name: props.project.name || '',
   description: props.project.description || '',
   short_description: props.project.short_description || '',
-  customer_id: props.project.customer_id || props.selectedCustomer?.id || null,
+  customer_id: props.project.customer?.uuid || props.selectedCustomer?.uuid || null,
 
   // Project Details
   production_type: props.project.production_type || '',
@@ -139,15 +139,6 @@ const form = useForm({
   // Media
   captured_media: [] as File[],
 });
-
-// Computed properties
-const customerOptions = computed(() =>
-  props.customers.map(customer => ({
-    value: customer.id,
-    label: customer.display_name || customer.full_name || `${customer.first_name} ${customer.last_name}`.trim(),
-    company: customer.company_name || 'Individual',
-  }))
-);
 
 const productionTypeOptions = computed(() =>
   props.productionTypes.map(type => ({ value: type, label: type }))
@@ -314,7 +305,7 @@ defineOptions({
 
     <!-- Form Content -->
     <div class="px-4 sm:px-6 lg:px-8 py-8">
-      <div class="max-w-4xl mx-auto">
+      <div class="max-w-3xl mx-auto">
         <form @submit.prevent="onSubmit" class="space-y-8">
 
           <!-- Basic Information -->
@@ -323,6 +314,7 @@ defineOptions({
               <div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
                 <FileText class="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
+
               <div>
                 <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Basic Information</h2>
                 <p class="text-sm text-gray-500 dark:text-gray-400">Essential project details and client information</p>
@@ -364,7 +356,7 @@ defineOptions({
                     <SelectContent>
                       <SelectItem :value="null">None</SelectItem>
                       <SelectItem
-                        v-for="customer in customerOptions"
+                        v-for="customer in customers"
                         :key="customer.value" :value="customer.value">
                         {{ customer.label }} {{ customer.company !== 'Individual' ? `(${customer.company})` : '' }}
                       </SelectItem>
@@ -410,13 +402,19 @@ defineOptions({
               <div class="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
                 <Tag class="h-5 w-5 text-purple-600 dark:text-purple-400" />
               </div>
+
               <div>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Project Classification</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Categorize and organize your project</p>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  Project Classification
+                </h2>
+
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Categorize and organize your project
+                </p>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Production Type -->
               <div>
                 <Label for="production_type">
@@ -478,7 +476,9 @@ defineOptions({
                   </SelectTrigger>
 
                   <SelectContent>
-                    <SelectItem v-for="status in statusOptions" :key="status.value" :value="status.value">
+                    <SelectItem
+                      v-for="status in statusOptions"
+                      :key="status.value" :value="status.value">
                       {{ status.label }}
                     </SelectItem>
                   </SelectContent>
@@ -500,7 +500,9 @@ defineOptions({
                   </SelectTrigger>
 
                   <SelectContent>
-                    <SelectItem v-for="priority in priorityOptions" :key="priority.value" :value="priority.value">
+                    <SelectItem
+                      v-for="priority in priorityOptions"
+                      :key="priority.value" :value="priority.value">
                       {{ priority.label }}
                     </SelectItem>
                   </SelectContent>
@@ -517,13 +519,19 @@ defineOptions({
               <div class="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
                 <Calendar class="h-5 w-5 text-green-600 dark:text-green-400" />
               </div>
+
               <div>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Timeline & Budget</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Project scheduling and resource planning</p>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  Timeline & Budget
+                </h2>
+
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Project scheduling and resource planning
+                </p>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Start Date -->
               <div>
                 <Label>
@@ -746,8 +754,12 @@ defineOptions({
                 <FileText class="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
               </div>
               <div>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Project Description</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Detailed project information</p>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  Project Description
+                </h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Detailed project information
+                </p>
               </div>
             </div>
 
@@ -756,6 +768,7 @@ defineOptions({
               v-model="form.description"
               placeholder="Describe the project in detail..."
             />
+
             <InputError :message="form.errors.description" />
           </div>
 
@@ -765,22 +778,31 @@ defineOptions({
               <div class="p-2 bg-pink-100 dark:bg-pink-900 rounded-lg">
                 <Target class="h-5 w-5 text-pink-600 dark:text-pink-400" />
               </div>
+
               <div>
-                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Project Story</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400">Challenges, solutions, and outcomes</p>
+                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                  Project Story
+                </h2>
+
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                  Challenges, solutions, and outcomes
+                </p>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 gap-6">
               <!-- Challenges -->
               <div>
-                <label for="challenges" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Label
+                  for="challenges">
                   Challenges
-                </label>
+                </Label>
+
                 <textarea
                   id="challenges"
                   v-model="form.challenges"
                   rows="4"
+                  auto-resize
                   placeholder="What challenges did you face?"
                   class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 ></textarea>
@@ -1025,23 +1047,26 @@ defineOptions({
 
               <!-- Settings -->
               <div class="flex flex-wrap gap-6">
-                <label class="flex items-center">
-                  <input
-                    type="checkbox"
-                    v-model="form.is_featured"
-                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                <Label class="flex items-center">
+                  <Switch
+                    :model-value="form.is_featured"
+                    @update:model-value="form.is_featured = !form.is_featured"
                   />
-                  <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Featured Project</span>
-                </label>
 
-                <label class="flex items-center">
-                  <input
-                    type="checkbox"
-                    v-model="form.is_public"
-                    class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                  <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                    Featured Project
+                  </span>
+                </Label>
+
+                <Label class="flex items-center">
+                  <Switch
+                    :model-value="form.is_public"
+                    @update:model-value="form.is_public = !form.is_public"
                   />
-                  <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Public Project</span>
-                </label>
+                  <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                    Public Project
+                  </span>
+                </Label>
               </div>
             </div>
           </div>
@@ -1079,3 +1104,5 @@ defineOptions({
   @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent;
 }
 </style>
+
+

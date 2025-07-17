@@ -289,7 +289,7 @@ onMounted(() => {
         </section>
 
         <!-- Challenges & Solutions -->
-        <div v-if="projectData.challenges || projectData.solutions" class="grid gap-8 mb-12 md:grid-cols-2">
+        <div v-if="projectData.challenges || projectData.solutions" class="grid gap-8 mb-12">
           <section v-if="projectData.challenges">
             <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-3">Challenges</h2>
             <p class="text-gray-700 dark:text-neutral-300">{{ projectData.challenges }}</p>

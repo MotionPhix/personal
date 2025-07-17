@@ -35,7 +35,7 @@ class CustomerService
         return [
           'label' => trim($customer->first_name . ' ' . $customer->last_name),
           'company' => $customer->company_name,
-          'value' => $customer->cid,
+          'value' => $customer->uuid,
         ];
       });
   }
