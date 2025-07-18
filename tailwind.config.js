@@ -20,6 +20,10 @@ export default {
         sans: [
           'Inter',
           ...defaultTheme.fontFamily.sans
+        ],
+        mono: [
+          'Geist Mono',
+          ...defaultTheme.fontFamily.mono
         ]
       },
       borderRadius: {

@@ -2,7 +2,7 @@
 import AppLayout from "@/layouts/AppLayout.vue";
 import { Project } from "@/types";
 import { Head, Link } from "@inertiajs/vue3";
-import { computed, onMounted, ref, nextTick } from 'vue';
+import { computed, onMounted, ref, nextTick, onUnmounted } from 'vue';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { cn } from '@/lib/utils';
@@ -25,7 +25,7 @@ import {
 // Icons
 import {
   ArrowLeft,
-  ExternalLink,
+  ArrowUpRight,
   Github,
   Figma,
   Eye,
@@ -79,6 +79,9 @@ const featuresRef = ref<HTMLElement>();
 const selectedImageIndex = ref(0);
 const isImageDialogOpen = ref(false);
 
+// Store animation instances for cleanup
+const animations = ref<gsap.core.Tween[]>([]);
+
 // Computed properties
 const projectData = computed(() => props.project.data);
 const relatedProjectsData = computed(() => props.relatedProjects?.data || []);
@@ -131,7 +134,7 @@ const externalLinks = computed(() => {
     links.push({
       name: 'Live Site',
       url: project.live_url,
-      icon: ExternalLink,
+      icon: ArrowUpRight,
       variant: 'default' as const
     });
   }
@@ -189,105 +192,158 @@ const getCustomerInitials = (customer: any) => {
   return `${customer.first_name?.[0] || ''}${customer.last_name?.[0] || ''}`.toUpperCase();
 };
 
+// Helper function to safely query elements
+const safeQuerySelector = (selector: string, container?: HTMLElement): NodeListOf<Element> | null => {
+  try {
+    const elements = container ? container.querySelectorAll(selector) : document.querySelectorAll(selector);
+    return elements.length > 0 ? elements : null;
+  } catch (error) {
+    console.warn(`Failed to query selector: ${selector}`, error);
+    return null;
+  }
+};
+
+// Helper function to check if element exists and has getBoundingClientRect
+const isValidElement = (element: any): element is HTMLElement => {
+  return element &&
+    typeof element.getBoundingClientRect === 'function' &&
+    element.nodeType === Node.ELEMENT_NODE;
+};
+
 // Animations
 onMounted(async () => {
   await nextTick();
 
-  // Hero animation
-  if (heroRef.value) {
-    gsap.fromTo(heroRef.value,
-      { opacity: 0, scale: 1.1 },
-      { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }
-    );
-  }
-
-  // Content stagger animation
-  if (contentRef.value) {
-    gsap.fromTo(contentRef.value.children,
-      { opacity: 0, y: 50 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: 'power3.out',
-        delay: 0.3
+  // Wait a bit more to ensure all elements are rendered
+  setTimeout(() => {
+    try {
+      // Hero animation
+      if (heroRef.value && isValidElement(heroRef.value)) {
+        const heroAnimation = gsap.fromTo(heroRef.value,
+          { opacity: 0, scale: 1.1 },
+          { opacity: 1, scale: 1, duration: 1.2, ease: 'power3.out' }
+        );
+        animations.value.push(heroAnimation);
       }
-    );
-  }
 
-  // Tech stack animation
-  if (techStackRef.value) {
-    gsap.fromTo('.tech-badge',
-      { opacity: 0, scale: 0.8, y: 20 },
-      {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-        duration: 0.5,
-        stagger: 0.1,
-        ease: 'back.out(1.7)',
-        scrollTrigger: {
-          trigger: techStackRef.value,
-          start: 'top bottom-=100',
-          toggleActions: 'play none none reverse'
+      // Content stagger animation
+      if (contentRef.value && isValidElement(contentRef.value) && contentRef.value.children.length > 0) {
+        const contentAnimation = gsap.fromTo(contentRef.value.children,
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: 'power3.out',
+            delay: 0.3
+          }
+        );
+        animations.value.push(contentAnimation);
+      }
+
+      // Tech stack animation
+      if (techStackRef.value && isValidElement(techStackRef.value)) {
+        const techBadges = safeQuerySelector('.tech-badge', techStackRef.value);
+        if (techBadges && techBadges.length > 0) {
+          const techAnimation = gsap.fromTo(techBadges,
+            { opacity: 0, scale: 0.8, y: 20 },
+            {
+              opacity: 1,
+              scale: 1,
+              y: 0,
+              duration: 0.5,
+              stagger: 0.1,
+              ease: 'back.out(1.7)',
+              scrollTrigger: {
+                trigger: techStackRef.value,
+                start: 'top bottom-=100',
+                toggleActions: 'play none none reverse'
+              }
+            }
+          );
+          animations.value.push(techAnimation);
         }
       }
-    );
-  }
 
-  // Features animation
-  if (featuresRef.value) {
-    gsap.fromTo('.feature-item',
-      { opacity: 0, x: -30 },
-      {
-        opacity: 1,
-        x: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: featuresRef.value,
-          start: 'top bottom-=100',
-          toggleActions: 'play none none reverse'
+      // Features animation
+      if (featuresRef.value && isValidElement(featuresRef.value)) {
+        const featureItems = safeQuerySelector('.feature-item', featuresRef.value);
+        if (featureItems && featureItems.length > 0) {
+          const featuresAnimation = gsap.fromTo(featureItems,
+            { opacity: 0, x: -30 },
+            {
+              opacity: 1,
+              x: 0,
+              duration: 0.6,
+              stagger: 0.1,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: featuresRef.value,
+                start: 'top bottom-=100',
+                toggleActions: 'play none none reverse'
+              }
+            }
+          );
+          animations.value.push(featuresAnimation);
         }
       }
-    );
-  }
 
-  // Gallery animation
-  if (galleryRef.value) {
-    gsap.fromTo('.gallery-item',
-      { opacity: 0, y: 30, scale: 0.9 },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: galleryRef.value,
-          start: 'top bottom-=100',
-          toggleActions: 'play none none reverse'
+      // Gallery animation
+      if (galleryRef.value && isValidElement(galleryRef.value)) {
+        const galleryItems = safeQuerySelector('.gallery-item', galleryRef.value);
+        if (galleryItems && galleryItems.length > 0) {
+          const galleryAnimation = gsap.fromTo(galleryItems,
+            { opacity: 0, y: 30, scale: 0.9 },
+            {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.6,
+              stagger: 0.1,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: galleryRef.value,
+                start: 'top bottom-=100',
+                toggleActions: 'play none none reverse'
+              }
+            }
+          );
+          animations.value.push(galleryAnimation);
         }
       }
-    );
-  }
 
-  // Parallax effect for hero image
-  if (heroRef.value) {
-    gsap.to(heroRef.value.querySelector('img'), {
-      yPercent: -20,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: heroRef.value,
-        start: 'top bottom',
-        end: 'bottom top',
-        scrub: true
+      // Parallax effect for hero image
+      if (heroRef.value && isValidElement(heroRef.value)) {
+        const heroImage = heroRef.value.querySelector('img');
+        if (heroImage && isValidElement(heroImage)) {
+          const parallaxAnimation = gsap.to(heroImage, {
+            yPercent: -20,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: heroRef.value,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true
+            }
+          });
+          animations.value.push(parallaxAnimation);
+        }
       }
-    });
-  }
+    } catch (error) {
+      console.warn('Animation setup failed:', error);
+    }
+  }, 100);
+});
+
+// Cleanup animations on unmount
+onUnmounted(() => {
+  animations.value.forEach(animation => {
+    if (animation && typeof animation.kill === 'function') {
+      animation.kill();
+    }
+  });
+  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 });
 </script>
 
@@ -338,7 +394,7 @@ onMounted(async () => {
                 </Badge>
               </div>
 
-              <h1 class="text-3xl lg:text-5xl font-bold text-white mb-4">
+              <h1 class="text-3xl lg:text-5xl font-bold text-white mb-4 font-mono max-w-2xl">
                 {{ projectData.name }}
               </h1>
 
@@ -357,8 +413,8 @@ onMounted(async () => {
                   class="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20"
                 >
                   <a :href="link.url" target="_blank" rel="noopener noreferrer">
-                    <component :is="link.icon" class="h-4 w-4 mr-2" />
-                    {{ link.name }}
+                    <span>{{ link.name }}</span>
+                    <component :is="link.icon" class="size-5" />
                   </a>
                 </Button>
               </div>
@@ -378,7 +434,7 @@ onMounted(async () => {
           <!-- Project Description -->
           <Card v-if="projectData.description">
             <CardHeader>
-              <CardTitle class="flex items-center">
+              <CardTitle class="flex items-center sub-caption">
                 <Target class="h-5 w-5 mr-2" />
                 About This Project
               </CardTitle>
@@ -395,7 +451,7 @@ onMounted(async () => {
           <!-- Technologies -->
           <Card v-if="projectData.technologies && projectData.technologies.length > 0" ref="techStackRef">
             <CardHeader>
-              <CardTitle class="flex items-center">
+              <CardTitle class="flex items-center sub-caption">
                 <Code class="h-5 w-5 mr-2" />
                 Technologies Used
               </CardTitle>
@@ -418,7 +474,7 @@ onMounted(async () => {
           <!-- Features -->
           <Card v-if="projectData.features && projectData.features.length > 0" ref="featuresRef">
             <CardHeader>
-              <CardTitle class="flex items-center">
+              <CardTitle class="flex items-center sub-caption">
                 <Award class="h-5 w-5 mr-2" />
                 Key Features
               </CardTitle>
@@ -441,7 +497,7 @@ onMounted(async () => {
           <!-- Project Journey -->
           <Card v-if="projectData.challenges || projectData.solutions || projectData.results">
             <CardHeader>
-              <CardTitle class="flex items-center">
+              <CardTitle class="flex items-center sub-caption">
                 <Zap class="h-5 w-5 mr-2" />
                 Project Journey
               </CardTitle>
@@ -453,7 +509,7 @@ onMounted(async () => {
             <CardContent>
               <div class="grid grid-cols-1 gap-6">
                 <div v-if="projectData.challenges">
-                  <h4 class="font-medium mb-2 flex items-center">
+                  <h4 class="font-medium mb-2 flex items-center sub-caption">
                     <AlertCircle class="h-4 w-4 mr-2 text-red-600" />
                     Challenges
                   </h4>
@@ -463,7 +519,7 @@ onMounted(async () => {
                 <Separator v-if="projectData.solutions" />
 
                 <div v-if="projectData.solutions">
-                  <h4 class="font-medium mb-2 flex items-center">
+                  <h4 class="font-medium mb-2 flex items-center sub-caption">
                     <Target class="h-4 w-4 mr-2 text-blue-600" />
                     Solutions
                   </h4>
@@ -473,7 +529,7 @@ onMounted(async () => {
                 <Separator v-if="projectData.results" />
 
                 <div v-if="projectData.results">
-                  <h4 class="font-medium mb-2 flex items-center">
+                  <h4 class="font-medium mb-2 flex items-center sub-caption">
                     <CheckCircle2 class="h-4 w-4 mr-2 text-green-600" />
                     Results
                   </h4>
@@ -486,7 +542,7 @@ onMounted(async () => {
           <!-- Client Feedback -->
           <Card v-if="projectData.client_feedback">
             <CardHeader>
-              <CardTitle class="flex items-center">
+              <CardTitle class="flex items-center sub-caption">
                 <Heart class="h-5 w-5 mr-2" />
                 Client Feedback
               </CardTitle>
@@ -505,7 +561,7 @@ onMounted(async () => {
           <!-- Project Details -->
           <Card>
             <CardHeader>
-              <CardTitle>Project Details</CardTitle>
+              <CardTitle class="sub-caption">Project Details</CardTitle>
             </CardHeader>
             <CardContent class="space-y-4">
               <!-- Client -->
@@ -572,7 +628,7 @@ onMounted(async () => {
       <!-- Project Gallery -->
       <section v-if="galleryImages.length > 0" ref="galleryRef" class="mt-20">
         <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold mb-4">Project Gallery</h2>
+          <h2 class="text-3xl font-bold mb-4 font-mono">Project Gallery</h2>
           <p class="text-muted-foreground max-w-2xl mx-auto">
             Explore the visual journey of this project through detailed screenshots and design iterations.
           </p>
@@ -607,7 +663,7 @@ onMounted(async () => {
       <!-- Related Projects -->
       <section v-if="relatedProjectsData.length > 0" class="mt-20">
         <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold mb-4">Related Projects</h2>
+          <h2 class="text-3xl font-bold mb-4 font-mono">Related Projects</h2>
           <p class="text-muted-foreground max-w-2xl mx-auto">
             Discover more projects from my portfolio that showcase similar skills and technologies.
           </p>
