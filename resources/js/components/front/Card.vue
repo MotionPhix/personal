@@ -8,7 +8,7 @@ const props = defineProps<{
 
 // Function to find a specific image by ID
 const getImageById = (id: number) => {
-  return props.project.media?.find(media => media.id === id)?.original_url || '';
+  return props.project.gallery_images?.find(media => media.id === id)?.url || '';
 };
 </script>
 
@@ -21,7 +21,7 @@ const getImageById = (id: number) => {
       loading="lazy"
       decoding="async" data-nimg="1"
       class="object-cover w-full bg-gray-100 rounded-lg size-40 dark:bg-neutral-800"
-      :src="project?.media?.length ? project?.media[0]?.original_url : ''" alt="Project image">
+      :src="project?.poster_url" :alt="project.name">
 
     <div
       class="absolute transition opacity-0 bottom-1 end-1 group-hover:opacity-100">
