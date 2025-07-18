@@ -57,10 +57,11 @@ import {IconMoon, IconSun} from "@tabler/icons-vue";
 
             <UseDark v-slot="{ isDark, toggleDark }">
               <button
-                class="text-gray-700 hover:opacity-70 dark:text-white mt-2"
-                @click="toggleDark()">
+                class="p-2 text-muted-foreground hover:text-foreground transition-colors duration-200 rounded-md hover:bg-muted/50"
+                @click="toggleDark()"
+                aria-label="Toggle theme">
                 <IconSun class="size-4" stroke="2" v-if="isDark" />
-                <IconMoon class="size-4" v-else />
+                <IconMoon class="size-4" stroke="2" v-else />
               </button>
             </UseDark>
 

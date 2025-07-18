@@ -98,6 +98,60 @@ class CustomerService
         ->orderBy('projects_count', 'desc')
         ->limit(5)
         ->get(['first_name', 'last_name', 'company_name', 'projects_count']),
+      'growth_rate' => $this->calculateGrowthRate(),
+      'growth_data' => $this->getCustomerGrowthData()
+    ];
+  }
+
+  /**
+   * Calculate customer growth rate by comparing current month with previous month.
+   */
+  private function calculateGrowthRate(): string
+  {
+    $now = now();
+    $currentMonthStart = $now->startOfMonth();
+    $lastMonthStart = $now->copy()->subMonth()->startOfMonth();
+    $lastMonthEnd = $now->copy()->subMonth()->endOfMonth();
+
+    $currentMonthCount = Customer::where('created_at', '>=', $currentMonthStart)->count();
+    $lastMonthCount = Customer::whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])->count();
+
+    if ($lastMonthCount === 0) {
+      return $currentMonthCount > 0 ? '+100%' : '0%';
+    }
+
+    $growthRate = (($currentMonthCount - $lastMonthCount) / $lastMonthCount) * 100;
+    $sign = $growthRate >= 0 ? '+' : '';
+
+    return $sign . number_format($growthRate, 1) . '%';
+  }
+
+  /**
+   * Get customer growth data for the last 12 months
+   */
+  private function getCustomerGrowthData(): array
+  {
+    $months = collect(range(11, 0))->map(function ($month) {
+      $date = now()->subMonths($month);
+      return [
+        'month' => $date->format('M'),
+        'year' => $date->format('Y'),
+        'start' => $date->startOfMonth(),
+        'end' => $date->endOfMonth(),
+      ];
+    });
+
+    $customerCounts = $months->map(function ($period) {
+      $count = Customer::whereBetween('created_at', [$period['start'], $period['end']])->count();
+      return [
+        'label' => "{$period['month']} {$period['year']}",
+        'value' => $count
+      ];
+    });
+
+    return [
+      'labels' => $customerCounts->pluck('label')->toArray(),
+      'data' => $customerCounts->pluck('value')->toArray()
     ];
   }
 

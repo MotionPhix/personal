@@ -11,7 +11,9 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Props
 const props = defineProps<{
-  projects?: Project[];
+  projects: {
+    data: Project[]
+  };
 }>();
 
 const projectListRef = ref(null);
@@ -32,7 +34,7 @@ onMounted(() => {
   });
 
   // Animate project cards
-  if (props.projects?.length) {
+  if (props.projects?.data.length) {
     gsap.utils.toArray('.project-card').forEach((card: any, index) => {
       gsap.from(card, {
         opacity: 0,
@@ -90,14 +92,12 @@ defineOptions({ layout: AppLayout });
 
       <ul
         role="list"
-        class="grid grid-cols-2 gap-2 lg:grid-cols-3"
-      >
+        class="grid grid-cols-2 gap-2 lg:grid-cols-3">
         <li
-          v-for="(project, index) in projects"
+          v-for="project in projects.data"
           :key="project.uuid"
           class="relative flex flex-col items-start project-card"
-          ref="el => projectsRef.value[index] = el"
-        >
+          ref="el => projectsRef.value[index] = el">
           <Card :project="project" />
         </li>
       </ul>

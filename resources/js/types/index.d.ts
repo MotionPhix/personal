@@ -27,15 +27,6 @@ export interface User {
   is_online?: boolean;
 }
 
-export interface Image {
-  id: string;
-  fid: string;
-  size: string;
-  mime_type: string;
-  model_id?: number;
-  src: string;
-}
-
 export interface MediaItem {
   id: number;
   model_type: string;
@@ -70,7 +61,7 @@ export interface Address {
 
 export interface Customer {
   id?: number;
-  cid?: string;
+  uuid?: string;
   name?: string;
   first_name: string;
   last_name: string;
@@ -103,7 +94,6 @@ export interface GalleryImage {
 export interface Project {
   id: number;
   uuid: string;
-  pid?: string;
   name: string;
   slug?: string;
   description?: string;
@@ -158,7 +148,7 @@ export interface Project {
 
 export interface Logo {
   id: number;
-  lid: string;
+  uuid: string;
   brand: string;
   poster_url: string;
   file_url: string;

@@ -1003,7 +1003,7 @@ defineOptions({
             <FilePondInput
               name="poster_image"
               ref="projectPosterPond"
-              :files="posterImage"
+              :files="projectImage"
               max-file-size="5MB"
               credits="false"
               :store-as-file="true"

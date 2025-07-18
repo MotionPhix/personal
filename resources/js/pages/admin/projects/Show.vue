@@ -292,6 +292,7 @@ console.log(props.project)
                   class="w-full h-full object-cover"
                 />
               </div>
+
               <div class="p-6">
                 <div class="flex items-start justify-between mb-4">
                   <div class="flex-1">
@@ -308,7 +309,7 @@ console.log(props.project)
                     <span class="text-sm font-medium">Project Progress</span>
                     <span class="text-sm text-muted-foreground">{{ statusConfig.progress }}%</span>
                   </div>
-                  <Progress :value="statusConfig.progress" class="h-2" />
+                  <Progress v-model="statusConfig.progress" class="h-1 rounded-none" />
                 </div>
 
                 <!-- Quick Stats -->

@@ -64,6 +64,8 @@
     "vue-tsc": "^2.0.24"
   },
   "dependencies": {
+    "@unovis/ts": "^1.5.2",
+    "@unovis/vue": "^1.5.2",
     "@vueuse/core": "^13.5.0",
     "apexcharts": "^5.2.0",
     "clsx": "^2.1.1",
