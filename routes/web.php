@@ -30,12 +30,27 @@ Route::prefix('projects')->group(function () {
   Route::get('/s/{project:uuid}', [\App\Http\Controllers\Projects\ProjectController::class, 'show'])->name('projects.show');
 });
 
-// Downloads/Logo Routes
-Route::prefix('downloads')->group(function () {
-  Route::get('/', \App\Http\Controllers\Logos\Index::class)->name('downloads.index');
-  Route::get('/fix-my-logo', \App\Http\Controllers\Logos\Upload::class)->name('fix-my-logo');
-  Route::post('/upload-my-logo', \App\Http\Controllers\Logos\Fixer::class)->name('upload-my-logo');
-  Route::get('/d/{logo:lid}', \App\Http\Controllers\Logos\Download::class)->name('downloads.show');
+// Public Download Routes
+Route::prefix('downloads')->name('public.')->group(function () {
+
+  Route::get(
+    '/', \App\Http\Controllers\Logos\Index::class
+  )->name('downloads.index');
+
+  Route::get(
+    '/fix-my-logo',
+    \App\Http\Controllers\Logos\Upload::class
+  )->name('fix-my-logo');
+
+  Route::post(
+    '/upload-my-logo',
+    \App\Http\Controllers\Logos\Fixer::class
+  )->name('upload-my-logo');
+
+  Route::get(
+    '/download/{download:uuid}',
+    [\App\Http\Controllers\Downloads\DownloadController::class, 'download']
+  )->name('download');
 });
 
 /*

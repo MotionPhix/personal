@@ -13,9 +13,9 @@ class Index extends Controller
    */
   public function __invoke()
   {
-    $logoFiles = Logo::get(['id', 'lid', 'brand'])->map(function ($logo) {
+    $logoFiles = Logo::get(['id', 'uuid', 'brand'])->map(function ($logo) {
       return [
-        'lid' => $logo->lid,
+        'uuid' => $logo->uuid,
         'brand' => $logo->brand,
         'poster_url' => $logo->getFirstMediaUrl('posters', 'thumb'),
       ];

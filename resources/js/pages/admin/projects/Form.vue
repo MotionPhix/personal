@@ -39,15 +39,7 @@ import {
 // UI Components
 import DatePicker from '@/components/DatePicker.vue';
 import { ModalLink } from '@inertiaui/modal-vue';
-
-// File upload
-import vueFilePond from "vue-filepond";
-import "filepond/dist/filepond.min.css";
-import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.min.css";
-import FilePondPluginFileValidateType from "filepond-plugin-file-validate-type";
-import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
-import FilePondPluginImagePreview from "filepond-plugin-image-preview";
-import type { FilePond } from "filepond";
+import ImageUploader from '@/components/ImageUploader.vue';
 
 // Rich text editor
 import PreTap from "@/components/PreTap.vue";
@@ -75,21 +67,14 @@ interface FormProps {
 
 const props = defineProps<FormProps>();
 
-// File upload setup
-const FilePondInput = vueFilePond(
-  FilePondPluginFileValidateType,
-  FilePondPluginFileValidateSize,
-  FilePondPluginImagePreview
-);
-
 // Refs
-const projectPosterPond = ref<FilePond | null>(null);
-const projectImage = ref();
-
-const projectGalleryPond = ref<FilePond | null>(null);
-const projectImages = ref([]);
-
 const tipTapRef = ref();
+const posterUploaderRef = ref();
+const galleryUploaderRef = ref();
+
+// Track existing media URLs
+const existingPosterImages = ref<string[]>([]);
+const existingGalleryImages = ref<string[]>([]);
 
 // Form setup
 const form = useForm({
@@ -140,9 +125,13 @@ const form = useForm({
   behance_url: props.project.behance_url || '',
   dribbble_url: props.project.dribbble_url || '',
 
-  // Media
+  // Media - for new uploads
   captured_media: [] as File[],
-  poster_image: props.project.poster_url as File
+  poster_image: null as File | null,
+
+  // Keep track of existing media (for editing)
+  existing_gallery_images: [] as string[],
+  existing_poster_image: null as string | null,
 });
 
 const productionTypeOptions = computed(() =>
@@ -194,55 +183,141 @@ const removeFeature = (index: number) => {
   form.features.splice(index, 1);
 };
 
-// File upload handling
-const handlePosterPondInit = () => {
+// Initialize existing media
+const initializeExistingMedia = () => {
+  // Initialize poster image
   if (props.project.poster_url) {
-    projectImage.value = ({
-      source: props.project.poster_url,
-      options: { type: 'server' },
-    }) as any;
+    existingPosterImages.value = [props.project.poster_url];
+    form.existing_poster_image = props.project.poster_url;
   }
+
+  // Initialize gallery images
+  if (props.project.gallery_images && props.project.gallery_images.length > 0) {
+    existingGalleryImages.value = props.project.gallery_images.map((image: GalleryImage) => image.url);
+    form.existing_gallery_images = [...existingGalleryImages.value];
+  } else if (props.project.media && props.project.media.length > 0) {
+    existingGalleryImages.value = props.project.media.map((image) => image.original_url);
+    form.existing_gallery_images = [...existingGalleryImages.value];
+  }
+
+  console.log('Initialized existing media:', {
+    poster: existingPosterImages.value,
+    gallery: existingGalleryImages.value
+  });
 };
 
-const handlePondInit = () => {
-  if (props.project.gallery_images && props.project.gallery_images.length > 0) {
-    projectImages.value = props.project.gallery_images.map((image: GalleryImage) => ({
-      source: image.url,
-      options: { type: 'server' },
-    })) as any;
-  } else if (props.project.media && props.project.media.length > 0) {
-    projectImages.value = props.project.media.map((image) => ({
-      source: image.original_url,
-      options: { type: 'server' },
-    })) as any;
-  }
+// Handle poster image changes
+const handlePosterChange = (file: File | null) => {
+  console.log('Poster changed:', file);
+  form.poster_image = file;
+};
+
+// Handle gallery images changes
+const handleGalleryChange = (files: File[]) => {
+  console.log('Gallery changed:', files);
+  form.captured_media = files;
+};
+
+// Handle poster uploader file changes (includes existing files tracking)
+const handlePosterFilesChanged = (files: any[]) => {
+  console.log('Poster files changed:', files);
+
+  // Update existing poster images list
+  const existingFiles = files.filter(f => f.isExisting).map(f => f.url);
+  form.existing_poster_image = existingFiles.length > 0 ? existingFiles[0] : null;
+
+  console.log('Updated existing poster:', form.existing_poster_image);
+};
+
+// Handle gallery uploader file changes (includes existing files tracking)
+const handleGalleryFilesChanged = (files: any[]) => {
+  console.log('Gallery files changed:', files);
+
+  // Update existing gallery images list
+  const existingFiles = files.filter(f => f.isExisting).map(f => f.url);
+  form.existing_gallery_images = existingFiles;
+
+  console.log('Updated existing gallery:', form.existing_gallery_images);
+};
+
+// Handle upload errors
+const handleUploadError = (message: string) => {
+  console.error('Upload error:', message);
+  // You can show a toast notification here
 };
 
 // Form submission
 const onSubmit = () => {
+  console.log('=== FORM SUBMISSION DEBUG ===');
+
+  // Get files from uploaders
+  const newGalleryFiles = form.captured_media;
+  const newPosterFile = form.poster_image;
+
+  console.log('New gallery files:', newGalleryFiles);
+  console.log('New poster file:', newPosterFile);
+  console.log('Existing gallery images:', form.existing_gallery_images);
+  console.log('Existing poster image:', form.existing_poster_image);
+
+  // Build the form data object
   const formData = {
     ...form.data(),
-    captured_media: projectGalleryPond.value?.getFiles().map((file) => file.file) || [],
-    poster_image: projectPosterPond.value?.getFile().file
+    // Files for upload
+    captured_media: newGalleryFiles,
+    poster_image: newPosterFile,
   };
+
+  // Only include existing media fields if we're editing and there are existing files to preserve
+  if (props.isEditing) {
+    // Only add existing_gallery_images if there are files to preserve
+    if (form.existing_gallery_images.length > 0) {
+      formData.existing_gallery_images = form.existing_gallery_images;
+    }
+
+    // Only add existing_poster_image if there's a file to preserve
+    if (form.existing_poster_image) {
+      formData.existing_poster_image = form.existing_poster_image;
+    }
+  }
+
+  console.log('Final form data being sent:', {
+    hasNewPoster: !!newPosterFile,
+    hasExistingPoster: !!form.existing_poster_image,
+    newGalleryCount: newGalleryFiles.length,
+    existingGalleryCount: form.existing_gallery_images.length,
+    formData: formData
+  });
 
   if (props.isEditing && props.project.uuid) {
     form.transform(() => ({ ...formData, _method: 'put' }))
       .post(route("admin.projects.update", props.project.uuid), {
         preserveScroll: true,
         onSuccess: () => {
-          // Success handled by redirect
+          console.log('Project updated successfully');
+        },
+        onError: (errors) => {
+          console.error('Update errors:', errors);
         }
       });
   } else {
-    form.transform(() => formData)
+    // For new projects, we don't need existing files
+    const { existing_gallery_images, existing_poster_image, ...createData } = formData;
+
+    form.transform(() => createData)
       .post(route('admin.projects.store'), {
         preserveScroll: true,
         onSuccess: () => {
+          console.log('Project created successfully');
           form.reset();
-          projectGalleryPond.value?.removeFiles();
+
+          // Reset uploaders
+          posterUploaderRef.value?.cleanup();
+          galleryUploaderRef.value?.cleanup();
           tipTapRef.value?.resetEditorContent();
         },
+        onError: (errors) => {
+          console.error('Create errors:', errors);
+        }
       });
   }
 };
@@ -250,7 +325,7 @@ const onSubmit = () => {
 // Customer assignment from modal
 const onAssignContact = () => {
   if (props.selectedCustomer) {
-    form.customer_id = props.selectedCustomer.id;
+    form.customer_id = props.selectedCustomer.uuid;
   }
 };
 
@@ -263,8 +338,7 @@ watch(() => form.name, (newName) => {
 
 // Lifecycle
 onMounted(() => {
-  handlePondInit();
-  handlePosterPondInit()
+  initializeExistingMedia();
 });
 
 defineOptions({
@@ -279,22 +353,23 @@ defineOptions({
     <!-- Header -->
     <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
       <div class="px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-          <div class="flex items-center space-x-4">
+        <div class="flex items-center justify-between py-2">
+          <div>
             <Link
-              :href="route('admin.projects.index')"
-              class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              v-if="isEditing && project.uuid"
+              :href="route('admin.projects.show', project.uuid)"
+              class="py-1 flex items-center gap-x-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
-              <ArrowLeft class="h-5 w-5" />
+              <ArrowLeft class="size-4" /> Project details
             </Link>
-            <div>
-              <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
-                {{ isEditing ? 'Edit Project' : 'Create New Project' }}
-              </h1>
-              <p class="text-sm text-gray-500 dark:text-gray-400" v-if="isEditing">
-                {{ project.name }}
-              </p>
-            </div>
+
+            <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
+              {{ isEditing ? 'Edit Project' : 'Create New Project' }}
+            </h1>
+
+            <p class="text-sm text-gray-500 dark:text-gray-400" v-if="isEditing">
+              {{ project.name }}
+            </p>
           </div>
 
           <div class="flex items-center space-x-3">
@@ -310,9 +385,9 @@ defineOptions({
               variant="default"
               @click.prevent="onSubmit"
               :disabled="form.processing">
-              <Loader2 v-if="form.processing" class="animate-spin" />
-              <Save v-else />
-              {{ isEditing ? 'Update Project' : 'Create Project' }}
+              <Loader2 v-if="form.processing" class="animate-spin mr-2" />
+              <Save v-else class="mr-2" />
+              {{ isEditing ? 'Update' : 'Create' }}
             </Button>
           </div>
         </div>
@@ -628,7 +703,7 @@ defineOptions({
               <div>
                 <NumberField
                   id="actual_hours"
-                  v-model="form.estimated_hours"
+                  v-model="form.actual_hours"
                   :format-options="{
                     style: 'decimal',
                     trailingZeroDisplay: 'auto'
@@ -648,7 +723,7 @@ defineOptions({
               <!-- Sort Order -->
               <div>
                 <NumberField
-                  id="actual_hours"
+                  id="sort_order"
                   v-model="form.sort_order"
                   :min="0">
                   <Label for="sort_order">Sort Order</Label>
@@ -832,9 +907,9 @@ defineOptions({
 
               <!-- Solutions -->
               <div>
-                <label for="solutions" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Label for="solutions">
                   Solutions
-                </label>
+                </Label>
                 <textarea
                   id="solutions"
                   v-model="form.solutions"
@@ -847,9 +922,9 @@ defineOptions({
 
               <!-- Results -->
               <div>
-                <label for="results" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Label for="results">
                   Results
-                </label>
+                </Label>
                 <textarea
                   id="results"
                   v-model="form.results"
@@ -862,9 +937,10 @@ defineOptions({
 
               <!-- Client Feedback -->
               <div>
-                <label for="client_feedback" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Label for="client_feedback">
                   Client Feedback
-                </label>
+                </Label>
+
                 <textarea
                   id="client_feedback"
                   v-model="form.client_feedback"
@@ -892,17 +968,17 @@ defineOptions({
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <!-- Live URL -->
               <div>
-                <label for="live_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Label for="live_url">
                   Live Site URL
-                </label>
+                </Label>
                 <div class="relative">
                   <Globe class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
+                  <Input
                     id="live_url"
                     v-model="form.live_url"
                     type="url"
+                    class="pl-9"
                     placeholder="https://example.com"
-                    class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <InputError :message="form.errors.live_url" />
@@ -910,17 +986,18 @@ defineOptions({
 
               <!-- GitHub URL -->
               <div>
-                <label for="github_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Label for="github_url">
                   GitHub Repository
-                </label>
+                </Label>
+
                 <div class="relative">
                   <Github class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
+                  <Input
                     id="github_url"
                     v-model="form.github_url"
                     type="url"
+                    class="pl-9"
                     placeholder="https://github.com/username/repo"
-                    class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <InputError :message="form.errors.github_url" />
@@ -928,17 +1005,18 @@ defineOptions({
 
               <!-- Figma URL -->
               <div>
-                <label for="figma_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Label for="figma_url">
                   Figma Design
-                </label>
+                </Label>
+
                 <div class="relative">
                   <Figma class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
+                  <Input
                     id="figma_url"
                     v-model="form.figma_url"
                     type="url"
+                    class="pl-9"
                     placeholder="https://figma.com/file/..."
-                    class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <InputError :message="form.errors.figma_url" />
@@ -946,17 +1024,18 @@ defineOptions({
 
               <!-- Behance URL -->
               <div>
-                <label for="behance_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Label for="behance_url">
                   Behance Project
-                </label>
+                </Label>
+
                 <div class="relative">
                   <Eye class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
+                  <Input
                     id="behance_url"
                     v-model="form.behance_url"
                     type="url"
+                    class="pl-9"
                     placeholder="https://behance.net/gallery/..."
-                    class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <InputError :message="form.errors.behance_url" />
@@ -964,17 +1043,18 @@ defineOptions({
 
               <!-- Dribbble URL -->
               <div>
-                <label for="dribbble_url" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <Label for="dribbble_url">
                   Dribbble Shot
-                </label>
+                </Label>
+
                 <div class="relative">
                   <Zap class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
+                  <Input
                     id="dribbble_url"
                     v-model="form.dribbble_url"
                     type="url"
+                    class="pl-9"
                     placeholder="https://dribbble.com/shots/..."
-                    class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
                 </div>
                 <InputError :message="form.errors.dribbble_url" />
@@ -1000,19 +1080,17 @@ defineOptions({
               </div>
             </div>
 
-            <FilePondInput
-              name="poster_image"
-              ref="projectPosterPond"
-              :files="projectImage"
-              max-file-size="5MB"
-              credits="false"
-              :store-as-file="true"
-              accepted-file-types="image/*"
-              label-idle="Drop poster image here or <span class='filepond--label-action'>Browse</span>"
-              :allow-multiple="false"
-              :allow-image-preview="true"
-              :allow-paste="true"
-              @init="handlePosterPondInit"
+            <ImageUploader
+              ref="posterUploaderRef"
+              :model-value="form.poster_image"
+              :existing-files="existingPosterImages"
+              :multiple="false"
+              :max-files="1"
+              :max-file-size="5"
+              placeholder="Drop poster image here or click to browse"
+              @update:model-value="handlePosterChange"
+              @files-changed="handlePosterFilesChanged"
+              @error="handleUploadError"
             />
 
             <InputError :message="form.errors.poster_image" />
@@ -1030,32 +1108,20 @@ defineOptions({
               </div>
             </div>
 
-            <FilePondInput
-              name="project_images"
-              ref="projectGalleryPond"
-              :files="projectImages"
-              max-file-size="5MB"
-              credits="false"
-              :store-as-file="true"
-              accepted-file-types="image/*"
-              label-idle="Drop project images here or <span class='filepond--label-action'>Browse</span>"
-              :allow-multiple="true"
-              :allow-image-preview="true"
-              :allow-paste="true"
-              :allow-reorder="true"
-              @init="handlePondInit"
+            <ImageUploader
+              ref="galleryUploaderRef"
+              :model-value="form.captured_media"
+              :existing-files="existingGalleryImages"
+              :multiple="true"
+              :max-files="10"
+              :max-file-size="5"
+              placeholder="Drop project images here or click to browse"
+              @update:model-value="handleGalleryChange"
+              @files-changed="handleGalleryFilesChanged"
+              @error="handleUploadError"
             />
 
-            <div v-if="projectGalleryPond?.getFiles().length">
-              <div v-for="(img, index) in projectGalleryPond?.getFiles()" :key="index">
-                <InputError
-                  v-if="(form.errors as Record<string, any>)[`captured_media.${index}`]"
-                  :message="(form.errors as Record<string, any>)[`captured_media.${index}`]"
-                />
-              </div>
-            </div>
-
-            <InputError v-else :message="form.errors.captured_media" />
+            <InputError :message="form.errors.captured_media" />
           </div>
 
           <!-- SEO & Settings -->
@@ -1135,23 +1201,6 @@ defineOptions({
 </template>
 
 <style scoped>
-/* FilePond custom styling */
-:deep(.filepond--root) {
-  @apply rounded-lg;
-}
-
-:deep(.filepond--panel-root) {
-  @apply bg-gray-50 dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg;
-}
-
-:deep(.filepond--drop-label) {
-  @apply text-gray-600 dark:text-gray-400;
-}
-
-:deep(.filepond--label-action) {
-  @apply text-blue-600 dark:text-blue-400 font-medium;
-}
-
 /* Date picker styling */
 :deep(.vc-container) {
   @apply w-full;
@@ -1161,6 +1210,3 @@ defineOptions({
   @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent;
 }
 </style>
-
-
-

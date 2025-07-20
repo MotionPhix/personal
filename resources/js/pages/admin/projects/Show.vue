@@ -186,30 +186,26 @@ console.log(props.project)
     <!-- Header -->
     <div class="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-          <div class="flex items-center space-x-4">
-            <Button variant="ghost" size="sm" asChild>
+        <div class="flex items-center justify-between py-2">
+          <div>
+            <Button variant="link" class="px-0" asChild>
               <Link :href="route('admin.projects.index')">
-                <ArrowLeft class="h-4 w-4" />
+                <ArrowLeft class="size-4" /> All projects
               </Link>
             </Button>
 
-            <Separator orientation="vertical" class="h-6" />
+            <h1 class="text-xl font-semibold">{{ project.data.name }}</h1>
 
-            <div>
-              <h1 class="text-xl font-semibold">{{ project.data.name }}</h1>
+            <div class="flex items-center space-x-2 mt-1">
+              <Badge :class="statusConfig.color" variant="secondary">
+                <component :is="statusConfig.icon" class="h-3 w-3 mr-1" />
+                {{ project.data.status?.replace('_', ' ') }}
+              </Badge>
 
-              <div class="flex items-center space-x-2 mt-1">
-                <Badge :class="statusConfig.color" variant="secondary">
-                  <component :is="statusConfig.icon" class="h-3 w-3 mr-1" />
-                  {{ project.data.status?.replace('_', ' ') }}
-                </Badge>
-
-                <Badge v-if="project.data.is_featured" variant="secondary" class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
-                  <Star class="h-3 w-3 mr-1" />
-                  Featured
-                </Badge>
-              </div>
+              <Badge v-if="project.data.is_featured" variant="secondary" class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                <Star class="h-3 w-3 mr-1" />
+                Featured
+              </Badge>
             </div>
           </div>
 

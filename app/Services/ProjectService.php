@@ -9,6 +9,9 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ProjectService
 {
@@ -62,9 +65,15 @@ class ProjectService
       $data['slug'] = $this->generateUniqueSlug($data['name']);
     }
 
-    // Generate PID if not provided
+    // Generate UUID if not provided
     if (empty($data['uuid'])) {
-      $data['uuid'] = (string)Str::uuid();
+      $data['uuid'] = (string) Str::orderedUuid();
+    }
+
+    // Resolve customer_id from UUID if needed
+    if (!empty($data['customer_id']) && !is_numeric($data['customer_id'])) {
+      $customer = Customer::where('uuid', $data['customer_id'])->first();
+      $data['customer_id'] = $customer?->id;
     }
 
     return Project::create($data);
@@ -75,7 +84,11 @@ class ProjectService
    */
   public function updateProject(Project $project, array $data): Project
   {
-    $data['customer_id'] = Customer::where('uuid', $data['customer_id'])?->first()->id;
+    // Resolve customer_id from UUID if needed
+    if (!empty($data['customer_id']) && !is_numeric($data['customer_id'])) {
+      $customer = Customer::where('uuid', $data['customer_id'])->first();
+      $data['customer_id'] = $customer?->id;
+    }
 
     // Update slug if name changed and slug not provided
     if (isset($data['name']) && empty($data['slug'])) {
@@ -92,6 +105,157 @@ class ProjectService
   public function deleteProject(Project $project): bool
   {
     return $project->delete();
+  }
+
+  /**
+   * Handle all media updates for a project (gallery and poster).
+   */
+  public function updateProjectMedia(
+    Project $project,
+    array $newGalleryFiles = [],
+    ?UploadedFile $newPosterFile = null,
+    array $existingGalleryUrls = [],
+    ?string $existingPosterUrl = null
+  ): void {
+    DB::transaction(function () use ($project, $newGalleryFiles, $newPosterFile, $existingGalleryUrls, $existingPosterUrl) {
+      // Update gallery media
+      $this->updateGalleryMedia($project, $existingGalleryUrls, $newGalleryFiles);
+
+      // Update poster media
+      $this->updatePosterMedia($project, $existingPosterUrl, $newPosterFile);
+    });
+  }
+
+  /**
+   * Update gallery media for a project.
+   * Removes media not in existing list and adds new uploads.
+   */
+  public function updateGalleryMedia(Project $project, array $existingImageUrls = [], array $newFiles = []): void
+  {
+    try {
+      // Get current gallery media
+      $currentMedia = $project->getMedia('gallery');
+
+      Log::info('Updating gallery media', [
+        'project_id' => $project->id,
+        'current_media_count' => $currentMedia->count(),
+        'existing_urls_count' => count($existingImageUrls),
+        'new_files_count' => count($newFiles)
+      ]);
+
+      // Remove media that's no longer in the existing list
+      foreach ($currentMedia as $media) {
+        $mediaUrl = $media->getUrl();
+        if (!in_array($mediaUrl, $existingImageUrls)) {
+          Log::info('Removing gallery media', ['media_id' => $media->id, 'url' => $mediaUrl]);
+          $media->delete();
+        }
+      }
+
+      // Add new files if any
+      if (!empty($newFiles)) {
+        $this->uploadMedia($project, $newFiles, 'gallery');
+      }
+    } catch (\Exception $e) {
+      Log::error('Error updating gallery media', [
+        'project_id' => $project->id,
+        'error' => $e->getMessage()
+      ]);
+      throw $e;
+    }
+  }
+
+  /**
+   * Update poster media for a project.
+   * Removes current poster if not in existing and adds new upload.
+   */
+  public function updatePosterMedia(Project $project, ?string $existingPosterUrl = null, ?UploadedFile $newFile = null): void
+  {
+    try {
+      // Get current poster media
+      $currentPosterMedia = $project->getFirstMedia('poster');
+
+      Log::info('Updating poster media', [
+        'project_id' => $project->id,
+        'has_current_poster' => !!$currentPosterMedia,
+        'existing_poster_url' => $existingPosterUrl,
+        'has_new_file' => !!$newFile
+      ]);
+
+      // If there's a current poster and it's not in the existing URL, remove it
+      if ($currentPosterMedia && (!$existingPosterUrl || $currentPosterMedia->getUrl() !== $existingPosterUrl)) {
+        Log::info('Removing current poster', ['media_id' => $currentPosterMedia->id]);
+        $currentPosterMedia->delete();
+      }
+
+      // Add new poster file if provided
+      if ($newFile) {
+        // Clear any remaining poster media to ensure single file
+        $project->clearMediaCollection('poster');
+        $this->uploadMedia($project, [$newFile], 'poster');
+      }
+    } catch (\Exception $e) {
+      Log::error('Error updating poster media', [
+        'project_id' => $project->id,
+        'error' => $e->getMessage()
+      ]);
+
+      throw $e;
+    }
+  }
+
+  /**
+   * Upload media for a project.
+   */
+  public function uploadMedia(Project $project, array|UploadedFile $files, string $collection = 'gallery'): void
+  {
+    if (!$files) {
+      return;
+    }
+
+    // Normalize to array if single file is passed
+    $files = is_array($files) ? $files : [$files];
+
+    foreach ($files as $file) {
+      if ($file instanceof UploadedFile && $file->isValid()) {
+        try {
+          $mediaAdder = $project->addMedia($file)
+            ->usingFileName($this->generateUniqueFileName($file))
+            ->usingName(Str::slug($project->name));
+
+          // Add to specific collection
+          $media = $mediaAdder->toMediaCollection($collection);
+
+          Log::info('Media uploaded successfully', [
+            'project_id' => $project->id,
+            'media_id' => $media->id,
+            'collection' => $collection,
+            'file_name' => $file->getClientOriginalName()
+          ]);
+        } catch (\Exception $e) {
+          Log::error('Error uploading media', [
+            'project_id' => $project->id,
+            'collection' => $collection,
+            'file_name' => $file->getClientOriginalName(),
+            'error' => $e->getMessage()
+          ]);
+          throw $e;
+        }
+      }
+    }
+  }
+
+  /**
+   * Generate a unique filename to prevent conflicts.
+   */
+  private function generateUniqueFileName(UploadedFile $file): string
+  {
+    $extension = $file->getClientOriginalExtension();
+    $name = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+    $timestamp = now()->format('Y-m-d_H-i-s');
+    $random = Str::random(6);
+
+    return Str::slug($name) . "_{$timestamp}_{$random}.{$extension}";
   }
 
   /**
@@ -195,28 +359,48 @@ class ProjectService
   }
 
   /**
-   * Upload media for a project.
+   * Get project media by collection.
    */
-  public function uploadMedia(Project $project, array|UploadedFile $files, string $collection = 'gallery'): array
+  public function getProjectMedia(Project $project, string $collection = 'default')
   {
-    // Normalize to array if single file is passed
-    $files = is_array($files) ? $files : [$files];
+    return $project->getMedia($collection);
+  }
 
-    $uploadedFiles = [];
+  /**
+   * Delete all media for a project.
+   */
+  public function deleteProjectMedia(Project $project): void
+  {
+    $project->clearMediaCollections();
+  }
 
-    foreach ($files as $file) {
-      $media = $project->addMedia($file)
-        ->toMediaCollection($collection);
-
-      $uploadedFiles[] = [
+  /**
+   * Get project gallery images with URLs.
+   */
+  public function getGalleryImages(Project $project): array
+  {
+    return $project->getMedia('gallery')->map(function (Media $media) {
+      return [
         'id' => $media->id,
-        'name' => $media->name,
         'url' => $media->getUrl(),
+        'name' => $media->name,
+        'file_name' => $media->file_name,
+        'mime_type' => $media->mime_type,
+        'size' => $media->size,
         'thumb_url' => $media->getUrl('thumb'),
+        'medium_url' => $media->getUrl('medium'),
+        'large_url' => $media->getUrl('large'),
       ];
-    }
+    })->toArray();
+  }
 
-    return $uploadedFiles;
+  /**
+   * Get project poster image URL.
+   */
+  public function getPosterImageUrl(Project $project): ?string
+  {
+    $posterMedia = $project->getFirstMedia('poster');
+    return $posterMedia ? $posterMedia->getUrl() : null;
   }
 
   /**

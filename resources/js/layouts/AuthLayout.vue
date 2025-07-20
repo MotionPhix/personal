@@ -1,23 +1,24 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import {ref} from 'vue';
 import ApplicationLogo from '@/components/ApplicationLogo.vue';
 import Dropdown from '@/components/Dropdown.vue';
 import DropdownLink from '@/components/DropdownLink.vue';
 import NavLink from '@/components/NavLink.vue';
 import ResponsiveNavLink from '@/components/ResponsiveNavLink.vue';
 import NotificationContainer from '@/components/ui/NotificationContainer.vue';
-import { Link } from '@inertiajs/vue3';
+import {Link, router} from '@inertiajs/vue3';
 import ToastList from '@/components/backend/ToastList.vue';
-import { useDark } from '@vueuse/core';
+import {useDark} from '@vueuse/core';
 import Footnote from '@/components/front/Footnote.vue';
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
 import {
   IconPlus,
   IconUserPlus,
   IconBuildingEstate,
   IconBalloon,
 } from "@tabler/icons-vue";
-import { ModalLink } from '@inertiaui/modal-vue';
+import {ModalLink} from '@inertiaui/modal-vue';
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
+import { Toaster } from "vue-sonner";
 
 const showingNavigationDropdown = ref(false);
 
@@ -29,8 +30,9 @@ const isDark = useDark()
 
   <div>
 
-    <ToastList />
-    <NotificationContainer />
+    <ToastList/>
+    <Toaster rich-colors position="top-right"/>
+    <NotificationContainer/>
 
     <div class="min-h-screen">
       <nav class="bg-white border-b border-gray-100 dark:bg-gray-800 dark:border-gray-700">
@@ -41,7 +43,7 @@ const isDark = useDark()
               <!-- Logo -->
               <div class="flex items-center shrink-0">
                 <Link :href="route('admin.dashboard')">
-                <ApplicationLogo class="block w-auto text-gray-800 fill-current h-9 dark:text-gray-200" />
+                  <ApplicationLogo class="block w-auto text-gray-800 fill-current h-9 dark:text-gray-200"/>
                 </Link>
               </div>
 
@@ -72,95 +74,54 @@ const isDark = useDark()
                 </NavLink>
               </div>
 
-              <div class="flex-1 inline-block sm:hidden" />
+              <div class="flex-1 inline-block sm:hidden"/>
 
               <div class="flex items-center ml-6">
-                <Menu as="div" class="relative inline-block mt-2 text-left">
-                  <div>
-                    <MenuButton
-                      class="inline-flex justify-center w-full"
-                    >
-                      <IconPlus
-                        class="text-gray-500 transition duration-200 size-8 sm:size-6"
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <IconPlus
+                      class="text-gray-500 transition duration-200 size-8 sm:size-6"
+                      aria-hidden="true"
+                      stroke="2"
+                    />
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent align="start" :side-offset="-32">
+                    <DropdownMenuItem
+                      @click="router.visit(route('admin.customers.create'), { preserveScroll: true })">
+                      <IconUserPlus
+                        class="text-violet-400 size-7"
                         aria-hidden="true"
-                        stroke="2"
                       />
-                    </MenuButton>
-                  </div>
 
-                  <transition
-                    enter-active-class="transition duration-100 ease-out"
-                    enter-from-class="transform scale-95 opacity-0"
-                    enter-to-class="transform scale-100 opacity-100"
-                    leave-active-class="transition duration-75 ease-in"
-                    leave-from-class="transform scale-100 opacity-100"
-                    leave-to-class="transform scale-95 opacity-0"
-                  >
-                    <MenuItems
-                      class="absolute left-0 z-30 w-40 -mt-10 bg-white divide-y divide-gray-100 rounded-md shadow-lg sm:right-0 ring-1 ring-black/5 focus:outline-none"
-                    >
-                    <div class="px-1 py-1">
-                      <MenuItem v-slot="{ active }">
-                        <Link
-                          as="button"
-                          :class="[
-                            active ? 'bg-violet-500 text-white' : 'text-gray-900',
-                            'group flex gap-2 w-full items-center rounded-md px-2 py-2 text-sm',
-                          ]"
-                          :href="route('auth.customer.create')"
-                        >
-                          <IconUserPlus
-                            :active="active"
-                            class="text-violet-400 size-7"
-                            aria-hidden="true"
-                          />
+                      <span>Add customer</span>
+                    </DropdownMenuItem>
 
-                          <span>Add customer</span>
-                        </Link>
-                      </MenuItem>
+                    <DropdownMenuItem
+                      @click="router.visit(route('auth.projects.create'), { preserveScroll: true })">
+                      <IconBuildingEstate
+                        class="text-violet-400 size-7"
+                        aria-hidden="true"
+                      />
+                      <span>Add project</span>
+                    </DropdownMenuItem>
 
-                      <MenuItem v-slot="{ active }">
-                        <Link
-                          as="button"
-                          :class="[
-                            active ? 'bg-violet-500 text-white' : 'text-gray-900',
-                            'group flex gap-2 w-full items-center rounded-md px-2 py-2 text-sm',
-                          ]"
-                          :href="route('auth.projects.create')"
-                        >
-                          <IconBuildingEstate
-                            :active="active"
-                            class="text-violet-400 size-7"
-                            aria-hidden="true"
-                          />
-                          <span>Add project</span>
-                        </Link>
-                      </MenuItem>
+                    <DropdownMenuItem as-child>
+                      <ModalLink
+                        as="button"
+                        class="w-full"
+                        :href="route('admin.downloads.create')">
+                        <IconBalloon
+                          class="text-violet-400 size-7"
+                          aria-hidden="true"
+                        />
+                        <span>Add logo</span>
+                      </ModalLink>
+                    </DropdownMenuItem>
 
-                      <MenuItem v-slot="{ active }">
-                        <ModalLink
-                          as="button"
-                          :class="[
-                            active ? 'bg-violet-500 text-white' : 'text-gray-900',
-                            'group flex gap-2 w-full items-center rounded-md px-2 py-2 text-sm',
-                          ]"
-                          :href="route('admin.downloads.create')"
-                        >
-                          <IconBalloon
-                            :active="active"
-                            class="text-violet-400 size-7"
-                            aria-hidden="true"
-                          />
-                          <span>Add logo</span>
-                        </ModalLink>
-                      </MenuItem>
-                    </div>
+                  </DropdownMenuContent>
 
-                  </MenuItems>
-
-                </transition>
-
-                </Menu>
+                </DropdownMenu>
               </div>
 
             </div>
@@ -182,14 +143,14 @@ const isDark = useDark()
                              fill="currentColor">
                           <path fill-rule="evenodd"
                                 d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd" />
+                                clip-rule="evenodd"/>
                         </svg>
                       </button>
                     </span>
                   </template>
 
                   <template #content>
-                    <DropdownLink :href="route('admin.profile.edit')"> Profile </DropdownLink>
+                    <DropdownLink :href="route('admin.profile.edit')"> Profile</DropdownLink>
                     <DropdownLink :href="route('logout')"
                                   method="post"
                                   as="button">
@@ -215,7 +176,7 @@ const isDark = useDark()
                         stroke-linecap="round"
                         stroke-linejoin="round"
                         stroke-width="2"
-                        d="M4 6h16M4 12h16M4 18h16" />
+                        d="M4 6h16M4 12h16M4 18h16"/>
                   <path :class="{
                     hidden: !showingNavigationDropdown,
                     'inline-flex': showingNavigationDropdown,
@@ -223,7 +184,7 @@ const isDark = useDark()
                         stroke-linecap="round"
                         stroke-linejoin="round"
                         stroke-width="2"
-                        d="M6 18L18 6M6 6l12 12" />
+                        d="M6 18L18 6M6 6l12 12"/>
                 </svg>
               </button>
             </div>
@@ -290,10 +251,10 @@ const isDark = useDark()
 
       <!-- Page Content -->
       <main>
-        <slot />
+        <slot/>
       </main>
 
-      <Footnote />
+      <Footnote/>
 
     </div>
 

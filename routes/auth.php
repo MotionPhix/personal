@@ -64,7 +64,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::post('/', [\App\Http\Controllers\Customer\CustomerController::class, 'store'])->name('store');
     Route::get('/s/{customer:uuid}', [\App\Http\Controllers\Customer\CustomerController::class, 'show'])->name('show');
     Route::get('/e/{customer:uuid}', [\App\Http\Controllers\Customer\CustomerController::class, 'edit'])->name('edit');
-    Route::put('/{customer:uuid}', [\App\Http\Controllers\Customer\CustomerController::class, 'update'])->name('update');
+    Route::patch('/{customer:uuid}', [\App\Http\Controllers\Customer\CustomerController::class, 'update'])->name('update');
     Route::delete('/{customer:uuid}', [\App\Http\Controllers\Customer\CustomerController::class, 'destroy'])->name('destroy');
   });
 
@@ -81,10 +81,75 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
   // Downloads/Logo Management
   Route::prefix('downloads')->name('downloads.')->group(function () {
-    Route::get('/', \App\Http\Controllers\Logos\Listing::class)->name('index');
-    Route::get('/create', \App\Http\Controllers\Logos\Create::class)->name('create');
-    Route::post('/', \App\Http\Controllers\Logos\Store::class)->name('store');
-    Route::delete('/{logo:uuid}', \App\Http\Controllers\Logos\Destroy::class)->name('destroy');
+    Route::get(
+      '/',
+      [\App\Http\Controllers\Downloads\DownloadController::class, 'index']
+    )->name('index');
+
+    Route::get(
+      '/create',
+      [\App\Http\Controllers\Downloads\DownloadController::class, 'create']
+    )->name('create');
+
+    Route::get(
+      '/s/{download:uuid}',
+      [\App\Http\Controllers\Downloads\DownloadController::class, 'show']
+    )->name('show');
+
+    Route::get(
+      '/e/{download:uuid}',
+      [\App\Http\Controllers\Downloads\DownloadController::class, 'edit']
+    )->name('edit');
+
+    Route::put(
+      '/{download:uuid}',
+      [\App\Http\Controllers\Downloads\DownloadController::class, 'update']
+    )->name('update');
+
+    Route::delete(
+      '/{download:uuid}',
+      [\App\Http\Controllers\Downloads\DownloadController::class, 'destroy']
+    )->name('destroy');
+
+    // Bulk operations
+    Route::post(
+      '/bulk-update',
+      [\App\Http\Controllers\Downloads\DownloadController::class, 'bulkUpdate']
+    )->name('bulk-update');
+
+    Route::post(
+      '/reorder',
+      [\App\Http\Controllers\Downloads\DownloadController::class, 'reorder']
+    )->name('reorder');
+
+    // Statistics
+    Route::get(
+      '/stats',
+      [\App\Http\Controllers\Downloads\DownloadController::class, 'stats']
+    )->name('stats');
+
+    // Export functionality
+    Route::get(
+      '/export',
+      [\App\Http\Controllers\Downloads\DownloadController::class, 'export']
+    )->name('export');
+
+    // Duplicate download
+    Route::post(
+      '/duplicate/{download:uuid}',
+      [\App\Http\Controllers\Downloads\DownloadController::class, 'duplicate']
+    )->name('duplicate');
+
+    // Download file endpoint
+    Route::get(
+      '/download/{download:uuid}',
+      [\App\Http\Controllers\Downloads\DownloadController::class, 'download']
+    )->name('download');
+
+    Route::post(
+      '/',
+      [\App\Http\Controllers\Downloads\DownloadController::class, 'store']
+    )->name('store');
   });
 
   // Profile Management

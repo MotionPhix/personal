@@ -5,7 +5,7 @@ import NoContactFound from "@/components/contact/NoContactFound.vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import { Customer } from "@/types";
 import { Head, Link, router } from "@inertiajs/vue3";
-import { IconPlus, IconSearch, IconArrowRight, IconFilter, IconGrid3x3, IconList, IconUsers, IconTrendingUp, IconBriefcase } from "@tabler/icons-vue";
+import { IconPlus, IconSearch, IconArrowRight, IconFilter, IconGrid3x3, IconList, IconUsers, IconTrendingUp, IconBriefcase, IconMail, IconPhone, IconBuilding, IconCheck, IconChevronLeft, IconChevronRight } from "@tabler/icons-vue";
 import { ref, computed, onMounted, nextTick } from "vue";
 import VueApexCharts from "vue3-apexcharts";
 import { gsap } from "gsap";
@@ -17,15 +17,15 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Checkbox } from "@/components/ui/checkbox";
 import {useStorage} from "@vueuse/core";
 
 // Props and options
-// Update props interface to include growth_data
 const props = defineProps<{
-  customers: { data: Customer[]; links: any[] };
+  customers: { data: Customer[]; links: any; meta: any };
   filters: {
     search: string;
     status: string;
@@ -159,8 +159,16 @@ const growthChartData = computed(() => ({
   }
 }));
 
-// Handle customer selection
-const toggleCustomerSelection = (customerId: string) => {
+// Selection functionality
+const isCustomerSelected = (customerId: string) => {
+  return selectedCustomers.value.includes(customerId);
+};
+
+const toggleCustomerSelection = (customerId: string, event?: Event) => {
+  if (event) {
+    event.stopPropagation();
+  }
+
   const index = selectedCustomers.value.indexOf(customerId);
   if (index === -1) {
     selectedCustomers.value.push(customerId);
@@ -169,6 +177,22 @@ const toggleCustomerSelection = (customerId: string) => {
   }
 };
 
+const selectAllCustomers = () => {
+  if (selectedCustomers.value.length === props.customers.data.length) {
+    selectedCustomers.value = [];
+  } else {
+    selectedCustomers.value = props.customers.data.map(customer => customer.uuid);
+  }
+};
+
+const isAllSelected = computed(() => {
+  return props.customers.data.length > 0 && selectedCustomers.value.length === props.customers.data.length;
+});
+
+const isIndeterminate = computed(() => {
+  return selectedCustomers.value.length > 0 && selectedCustomers.value.length < props.customers.data.length;
+});
+
 // Delete selected customers
 const deleteSelectedCustomers = async () => {
   if (!selectedCustomers.value.length) return;
@@ -176,14 +200,10 @@ const deleteSelectedCustomers = async () => {
   try {
     loading.value = true;
     // Implement delete logic here
-    toast.success(`${selectedCustomers.value.length} customers deleted`, {
-      description: "Selected customers have been deleted.",
-    });
+    console.log(`${selectedCustomers.value.length} customers deleted`);
     selectedCustomers.value = [];
   } catch (error) {
-    toast.error("Failed to delete customers", {
-      description: "An error occurred while deleting customers.",
-    });
+    console.error("Failed to delete customers");
   } finally {
     loading.value = false;
   }
@@ -194,9 +214,9 @@ const updateCustomerStatus = async (customer: Customer, newStatus: string) => {
   try {
     loading.value = true;
     // Implement status update logic here
-    toast.success(`Customer status updated to ${newStatus}`);
+    console.log(`Customer status updated to ${newStatus}`);
   } catch (error) {
-    toast.error("Failed to update customer status");
+    console.error("Failed to update customer status");
   } finally {
     loading.value = false;
   }
@@ -247,12 +267,22 @@ const handleViewModeChange = () => {
 };
 
 // Helper functions
-const getInitials = (firstName: string, lastName: string) => {
-  return `${firstName[0]}${lastName[0]}`.toUpperCase();
+const getInitials = (customer: Customer) => {
+  return customer.initials || `${customer.first_name[0]}${customer.last_name[0]}`.toUpperCase();
 };
 
 const getCustomerStatus = (customer: Customer) => {
   return customer.status || 'inactive';
+};
+
+// Pagination helpers
+const goToPage = (url: string) => {
+  if (url) {
+    router.visit(url, {
+      preserveState: true,
+      preserveScroll: true
+    });
+  }
 };
 </script>
 
@@ -264,25 +294,15 @@ const getCustomerStatus = (customer: Customer) => {
     <Navheader>
       <div class="header-content flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 w-full">
         <div class="flex items-center gap-4">
-          <div class="flex items-center gap-3 flex-1">
+          <div class="flex items-start gap-3 flex-1">
             <div class="p-2 bg-primary/10 rounded-lg">
               <IconUsers class="w-6 h-6 text-primary" />
             </div>
 
             <div class="flex-1">
-              <section class="flex items-start justify-between w-full">
-                <h1 class="text-2xl font-bold text-foreground">
-                  Customer Management
-                </h1>
-
-                <!-- Add Customer Button -->
-                <Link :href="route('admin.customers.create')" as="button">
-                  <Button class="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300">
-                    <IconPlus class="w-4 h-4 mr-2" />
-                    Add Customer
-                  </Button>
-                </Link>
-              </section>
+              <h1 class="text-2xl font-bold text-foreground">
+                Customer Management
+              </h1>
 
               <p class="text-sm text-muted-foreground">
                 Manage and organize your customer relationships
@@ -291,15 +311,15 @@ const getCustomerStatus = (customer: Customer) => {
           </div>
         </div>
 
-        <!-- Stats Cards -->
-        <div class="flex gap-4 overflow-x-auto pb-2 lg:pb-0">
-          <Card class="min-w-[140px] bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
-            <CardContent class="p-4">
+        <!-- Stats Cards - Optimized for smaller container -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 w-full lg:w-auto">
+          <Card class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800">
+            <CardContent class="p-3">
               <div class="flex items-center gap-2">
-                <IconUsers class="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                <div>
-                  <p class="text-sm font-medium text-blue-900 dark:text-blue-100">Total</p>
-                  <p class="text-xl font-bold text-blue-900 dark:text-blue-100">
+                <IconUsers class="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <div class="min-w-0">
+                  <p class="text-xs font-medium text-blue-900 dark:text-blue-100">Total</p>
+                  <p class="text-lg font-bold text-blue-900 dark:text-blue-100">
                     {{ stats.total_customers }}
                   </p>
                 </div>
@@ -307,13 +327,13 @@ const getCustomerStatus = (customer: Customer) => {
             </CardContent>
           </Card>
 
-          <Card class="min-w-[140px] bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
-            <CardContent class="p-4">
+          <Card class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 border-green-200 dark:border-green-800">
+            <CardContent class="p-3">
               <div class="flex items-center gap-2">
-                <IconUsers class="w-4 h-4 text-green-600 dark:text-green-400" />
-                <div>
-                  <p class="text-sm font-medium text-green-900 dark:text-green-100">Active</p>
-                  <p class="text-xl font-bold text-green-900 dark:text-green-100">
+                <IconUsers class="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                <div class="min-w-0">
+                  <p class="text-xs font-medium text-green-900 dark:text-green-100">Active</p>
+                  <p class="text-lg font-bold text-green-900 dark:text-green-100">
                     {{ stats.active_customers }}
                   </p>
                 </div>
@@ -321,16 +341,13 @@ const getCustomerStatus = (customer: Customer) => {
             </CardContent>
           </Card>
 
-          <Card class="min-w-[140px] bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800">
-            <CardContent class="p-4">
+          <Card class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900 border-purple-200 dark:border-purple-800">
+            <CardContent class="p-3">
               <div class="flex items-center gap-2">
-                <IconBriefcase class="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                <div>
-                  <p class="text-sm font-medium text-purple-900 dark:text-purple-100">
-                    With Projects
-                  </p>
-
-                  <p class="text-xl font-bold text-purple-900 dark:text-purple-100">
+                <IconBriefcase class="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+                <div class="min-w-0">
+                  <p class="text-xs font-medium text-purple-900 dark:text-purple-100">Projects</p>
+                  <p class="text-lg font-bold text-purple-900 dark:text-purple-100">
                     {{ stats.customers_with_projects }}
                   </p>
                 </div>
@@ -338,13 +355,13 @@ const getCustomerStatus = (customer: Customer) => {
             </CardContent>
           </Card>
 
-          <Card class="min-w-[140px] bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border-amber-200 dark:border-amber-800">
-            <CardContent class="p-4">
+          <Card class="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-950 dark:to-amber-900 border-amber-200 dark:border-amber-800">
+            <CardContent class="p-3">
               <div class="flex items-center gap-2">
-                <IconTrendingUp class="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                <div>
-                  <p class="text-sm font-medium text-amber-900 dark:text-amber-100">Growth</p>
-                  <p class="text-xl font-bold text-amber-900 dark:text-amber-100">
+                <IconTrendingUp class="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                <div class="min-w-0">
+                  <p class="text-xs font-medium text-amber-900 dark:text-amber-100">Growth</p>
+                  <p class="text-lg font-bold text-amber-900 dark:text-amber-100">
                     {{ stats.growth_rate }}
                   </p>
                 </div>
@@ -355,8 +372,8 @@ const getCustomerStatus = (customer: Customer) => {
       </div>
     </Navheader>
 
-    <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8 max-w-7xl">
+    <!-- Main Content with max-w-4xl -->
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
       <!-- Search and Controls -->
       <div class="mb-8 space-y-4">
         <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
@@ -372,8 +389,18 @@ const getCustomerStatus = (customer: Customer) => {
 
           <!-- Controls -->
           <div class="flex items-center gap-3">
+            <!-- Bulk Actions -->
+            <div v-if="selectedCustomers.length > 0" class="flex items-center gap-2">
+              <Badge variant="secondary" class="px-3 py-1">
+                {{ selectedCustomers.length }} selected
+              </Badge>
+              <Button variant="destructive" size="sm" @click="deleteSelectedCustomers">
+                Delete Selected
+              </Button>
+            </div>
+
             <!-- View Mode Toggle -->
-            <div class="flex items-center gap-2 p-1 bg-muted rounded-lg">
+            <div class="flex items-center gap-1 p-1 bg-muted rounded-lg">
               <Button
                 variant="ghost"
                 size="sm"
@@ -409,24 +436,33 @@ const getCustomerStatus = (customer: Customer) => {
           </div>
         </div>
 
-        <!-- Action Menu for Selected Customers -->
-        <ContactActionMenu :contacts="customers" v-if="customers.length" />
+        <!-- Select All Checkbox -->
+        <div v-if="customers.data.length > 0" class="flex items-center gap-2">
+          <Checkbox
+            :checked="isAllSelected"
+            :indeterminate="isIndeterminate"
+            @click="selectAllCustomers"
+          />
+          <span class="text-sm text-muted-foreground">
+            Select all customers on this page
+          </span>
+        </div>
       </div>
 
-      <!-- Customer Stats Overview -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <!-- Customer Stats Overview - Optimized for max-w-4xl -->
+      <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
         <!-- Growth Chart -->
-        <Card class="lg:col-span-2">
+        <Card class="lg:col-span-3">
           <CardHeader class="flex flex-row items-center justify-between pb-2">
-            <CardTitle>Customer Growth</CardTitle>
-            <Badge variant="outline" class="font-mono">
+            <CardTitle class="text-lg">Customer Growth</CardTitle>
+            <Badge variant="outline" class="font-mono text-xs">
               {{ stats.growth_rate }}
             </Badge>
           </CardHeader>
           <CardContent>
             <VueApexCharts
               width="100%"
-              height="280"
+              height="240"
               :options="growthChartData"
               :series="[{
                 name: 'New Customers',
@@ -437,19 +473,19 @@ const getCustomerStatus = (customer: Customer) => {
         </Card>
 
         <!-- Status Distribution -->
-        <ScrollArea class="h-[230px]">
-          <Card>
-            <CardHeader>
-              <CardTitle>Status Distribution</CardTitle>
-            </CardHeader>
-            <CardContent>
+        <Card class="lg:col-span-2">
+          <CardHeader>
+            <CardTitle class="text-lg">Status Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ScrollArea class="h-[200px]">
               <div class="space-y-4">
                 <div v-for="(count, status) in stats.customers_by_status" :key="status">
-                  <div class="flex items-center justify-between mb-1">
-                    <Badge :variant="status === 'active' ? 'default' : 'secondary'" class="capitalize">
+                  <div class="flex items-center justify-between mb-2">
+                    <Badge :variant="status === 'active' ? 'default' : 'secondary'" class="capitalize text-xs">
                       {{ status }}
                     </Badge>
-                    <span class="text-sm text-muted-foreground">
+                    <span class="text-sm text-muted-foreground font-medium">
                       {{ Math.round((count / stats.total_customers) * 100) }}%
                     </span>
                   </div>
@@ -466,49 +502,62 @@ const getCustomerStatus = (customer: Customer) => {
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </ScrollArea>
+            </ScrollArea>
+          </CardContent>
+        </Card>
       </div>
 
       <!-- Top Customers -->
       <Card class="mb-8">
         <CardHeader>
-          <CardTitle>Top Performing Customers</CardTitle>
+          <CardTitle class="text-lg">Top Performing Customers</CardTitle>
           <CardDescription>Customers with the most projects</CardDescription>
         </CardHeader>
         <CardContent>
-          <ScrollArea class="h-[360px]">
-            <div class="space-y-6">
+          <ScrollArea class="h-[300px]">
+            <div class="space-y-4">
               <div
                 v-for="(customer, index) in stats.top_customers_by_projects"
                 :key="customer.uuid"
-                class="flex items-center justify-between group"
+                class="relative flex items-center justify-between group p-3 rounded-lg hover:bg-muted/50 transition-colors"
               >
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
                   <div class="relative">
-                    <Avatar class="w-12 h-12">
-                      <AvatarFallback class="bg-primary/10 text-primary">
-                        {{ getInitials(customer.first_name, customer.last_name) }}
+                    <Avatar class="w-10 h-10">
+                      <AvatarFallback class="bg-primary/10 text-primary text-sm font-semibold">
+                        {{ getInitials(customer) }}
                       </AvatarFallback>
                     </Avatar>
-                    <div class="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
+                    <div class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
                       {{ index + 1 }}
                     </div>
                   </div>
-                  <div>
-                    <h4 class="font-medium group-hover:text-primary transition-colors">
+                  <div class="min-w-0 flex-1">
+                    <h4 class="font-mono font-medium group-hover:text-primary transition-colors truncate">
                       {{ customer.first_name }} {{ customer.last_name }}
                     </h4>
-                    <p class="text-sm text-muted-foreground">{{ customer.company_name || 'No company' }}</p>
+
+                    <p class="text-sm text-muted-foreground truncate">
+                      {{ customer.job_title }} | {{ customer.company_name || 'No company' }}
+                    </p>
                   </div>
                 </div>
-                <div class="flex items-center gap-4">
-                  <div class="text-right">
-                    <p class="font-medium">{{ customer.projects_count }}</p>
-                    <p class="text-xs text-muted-foreground">Projects</p>
+
+                <div class="absolute flex items-center gap-3 right-3 top-6 transform -translate-y-1/2 group-hover:opacity-100 opacity-0 transition-opacity">
+                  <div class="text-right flex items-center gap-x-4">
+                    <p class="font-semibold text-lg">
+                      {{ customer.projects_count }}
+                    </p>
+
+                    <p class="text-xs text-muted-foreground">
+                      Projects
+                    </p>
                   </div>
-                  <Button variant="ghost" size="icon">
+
+                  <Button
+                    variant="ghost" size="icon"
+                    @click="() => router.visit(route('admin.customers.show', customer.uuid))"
+                    class="opacity-0 group-hover:opacity-100 transition-opacity">
                     <IconArrowRight class="w-4 h-4" />
                   </Button>
                 </div>
@@ -521,112 +570,96 @@ const getCustomerStatus = (customer: Customer) => {
       <!-- Loading State -->
       <div v-if="loading" class="space-y-4">
         <Skeleton class="h-12 w-full" />
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          <Skeleton v-for="n in 8" :key="n" class="h-[200px]" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Skeleton v-for="n in 6" :key="n" class="h-[240px]" />
         </div>
       </div>
 
-      <article
-        v-if="customers.data.length && !loading"
-        class="grid gap-8 mb-6 lg:mb-16 md:grid-cols-2">
-        <div
-          v-for="(customer, index) in customers.data"
-          :key="customer.uuid"
-          class="items-center bg-gray-50 rounded-lg shadow sm:flex dark:bg-gray-800 dark:border-gray-700">
-          <Link href="#" class="h-full">
-            <img
-              class="w-full rounded-lg"
-              src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/bonnie-green.png" alt="Bonnie Avatar">
-          </Link>
-
-          <div class="p-5 sm:flex-1">
-            <h3 class="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
-              <a href="#">{{ customer.first_name }} {{ customer.last_name }}</a>
-            </h3>
-
-            <span class="text-gray-500 dark:text-gray-400">
-              {{ customer.job_title || 'No company' }}
-            </span>
-
-            <p class="mt-3 mb-4 font-light text-gray-500 dark:text-gray-400">
-              {{ customer.company_name || 'No company.' }}
-            </p>
-
-            <ul class="flex space-x-4 sm:mt-0">
-              <li>
-                <Link :href="route('admin.customers.edit', customer.uuid)" as="button" class="flex-1">
-                  <Button variant="outline" size="sm" class="w-full">
-                    Edit
-                  </Button>
-                </Link>
-              </li>
-
-              <li>
-                <Link :href="route('admin.projects.create', customer.uuid)" as="button">
-                  <Button variant="outline" size="sm" class="w-full">
-                    Project
-                  </Button>
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </article>
-
-        <!-- Customer Grid/List -->
+      <!-- Customer Grid/List -->
       <div v-if="customers.data.length && !loading" ref="containerRef" class="transition-all duration-300">
-        <!-- Grid View -->
+        <!-- Enhanced Grid View -->
         <div
           v-if="viewMode === 'grid'"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <Card
             v-for="(customer, index) in customers.data"
             :key="customer.uuid"
             :ref="el => cardsRef[index] = el as HTMLElement"
-            class="group hover:shadow-xl transition-all duration-300 cursor-pointer border-border/50 hover:border-primary/50 bg-card/50 backdrop-blur-sm"
-            @click="router.visit(route('admin.customers.edit', customer.uuid))">
-            <CardHeader class="pb-3">
+            class="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border/50 hover:border-primary/50 bg-card hover:bg-card/80"
+            :class="{ 'ring-2 ring-primary/50': isCustomerSelected(customer.uuid) }"
+            @click="toggleCustomerSelection(customer.uuid, $event)">
+            <CardHeader>
               <div class="flex items-start justify-between">
-                <div class="flex items-center gap-3">
-                  <Avatar class="w-12 h-12 ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300">
-                    <AvatarImage :src="customer.avatar" />
-                    <AvatarFallback class="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold">
-                      {{ getInitials(customer.first_name, customer.last_name) }}
-                    </AvatarFallback>
-                  </Avatar>
+                <div class="flex items-center gap-3 flex-1 min-w-0">
+                  <!-- Avatar with Selection -->
+                  <div class="relative">
+                    <Avatar
+                      class="w-12 h-12 ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300 cursor-pointer">
+                      <AvatarImage v-if="customer.avatar_url" :src="customer.avatar_url" />
+                      <AvatarFallback>
+                        {{ isCustomerSelected(customer.uuid) ? '' : getInitials(customer) }}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <!-- Selection Indicator -->
+                    <div
+                      v-if="isCustomerSelected(customer.uuid)"
+                      class="absolute inset-0 bg-primary/20 rounded-full flex items-center justify-center">
+                      <IconCheck class="w-6 h-6 text-primary" />
+                    </div>
+
+                    <!-- Hover Checkbox -->
+                    <div
+                      v-else
+                      class="absolute inset-0 bg-background/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                      <div class="w-4 h-4 border-2 border-primary rounded"></div>
+                    </div>
+                  </div>
 
                   <div class="flex-1 min-w-0">
-                    <CardTitle class="text-lg truncate group-hover:text-primary transition-colors duration-300">
+                    <CardTitle class="text-base truncate group-hover:text-primary transition-colors duration-300">
                       {{ customer.first_name }} {{ customer.last_name }}
                     </CardTitle>
 
-                    <CardDescription class="truncate">
+                    <CardDescription class="truncate text-sm">
                       {{ customer.job_title || 'Customer' }}
                     </CardDescription>
                   </div>
                 </div>
 
                 <Badge
-                  :variant="getCustomerStatus(customer) === 'active' ? 'default' : 'secondary'"
-                  class="text-xs">
+                  :variant="getCustomerStatus(customer) === 'active'
+                  ? 'default' : getCustomerStatus(customer) === 'prospect'
+                  ? 'outline' : 'secondary'"
+                  class="text-xs flex-shrink-0">
                   {{ getCustomerStatus(customer) }}
                 </Badge>
               </div>
             </CardHeader>
 
-            <CardContent class="pt-0">
+            <CardContent class="space-y-3">
+              <!-- Contact Information -->
               <div class="space-y-2">
-                <p class="text-sm text-muted-foreground truncate" v-if="customer.email">
-                  {{ customer.email }}
-                </p>
+                <div class="flex items-center gap-2 text-sm text-muted-foreground" v-if="customer.email">
+                  <IconMail class="w-4 h-4 flex-shrink-0" />
+                  <span class="truncate">{{ customer.email }}</span>
+                </div>
 
-                <p class="text-sm text-muted-foreground truncate" v-if="customer.phone">
-                  {{ customer.phone }}
-                </p>
+                <div class="flex items-center gap-2 text-sm text-muted-foreground" v-if="customer.phone_number">
+                  <IconPhone class="w-4 h-4 flex-shrink-0" />
+                  <span class="truncate">{{ customer.phone_number }}</span>
+                </div>
+
+                <div class="flex items-center gap-2 text-sm text-muted-foreground" v-if="customer.company_name">
+                  <IconBuilding class="w-4 h-4 flex-shrink-0" />
+                  <span class="truncate">{{ customer.company_name }}</span>
+                </div>
               </div>
 
+              <Separator />
+
               <!-- Action Buttons -->
-              <div class="flex gap-2 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <Link :href="route('admin.customers.edit', customer.uuid)" as="button" class="flex-1">
                   <Button variant="outline" size="sm" class="w-full">
                     Edit
@@ -643,59 +676,100 @@ const getCustomerStatus = (customer: Customer) => {
           </Card>
         </div>
 
-        <!-- List View -->
-        <Card v-else class="bg-card/50 backdrop-blur-sm border-border/50">
+        <!-- Enhanced List View -->
+        <Card v-else class="bg-card border-border/50">
           <CardContent class="p-0">
             <div class="divide-y divide-border/50">
               <div
                 v-for="(customer, index) in customers.data"
                 :key="customer.uuid"
                 :ref="el => cardsRef[index] = el as HTMLElement"
-                class="p-4 hover:bg-muted/50 transition-colors duration-200 cursor-pointer group"
-                @click="router.visit(route('admin.customers.edit', customer.uuid))"
-              >
-                <div class="flex items-center justify-between">
+                class="p-4 hover:bg-muted/30 transition-colors duration-200 cursor-pointer group"
+                :class="{ 'bg-primary/5': isCustomerSelected(customer.uuid) }"
+                @click="toggleCustomerSelection(customer.uuid, $event)">
+                <div class="flex items-center justify-between gap-4">
                   <div class="flex items-center gap-4 flex-1 min-w-0">
-                    <Avatar class="w-10 h-10 ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300">
-                      <AvatarImage :src="customer.avatar" />
-                      <AvatarFallback class="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold">
-                        {{ getInitials(customer.first_name, customer.last_name) }}
-                      </AvatarFallback>
-                    </Avatar>
+                    <!-- Avatar with Selection -->
+                    <div class="relative">
+                      <Avatar
+                        class="w-12 h-12 ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300 cursor-pointer">
+                        <AvatarImage v-if="customer.avatar_url" :src="customer.avatar_url" />
+                        <AvatarFallback>
+                          {{ isCustomerSelected(customer.uuid) ? '' : getInitials(customer) }}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <!-- Selection Indicator -->
+                      <div
+                        v-if="isCustomerSelected(customer.uuid)"
+                        class="absolute inset-0 bg-primary/20 rounded-full flex items-center justify-center">
+                        <IconCheck class="w-6 h-6 text-primary" />
+                      </div>
+
+                      <!-- Hover Checkbox -->
+                      <div
+                        v-else
+                        class="absolute inset-0 bg-background/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <div class="w-5 h-5 border-2 border-primary rounded"></div>
+                      </div>
+                    </div>
 
                     <div class="flex-1 min-w-0">
-                      <div class="flex items-center gap-2">
-                        <h3 class="font-semibold text-foreground group-hover:text-primary transition-colors duration-300 truncate">
+                      <div class="flex items-center gap-2 mb-1">
+                        <h3 class="font-mono font-semibold text-foreground group-hover:text-primary transition-colors duration-300 truncate">
                           {{ customer.first_name }} {{ customer.last_name }}
                         </h3>
+
                         <Badge
-                          :variant="getCustomerStatus(customer) === 'active' ? 'default' : 'secondary'"
-                          class="text-xs"
-                        >
+                          :variant="getCustomerStatus(customer) === 'active'
+                          ? 'default' : getCustomerStatus(customer) === 'prospect'
+                          ? 'outline' : 'secondary'"
+                          class="capitalize text-xs flex-shrink-0">
                           {{ getCustomerStatus(customer) }}
                         </Badge>
                       </div>
-                      <p class="text-sm text-muted-foreground truncate">
-                        {{ customer.job_title || 'Customer' }}
+
+                      <p class="text-sm text-muted-foreground truncate mb-2">
+                        {{ customer.job_title || 'Customer' }} | <span class="font-mono font-semibold">{{ customer.company_name || 'No company' }}</span>
                       </p>
-                      <div class="flex gap-4 mt-1">
-                        <p class="text-xs text-muted-foreground truncate" v-if="customer.email">
-                          {{ customer.email }}
-                        </p>
-                        <p class="text-xs text-muted-foreground" v-if="customer.phone">
-                          {{ customer.phone }}
-                        </p>
+
+                      <!-- Contact Details in List View -->
+                      <div class="flex flex-wrap gap-4 text-xs text-muted-foreground">
+                        <div class="flex items-center gap-1" v-if="customer.email">
+                          <IconMail class="w-3 h-3" />
+                          <span class="truncate max-w-[200px]">{{ customer.email }}</span>
+                        </div>
+
+                        <div class="flex items-center gap-1" v-if="customer.phone_number">
+                          <IconPhone class="w-3 h-3" />
+                          <span>{{ customer.phone_number }}</span>
+                        </div>
+
+                        <div class="flex items-center gap-1" v-if="customer.company_name">
+                          <IconBuilding class="w-3 h-3" />
+                          <span class="truncate max-w-[150px]">{{ customer.company_name }}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex-shrink-0">
+                    <Link
+                      :href="route('admin.customers.show', customer.uuid)"
+                      as="button">
+                      <Button variant="outline" size="sm">
+                        View
+                      </Button>
+                    </Link>
+
                     <Link :href="route('admin.customers.edit', customer.uuid)" as="button">
                       <Button variant="outline" size="sm">
                         Edit
                       </Button>
                     </Link>
-                    <Link :href="route('admin.projects.create', customer.uuid)" as="button">
+
+                    <Link
+                      :href="route('admin.projects.create', customer.uuid)" as="button">
                       <Button variant="outline" size="sm">
                         Project
                       </Button>
@@ -708,22 +782,24 @@ const getCustomerStatus = (customer: Customer) => {
         </Card>
       </div>
 
-      <!-- Empty State -->
-      <div v-else class="text-center py-16">
+      <!-- Enhanced Empty State -->
+      <div v-else-if="!loading" class="text-center py-16">
         <NoContactFound>
-          <div class="space-y-4">
+          <div class="space-y-6">
             <div class="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-6">
               <IconUsers class="w-12 h-12 text-muted-foreground" />
             </div>
-            <h3 class="text-xl font-semibold text-foreground">
-              {{ searchQuery ? 'No customers found' : 'No customers yet' }}
-            </h3>
-            <p class="text-muted-foreground max-w-md mx-auto">
-              {{ searchQuery
+            <div class="space-y-2">
+              <h3 class="text-xl font-semibold text-foreground">
+                {{ searchQuery ? 'No customers found' : 'No customers yet' }}
+              </h3>
+              <p class="text-muted-foreground max-w-md mx-auto">
+                {{ searchQuery
                 ? `No customers match "${searchQuery}". Try adjusting your search.`
                 : 'Get started by adding your first customer to begin managing relationships.'
-              }}
-            </p>
+                }}
+              </p>
+            </div>
             <div class="flex gap-3 justify-center mt-6">
               <Button v-if="searchQuery" variant="outline" @click="searchQuery = ''">
                 Clear Search
@@ -737,6 +813,50 @@ const getCustomerStatus = (customer: Customer) => {
             </div>
           </div>
         </NoContactFound>
+      </div>
+
+      <!-- Pagination -->
+      <div v-if="customers.data.length > 0 && customers.meta" class="mt-8 flex items-center justify-between">
+        <div class="text-sm text-muted-foreground">
+          Showing {{ customers.meta.from }} to {{ customers.meta.to }} of {{ customers.meta.total }} customers
+        </div>
+
+        <div class="flex items-center gap-2">
+          <!-- Previous Button -->
+<!--          <Button-->
+<!--            variant="outline"-->
+<!--            size="sm"-->
+<!--            :disabled="!customers.links.prev"-->
+<!--            @click="goToPage(customers.links.prev)">-->
+<!--            <IconChevronLeft class="w-4 h-4 mr-1" />-->
+<!--            Previous-->
+<!--          </Button>-->
+
+          <!-- Page Numbers -->
+          <div class="flex items-center gap-1">
+            <template v-for="link in customers.meta.links" :key="link.label">
+              <Button
+                v-if="link.label !== '&laquo; Previous' && link.label !== 'Next &raquo;'"
+                variant="outline"
+                size="sm"
+                :class="link.active ? 'bg-primary text-primary-foreground' : ''"
+                :disabled="!link.url"
+                @click="goToPage(link.url)"
+                v-html="link.label">
+              </Button>
+            </template>
+          </div>
+
+          <!-- Next Button -->
+<!--          <Button-->
+<!--            variant="outline"-->
+<!--            size="sm"-->
+<!--            :disabled="!customers.links.next"-->
+<!--            @click="goToPage(customers.links.next)">-->
+<!--            Next-->
+<!--            <IconChevronRight class="w-4 h-4 ml-1" />-->
+<!--          </Button>-->
+        </div>
       </div>
     </div>
   </div>
@@ -760,5 +880,26 @@ const getCustomerStatus = (customer: Customer) => {
 
 .overflow-x-auto::-webkit-scrollbar-thumb:hover {
   background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Enhanced hover effects */
+.group:hover .group-hover\:ring-primary\/40 {
+  --tw-ring-color: hsl(var(--primary) / 0.4);
+}
+
+/* Smooth transitions for all interactive elements */
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Selection ring animation */
+@keyframes selection-ring {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.ring-2.ring-primary\/50 {
+  animation: selection-ring 0.2s ease-out;
 }
 </style>

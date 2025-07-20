@@ -3,9 +3,11 @@ import {IconPhotoDown, IconTrashFilled} from "@tabler/icons-vue";
 import {Link} from "@inertiajs/vue3";
 import {Logo} from "@/types";
 
-defineProps<{
+const props = defineProps<{
   logoFile: Logo;
 }>();
+
+console.log('Logo file:', props.logoFile);
 </script>
 
 <template>
@@ -25,7 +27,7 @@ defineProps<{
         class="absolute transition opacity-0 bottom-2 end-2 group-hover:opacity-100">
 
         <a
-          :href="route('downloads.show', logoFile.lid)"
+          :href="route('downloads.show', logoFile.uuid)"
           class="flex items-center px-2 py-1 text-gray-800 bg-white rounded gap-x-1 dark:bg-neutral-900 dark:text-neutral-200">
 
           <IconPhotoDown
@@ -41,10 +43,10 @@ defineProps<{
 
     <Link
       class="absolute items-center justify-center hidden text-gray-800 bg-white rounded group-hover:flex left-2 bottom-2 size-6 dark:bg-neutral-900 dark:text-neutral-200"
-      :href="route('auth.downloads.destroy', logoFile.lid)"
+      :href="route('admin.downloads.destroy', logoFile.uuid)"
       method="delete"
       as="button"
-      v-if="$page.url.startsWith('/auth')">
+      v-if="$page.url.startsWith('/admin')">
 
       <IconTrashFilled
         class="size-4"/>
