@@ -25,9 +25,9 @@ Route::prefix('subscribe')->group(function () {
 });
 
 // Public Portfolio Routes
-Route::prefix('projects')->group(function () {
-  Route::get('/', [\App\Http\Controllers\Projects\ProjectController::class, 'index'])->name('projects.index');
-  Route::get('/s/{project:uuid}', [\App\Http\Controllers\Projects\ProjectController::class, 'show'])->name('projects.show');
+Route::prefix('projects')->name('projects.')->group(function () {
+  Route::get('/', [\App\Http\Controllers\Projects\ProjectController::class, 'index'])->name('index');
+  Route::get('/s/{project:uuid}', [\App\Http\Controllers\Projects\ProjectController::class, 'show'])->name('show');
 });
 
 // Public Download Routes

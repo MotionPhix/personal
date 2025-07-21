@@ -34,13 +34,13 @@ import BetterLink from '../BetterLink.vue';
     <div
       class="flex items-center py-1 gap-x-1 md:gap-x-2 ms-auto md:ps-6 md:order-3 md:col-span-3">
 
-      <ModalLink
-        as="button"
-        class="inline-flex items-center px-2 py-1 text-sm font-medium text-black transition border border-transparent rounded-md gap-x-2 bg-lime-400 hover:bg-lime-500 focus:outline-none focus:bg-lime-500 disabled:opacity-50 disabled:pointer-events-none"
-        :href="route('fix-my-logo')">
-        <IconFileSymlink size="24" />
-        <span>Fix my logo</span>
-      </ModalLink>
+<!--      <ModalLink-->
+<!--        as="button"-->
+<!--        class="inline-flex items-center px-2 py-1 text-sm font-medium text-black transition border border-transparent rounded-md gap-x-2 bg-lime-400 hover:bg-lime-500 focus:outline-none focus:bg-lime-500 disabled:opacity-50 disabled:pointer-events-none"-->
+<!--        :href="route('fix-my-logo')">-->
+<!--        <IconFileSymlink size="24" />-->
+<!--        <span>Fix my logo</span>-->
+<!--      </ModalLink>-->
 
       <div class="md:hidden">
         <button
@@ -89,8 +89,8 @@ import BetterLink from '../BetterLink.vue';
 
           <BetterLink
             as="button"
-            :href="route('downloads.index')"
-            :active="route().current('downloads.index')">
+            :href="route('public.downloads.index')"
+            :active="route().current('public.downloads.index')">
             Downloads
           </BetterLink>
 

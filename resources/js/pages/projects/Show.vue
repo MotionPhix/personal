@@ -362,7 +362,7 @@ onUnmounted(() => {
       <Button variant="ghost" size="sm" asChild class="group">
         <Link :href="route('projects.index')">
           <ArrowLeft class="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-1" />
-          Portfolio
+          All work
         </Link>
       </Button>
     </div>
@@ -394,11 +394,13 @@ onUnmounted(() => {
                 </Badge>
               </div>
 
-              <h1 class="text-3xl lg:text-5xl font-bold text-white mb-4 font-mono max-w-2xl">
+              <h1 class="text-3xl lg:text-5xl font-bold text-white mb-4 max-w-2xl">
                 {{ projectData.name }}
               </h1>
 
-              <p v-if="projectData.short_description" class="text-lg lg:text-xl text-white/90 max-w-2xl">
+              <p
+                v-if="projectData.short_description"
+                class="text-lg lg:text-xl text-white/90 max-w-2xl font-mono">
                 {{ projectData.short_description }}
               </p>
 
@@ -561,18 +563,16 @@ onUnmounted(() => {
           <!-- Project Details -->
           <Card>
             <CardHeader>
-              <CardTitle class="sub-caption">Project Details</CardTitle>
+              <CardTitle class="sub-caption">
+                Project For
+              </CardTitle>
             </CardHeader>
             <CardContent class="space-y-4">
               <!-- Client -->
-              <div v-if="projectData.customer" class="flex items-center space-x-3">
-                <Avatar>
-                  <AvatarImage :src="projectData.customer.avatar_url" />
-                  <AvatarFallback>{{ getCustomerInitials(projectData.customer) }}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <div class="font-medium">{{ customerName }}</div>
-                  <div class="text-sm text-muted-foreground">Client</div>
+              <div v-if="projectData.customer">
+                <div class="font-medium">{{ customerName }}</div>
+                <div class="text-sm text-muted-foreground">
+                  {{ projectData.customer.full_name }}
                 </div>
               </div>
 
@@ -584,7 +584,7 @@ onUnmounted(() => {
                   <Calendar class="h-4 w-4 mr-2 text-muted-foreground" />
                   <span class="text-sm text-muted-foreground">Year</span>
                 </div>
-                <span class="text-sm font-medium">{{ projectYear }}</span>
+                <span class="text-sm font-medium font-mono">{{ projectYear }}</span>
               </div>
 
               <!-- Category -->
@@ -593,7 +593,10 @@ onUnmounted(() => {
                   <Tag class="h-4 w-4 mr-2 text-muted-foreground" />
                   <span class="text-sm text-muted-foreground">Category</span>
                 </div>
-                <Badge variant="secondary">{{ projectData.category }}</Badge>
+
+                <span class="text-sm font-medium font-mono">
+                  {{ projectData.category }}
+                </span>
               </div>
 
               <!-- Production Type -->
@@ -602,7 +605,10 @@ onUnmounted(() => {
                   <Layers class="h-4 w-4 mr-2 text-muted-foreground" />
                   <span class="text-sm text-muted-foreground">Type</span>
                 </div>
-                <Badge variant="secondary">{{ projectData.production_type }}</Badge>
+
+                <span class="text-sm font-medium font-mono">
+                  {{ projectData.production_type }}
+                </span>
               </div>
             </CardContent>
           </Card>

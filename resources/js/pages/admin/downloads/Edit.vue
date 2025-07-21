@@ -608,15 +608,15 @@ watch(activeTab, () => {
             <div class="h-6 w-px bg-border hidden md:block" />
 
             <!-- Action Buttons -->
-            <Button
-              variant="outline"
-              size="sm"
-              @click="resetForm"
-              :disabled="!hasChanges"
-              class="gap-2">
-              <RefreshCw class="h-4 w-4" />
-              <span class="hidden sm:inline">Reset</span>
-            </Button>
+<!--            <Button-->
+<!--              variant="outline"-->
+<!--              size="sm"-->
+<!--              @click="resetForm"-->
+<!--              :disabled="!hasChanges"-->
+<!--              class="gap-2">-->
+<!--              <RefreshCw class="h-4 w-4" />-->
+<!--              <span class="hidden sm:inline">Reset</span>-->
+<!--            </Button>-->
 
             <Button
               variant="outline"
@@ -928,7 +928,7 @@ watch(activeTab, () => {
                       Highlight prominently
                     </p>
                   </div>
-                  <Switch v-model:checked="form.is_featured" />
+                  <Switch v-model="form.is_featured" />
                 </div>
 
                 <!-- Public -->
@@ -942,7 +942,7 @@ watch(activeTab, () => {
                       Allow public access
                     </p>
                   </div>
-                  <Switch v-model:checked="form.is_public" />
+                  <Switch v-model="form.is_public" />
                 </div>
               </div>
 

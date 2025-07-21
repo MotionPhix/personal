@@ -24,6 +24,7 @@ import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} fr
 import {
   AlertCircle,
   ArrowLeft,
+  ArrowUpRight,
   Award,
   Bookmark,
   Building2,
@@ -175,8 +176,6 @@ const getCustomerInitials = (customer: any) => {
   if (!customer) return 'N/A';
   return `${customer.first_name?.[0] || ''}${customer.last_name?.[0] || ''}`.toUpperCase();
 };
-
-console.log(props.project)
 </script>
 
 <template>
@@ -212,14 +211,22 @@ console.log(props.project)
           <div class="flex items-center space-x-2">
             <!-- External Links -->
             <div class="flex items-center space-x-1">
-              <Button v-if="project.data.live_url" variant="ghost" size="sm" asChild>
-                <a :href="project.data.live_url" target="_blank" rel="noopener noreferrer">
-                  <ExternalLink class="h-4 w-4" />
+              <Button
+                v-if="project.data.live_url" variant="ghost" size="sm"
+                asChild class="text-muted-foreground hover:text-primary">
+                <a
+                  :href="project.data.live_url"
+                  target="_blank" rel="noopener noreferrer">
+                  <ArrowUpRight />
                 </a>
               </Button>
 
-              <Button v-if="project.data.github_url" variant="ghost" size="sm" asChild>
-                <a :href="project.data.github_url" target="_blank" rel="noopener noreferrer">
+              <Button
+                v-if="project.data.github_url" variant="ghost" size="sm"
+                asChild class="text-muted-foreground hover:text-primary">
+                <a
+                  :href="project.data.github_url"
+                  target="_blank" rel="noopener noreferrer">
                   <Github class="h-4 w-4" />
                 </a>
               </Button>
@@ -525,19 +532,13 @@ console.log(props.project)
             </CardHeader>
 
             <CardContent class="space-y-4">
-              <div class="flex items-center space-x-3">
-                <Avatar>
-                  <AvatarImage :src="project.data.customer.avatar_url" />
-                  <AvatarFallback>{{ getCustomerInitials(project.customer) }}</AvatarFallback>
-                </Avatar>
+              <div>
+                <div class="font-medium">
+                  {{ project.data.customer.first_name }} {{ project.data.customer.last_name }}
+                </div>
 
-                <div>
-                  <div class="font-medium">
-                    {{ project.data.customer.first_name }} {{ project.data.customer.last_name }}
-                  </div>
-                  <div v-if="project.data.customer.job_title" class="text-sm text-muted-foreground">
-                    {{ project.data.customer.job_title }}
-                  </div>
+                <div v-if="project.data.customer.job_title" class="text-sm text-muted-foreground">
+                  {{ project.data.customer.job_title }}
                 </div>
               </div>
 

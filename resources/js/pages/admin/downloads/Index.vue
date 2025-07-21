@@ -24,7 +24,7 @@ import {
   Calendar,
   ArrowUpDown,
   X,
-  CheckCircle,
+  Pencil,
   AlertCircle,
   Loader2,
   RefreshCw,
@@ -350,7 +350,7 @@ watch(viewMode, () => {
     <!-- Enhanced Header -->
     <div ref="headerRef" class="bg-gradient-to-r from-background via-background to-background/95 border-b backdrop-blur-xl sticky top-0 z-40">
       <div class="mx-auto max-w-4xl px-4 py-6">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div class="flex lg:flex-row lg:items-center justify-between gap-6">
           <!-- Title Section -->
           <div class="flex items-center gap-4">
             <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 ring-1 ring-primary/20">
@@ -361,6 +361,7 @@ watch(viewMode, () => {
               <h1 class="text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                 Downloads Management
               </h1>
+
               <p class="text-sm text-muted-foreground mt-1">
                 Manage downloadable content and track performance
               </p>
@@ -368,12 +369,18 @@ watch(viewMode, () => {
           </div>
 
           <!-- Action Button -->
-          <Link :href="route('admin.downloads.create')" as="button">
-            <Button class="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 group">
-              <Plus class="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform duration-300" />
-              Add Download
-            </Button>
-          </Link>
+          <Button
+            @click="() => router.visit(route('admin.downloads.create'))"
+            class="hidden md:flex" size="sm">
+            <Plus class="w-4 h-4" />
+            Add Download
+          </Button>
+
+          <Button
+            @click="() => router.visit(route('admin.downloads.create'))"
+            size="icon" class="flex md:hidden">
+            <Plus class="w-4 h-4" />
+          </Button>
         </div>
       </div>
     </div>
@@ -384,8 +391,7 @@ watch(viewMode, () => {
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <Card
           ref="el => statsRef[0] = el as HTMLElement"
-          class="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-50 to-blue-100 dark:from-blue-950 dark:via-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800 hover:shadow-lg transition-all duration-300 group"
-        >
+          class="relative overflow-hidden bg-gradient-to-br from-blue-50 via-blue-50 to-blue-100 dark:from-blue-950 dark:via-blue-950 dark:to-blue-900 border-blue-200 dark:border-blue-800 hover:shadow-lg transition-all duration-300 group">
           <CardContent class="p-4">
             <div class="flex items-center justify-between">
               <div class="space-y-1">
@@ -393,14 +399,17 @@ watch(viewMode, () => {
                 <p class="text-2xl font-bold text-blue-900 dark:text-blue-100">
                   {{ enhancedStats.total_downloads }}
                 </p>
+
                 <p class="text-xs text-blue-700 dark:text-blue-300">
                   {{ enhancedStats.public_downloads }} public
                 </p>
               </div>
+
               <div class="p-3 bg-blue-200 dark:bg-blue-800 rounded-xl group-hover:scale-110 transition-transform duration-300">
                 <FileText class="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
+
             <div class="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </CardContent>
         </Card>
@@ -416,6 +425,7 @@ watch(viewMode, () => {
                 <p class="text-2xl font-bold text-green-900 dark:text-green-100">
                   {{ enhancedStats.total_download_count.toLocaleString() }}
                 </p>
+
                 <p class="text-xs text-green-700 dark:text-green-300">
                   Avg: {{ enhancedStats.avg_downloads_per_item }}
                 </p>
@@ -439,10 +449,12 @@ watch(viewMode, () => {
                 <p class="text-2xl font-bold text-purple-900 dark:text-purple-100">
                   {{ enhancedStats.categories_count }}
                 </p>
+
                 <p class="text-xs text-purple-700 dark:text-purple-300">
                   {{ enhancedStats.file_types_count }} file types
                 </p>
               </div>
+
               <div class="p-3 bg-purple-200 dark:bg-purple-800 rounded-xl group-hover:scale-110 transition-transform duration-300">
                 <Grid3X3 class="w-5 h-5 text-purple-600 dark:text-purple-400" />
               </div>
@@ -531,7 +543,7 @@ watch(viewMode, () => {
                 <!-- Sort Dropdown -->
                 <DropdownMenu>
                   <DropdownMenuTrigger as-child>
-                    <Button variant="outline" size="sm" class="gap-2 bg-background/80">
+                    <Button variant="outline"  class="gap-2 bg-background/80">
                       <ArrowUpDown class="w-4 h-4" />
                       Sort
                       <SortAsc v-if="sortDirection === 'asc'" class="w-3 h-3" />
@@ -652,14 +664,12 @@ watch(viewMode, () => {
             v-for="(download, index) in downloads.data"
             :key="download.uuid"
             :ref="el => cardsRef[index] = el as HTMLElement"
-            class="group hover:shadow-xl transition-all duration-300 cursor-pointer border-border/50 hover:border-primary/30 bg-card hover:bg-card/80 overflow-hidden relative"
-            @click="router.visit(route('admin.downloads.edit', download.uuid))"
-          >
+            class="group hover:shadow-xl transition-all duration-300 cursor-pointer border-border/50 hover:border-primary/30 bg-card hover:bg-card/80 overflow-hidden relative">
             <!-- Selection Checkbox -->
             <div class="absolute top-3 left-3 z-10 opacity-0 group-hover:opacity-100 transition-all duration-300">
               <Checkbox
-                :checked="selectedDownloads.includes(download.id)"
-                @update:checked="() => toggleDownloadSelection(download.id)"
+                :model-value="selectedDownloads.includes(download.id)"
+                @update:model-value="() => toggleDownloadSelection(download.id)"
                 class="bg-background/90 backdrop-blur-sm border-2 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                 @click.stop
               />
@@ -716,16 +726,15 @@ watch(viewMode, () => {
                     size="sm"
                     variant="secondary"
                     class="bg-background/90 backdrop-blur-sm hover:bg-background shadow-lg"
-                    @click.stop="router.visit(route('admin.downloads.edit', download.uuid))"
-                  >
-                    <Edit class="w-4 h-4" />
+                    @click.stop="router.visit(route('admin.downloads.edit', download.uuid))">
+                    <Pencil class="w-4 h-4" />
                   </Button>
+
                   <Button
                     size="sm"
                     variant="secondary"
                     class="bg-background/90 backdrop-blur-sm hover:bg-background shadow-lg"
-                    @click.stop="router.visit(route('admin.downloads.show', download.uuid))"
-                  >
+                    @click.stop="router.visit(route('admin.downloads.show', download.uuid))">
                     <Eye class="w-4 h-4" />
                   </Button>
                 </div>
@@ -733,12 +742,13 @@ watch(viewMode, () => {
             </div>
 
             <!-- Enhanced Content -->
-            <CardContent class="p-5 space-y-4">
+            <CardContent class="p-5 space-y-4 flex flex-col">
               <!-- Title and Brand -->
               <div class="space-y-2">
                 <h3 class="font-semibold text-foreground group-hover:text-primary transition-colors duration-300 line-clamp-2 leading-tight">
                   {{ download.title }}
                 </h3>
+
                 <p v-if="download.brand" class="text-sm text-muted-foreground line-clamp-1 font-medium">
                   {{ download.brand }}
                 </p>
@@ -750,6 +760,7 @@ watch(viewMode, () => {
                   <Badge v-if="download.category" variant="outline" class="text-xs">
                     {{ download.category }}
                   </Badge>
+
                   <Badge v-if="!download.is_public" variant="secondary" class="text-xs">
                     <EyeOff class="w-3 h-3 mr-1" />
                     Private
@@ -768,6 +779,8 @@ watch(viewMode, () => {
                 </div>
               </div>
 
+              <div class="flex-1"></div>
+
               <!-- Progress Bar for Download Count -->
               <div class="space-y-1">
                 <div class="flex justify-between text-xs">
@@ -775,7 +788,7 @@ watch(viewMode, () => {
                   <span class="font-medium">{{ download.download_count }}</span>
                 </div>
                 <Progress
-                  :value="Math.min((download.download_count / 100) * 100, 100)"
+                  model-value="Math.min((download.download_count / 100) * 100, 100)"
                   class="h-1.5"
                 />
               </div>
@@ -789,7 +802,7 @@ watch(viewMode, () => {
             <!-- Enhanced Header -->
             <div class="flex items-center gap-4 p-4 border-b border-border/50 bg-muted/20">
               <Checkbox
-                v-model:model-value="allSelected"
+                :model-value="allSelected"
                 :indeterminate="someSelected"
                 @update:model-value="toggleAllSelection"
                 class="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
@@ -798,10 +811,10 @@ watch(viewMode, () => {
                 <div class="col-span-4">Download</div>
                 <div class="col-span-2">Category</div>
                 <div class="col-span-1">Type</div>
-                <div class="col-span-1">Size</div>
-                <div class="col-span-2">Downloads</div>
-                <div class="col-span-1">Status</div>
-                <div class="col-span-1">Actions</div>
+                <div class="col-span-2">Size</div>
+<!--                <div class="col-span-2">Downloads</div>-->
+                <div class="col-span-2">Status</div>
+                <div class="col-span-1"></div>
               </div>
             </div>
 
@@ -828,13 +841,16 @@ watch(viewMode, () => {
                         <DownloadIcon class="w-5 h-5" />
                       </AvatarFallback>
                     </Avatar>
+
                     <div class="min-w-0 space-y-1">
                       <h4 class="font-medium text-foreground group-hover:text-primary transition-colors truncate">
                         {{ download.title }}
                       </h4>
+
                       <p v-if="download.brand" class="text-sm text-muted-foreground truncate">
                         {{ download.brand }}
                       </p>
+
                       <div class="flex items-center gap-2">
                         <Badge v-if="download.is_featured" variant="default" class="text-xs">
                           <Star class="w-3 h-3 mr-1 fill-current" />
@@ -860,24 +876,24 @@ watch(viewMode, () => {
                   </div>
 
                   <!-- File Size -->
-                  <div class="col-span-1 text-sm font-medium text-muted-foreground">
+                  <div class="col-span-2 text-sm font-medium text-muted-foreground">
                     {{ download.formatted_file_size }}
                   </div>
 
                   <!-- Download Count with Progress -->
-                  <div class="col-span-2 space-y-1">
-                    <div class="flex items-center justify-between">
-                      <span class="text-sm font-medium">{{ download.download_count }}</span>
-                      <span class="text-xs text-muted-foreground">downloads</span>
-                    </div>
-                    <Progress
-                      :value="Math.min((download.download_count / 100) * 100, 100)"
-                      class="h-1"
-                    />
-                  </div>
+<!--                  <div class="col-span-2 space-y-1">-->
+<!--                    <div class="flex items-center justify-between">-->
+<!--                      <span class="text-sm font-medium">{{ download.download_count }}</span>-->
+<!--                      <span class="text-xs text-muted-foreground">downloads</span>-->
+<!--                    </div>-->
+<!--                    <Progress-->
+<!--                      v-model="Math.min((download.download_count / 100) * 100, 100)"-->
+<!--                      class="h-1"-->
+<!--                    />-->
+<!--                  </div>-->
 
                   <!-- Status -->
-                  <div class="col-span-1">
+                  <div class="col-span-2">
                     <Badge
                       :variant="download.is_public ? 'default' : 'secondary'"
                       class="text-xs">
@@ -889,16 +905,15 @@ watch(viewMode, () => {
                   <div class="col-span-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                     <Button
                       variant="ghost"
-                      size="sm"
-                      @click="router.visit(route('admin.downloads.edit', download.uuid))"
-                    >
-                      <Edit class="w-4 h-4" />
+                      size="icon"
+                      @click="router.visit(route('admin.downloads.edit', download.uuid))">
+                      <Pencil class="w-4 h-4" />
                     </Button>
+
                     <Button
                       variant="ghost"
-                      size="sm"
-                      @click="router.visit(route('admin.downloads.show', download.uuid))"
-                    >
+                      size="icon"
+                      @click="router.visit(route('admin.downloads.show', download.uuid))">
                       <Eye class="w-4 h-4" />
                     </Button>
                   </div>

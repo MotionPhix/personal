@@ -1,16 +1,36 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import {Head, router} from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { IconBrandBehance, IconBrandLinkedin, IconBrandX, IconMapPin } from '@tabler/icons-vue';
+import {
+  IconBrandBehance,
+  IconBrandLinkedin,
+  IconBrandX,
+  IconMapPin,
+  IconDownload,
+  IconExternalLink,
+  IconArrowRight,
+  IconStar,
+  IconUsers,
+  IconBriefcase,
+  IconMail,
+  IconPhone,
+  IconArrowDown
+} from '@tabler/icons-vue';
 import Projects from '@/components/front/Projects.vue';
 import Skills from '@/components/front/Skills.vue';
 import Expertise from '@/components/front/Expertise.vue';
 import Subscription from '@/components/front/Subscription.vue';
-import { Project, User } from '@/types';
-import { onMounted, ref, computed } from 'vue';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import {Project, User} from '@/types';
+import {onMounted, ref, computed, nextTick, onUnmounted} from 'vue';
+import {gsap} from 'gsap';
+import {ScrollTrigger} from 'gsap/ScrollTrigger';
 import IconEmail from '@/components/icon/IconEmail.vue';
+import {Play as IconPlay} from 'lucide-vue-next'
+
+// Shadcn Vue Components
+import {Card, CardContent} from '@/components/ui/card';
+import {Button} from '@/components/ui/button';
+import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -21,9 +41,12 @@ const props = defineProps<{
 }>();
 
 // Refs for elements to animate
-const profileRef = ref(null);
-const aboutRef = ref(null);
-const headlineRef = ref(null);
+const heroRef = ref<HTMLElement>();
+const heroTextRef = ref<HTMLElement>();
+const profileCardRef = ref<HTMLElement>();
+const statsRef = ref<HTMLElement>();
+const aboutRef = ref<HTMLElement>();
+const contentSections = ref<HTMLElement[]>([]);
 
 // Computed properties for user data
 const fullName = computed(() => {
@@ -43,6 +66,10 @@ const userBio = computed(() => {
   return props.user?.bio || `With more than a decade of experience, I have refined my abilities to produce visually appealing, user-centric designs that function seamlessly. I am enthusiastic about transforming creative concepts into digital realities, from the creation of intuitive user interface designs to the development of cohesive design systems and custom illustrations.`;
 });
 
+const userTitle = computed(() => {
+  return props.user?.job_title || 'Graphic Designer, & Web Developer';
+});
+
 // Social media links with proper URL handling
 const socialLinks = computed(() => {
   const socials = props.user?.socials || {};
@@ -51,25 +78,29 @@ const socialLinks = computed(() => {
       name: 'LinkedIn',
       icon: IconBrandLinkedin,
       url: socials.linkedin?.startsWith('http') ? socials.linkedin : `https://linkedin.com/in/${socials.linkedin}`,
-      show: !!socials.linkedin
+      show: !!socials.linkedin,
+      color: 'hover:text-blue-600'
     },
     {
       name: 'Twitter/X',
       icon: IconBrandX,
       url: socials.twitter?.startsWith('http') ? socials.twitter : `https://x.com/${socials.twitter}`,
-      show: !!socials.twitter
+      show: !!socials.twitter,
+      color: 'hover:text-gray-900 dark:hover:text-gray-100'
     },
     {
       name: 'Behance',
       icon: IconBrandBehance,
       url: socials.behance?.startsWith('http') ? socials.behance : `https://be.net/${socials.behance}`,
-      show: !!socials.behance
+      show: !!socials.behance,
+      color: 'hover:text-blue-500'
     },
     {
       name: 'Email',
       icon: IconEmail,
       url: `mailto:${props.user?.email}`,
-      show: !!props.user?.email
+      show: !!props.user?.email,
+      color: 'hover:text-green-600'
     }
   ].filter(link => link.show);
 });
@@ -79,111 +110,510 @@ const avatarUrl = computed(() => {
   return props.user?.avatar_url || '/assets/profile_400x400.jpg';
 });
 
-onMounted(() => {
-  const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+// Stats data
+const stats = computed(() => [
+  {
+    label: 'Years Experience',
+    value: '10+',
+    icon: IconStar,
+    color: 'text-amber-600'
+  },
+  {
+    label: 'Happy Clients',
+    value: '50+',
+    icon: IconUsers,
+    color: 'text-green-600'
+  }
+]);
 
-  tl.from(profileRef.value, { opacity: 0, x: -50, duration: 1 })
-    .from(headlineRef.value, { opacity: 0, y: 50, duration: 1.2 }, '-=0.5')
-    .from(aboutRef.value, { opacity: 0, y: 20, duration: 1 }, '-=0.8');
+// Add intersection observer for reliable animations
+const isHeroVisible = ref(true);
+const heroObserver = ref<IntersectionObserver | null>(null);
+
+// New computed property for stats animation
+const animatedStats = computed(() => stats.value.map(stat => ({
+  ...stat,
+  animatedValue: ref(0),
+  formattedValue: typeof stat.value === 'string' ? stat.value : new Intl.NumberFormat().format(stat.value)
+})));
+
+// Enhanced animation timeline
+const initHeroAnimations = () => {
+  if (!heroTextRef.value || !profileCardRef.value || !statsRef.value) return;
+
+  const tl = gsap.timeline({
+    defaults: {ease: 'expo.out'},
+    scrollTrigger: {
+      trigger: heroRef.value,
+      start: 'top center',
+      end: 'bottom center',
+      toggleActions: 'play none none reverse'
+    }
+  });
+
+  // Text reveal animations with better timing
+  tl.fromTo(heroTextRef.value.querySelectorAll('.hero-line'),
+    {
+      y: 100,
+      opacity: 0,
+      rotateX: -45,
+    },
+    {
+      y: 0,
+      opacity: 1,
+      rotateX: 0,
+      duration: 1.5,
+      stagger: 0.15,
+    }
+  )
+    .fromTo(profileCardRef.value,
+      {
+        y: 50,
+        opacity: 0,
+        scale: 0.9,
+      },
+      {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        duration: 1,
+        ease: 'elastic.out(1, 0.8)',
+      },
+      '-=0.8'
+    )
+    .fromTo(statsRef.value.querySelectorAll('.stat-item'),
+      {
+        y: 30,
+        opacity: 0,
+        scale: 0.8,
+      },
+      {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: 'back.out(1.7)',
+      },
+      '-=0.6'
+    );
+};
+
+// Setup intersection observer for reliable animation triggering
+onMounted(() => {
+  nextTick(() => {
+    heroObserver.value = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            isHeroVisible.value = true;
+            initHeroAnimations();
+            heroObserver.value?.disconnect();
+          }
+        });
+      },
+      {
+        threshold: 0.1
+      }
+    );
+
+    if (heroRef.value) {
+      heroObserver.value.observe(heroRef.value);
+    }
+  });
 });
 
-defineOptions({ layout: AppLayout })
+// Cleanup
+onUnmounted(() => {
+  heroObserver.value?.disconnect();
+});
+
+// Enhanced animations
+onMounted(() => {
+  // Hero section animation
+  const heroTl = gsap.timeline({defaults: {ease: 'power3.out'}});
+
+  heroTl
+    .from(heroTextRef.value?.querySelectorAll('.hero-line'), {
+      y: 100,
+      opacity: 0,
+      duration: 1.2,
+      stagger: 0.2,
+      ease: 'power2.out'
+    })
+    .from(profileCardRef.value, {
+      y: 50,
+      opacity: 0,
+      duration: 1,
+      ease: 'power2.out'
+    }, '-=0.8')
+    .from(statsRef.value?.querySelectorAll('.stat-item'), {
+      y: 30,
+      opacity: 0,
+      duration: 0.8,
+      stagger: 0.1,
+      ease: 'power2.out'
+    }, '-=0.6');
+
+  // About section animation
+  gsap.fromTo(aboutRef.value,
+    {
+      opacity: 0,
+      y: 100,
+      scale: 0.95
+    },
+    {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      duration: 1.4,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: aboutRef.value,
+        start: 'top bottom-=100',
+        toggleActions: 'play none none reverse',
+      }
+    }
+  );
+
+  // Content sections scroll animations
+  contentSections.value.forEach((section, index) => {
+    if (section) {
+      gsap.fromTo(section,
+        {
+          opacity: 0,
+          y: 80,
+          scale: 0.95
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 1.2,
+          ease: 'power2.out',
+          scrollTrigger: {
+            trigger: section,
+            start: 'top bottom-=150',
+            toggleActions: 'play none none reverse',
+          },
+          delay: index * 0.1
+        }
+      );
+    }
+  });
+
+  // Add number counter animation for stats
+  animatedStats.value.forEach((stat, index) => {
+    const targetValue = parseInt(stat.value) || 0;
+    gsap.to(stat.animatedValue, {
+      value: targetValue,
+      duration: 2,
+      delay: index * 0.2,
+      ease: 'power2.out',
+      scrollTrigger: {
+        trigger: statsRef.value,
+        start: 'top bottom-=100',
+        toggleActions: 'play none none reverse'
+      }
+    });
+  });
+});
+
+defineOptions({layout: AppLayout})
 </script>
 
 <template>
   <Head :title="`${fullName} - Portfolio`">
-    <meta name="description" :content="`Portfolio of ${fullName}, a creative professional specializing in design and development.`" />
-    <meta property="og:title" :content="`${fullName} - Portfolio`" />
-    <meta property="og:description" :content="userBio.substring(0, 160)" />
-    <meta property="og:type" content="website" />
+    <meta name="description"
+          :content="`Portfolio of ${fullName}, a creative professional specializing in design and development.`"/>
+    <meta property="og:title" :content="`${fullName} - Portfolio`"/>
+    <meta property="og:description" :content="userBio.substring(0, 160)"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" :content="avatarUrl"/>
   </Head>
 
-  <div class="w-full max-w-2xl px-8 pt-10 mx-auto md:pt-16">
+  <!-- Hero Section -->
+  <section
+    ref="heroRef"
+    class="relative min-h-[100svh] flex items-center justify-center bg-background/80 backdrop-blur-sm overflow-hidden"
+  >
+    <!-- Animated gradient background -->
+    <div class="absolute inset-0 bg-grid-pattern opacity-[0.03]"></div>
+    <div class="absolute inset-0">
+      <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-secondary/10"></div>
+      <div class="absolute inset-0 bg-gradient-to-br from-transparent via-accent/5 to-transparent"></div>
+    </div>
 
-    <!-- Profile Section -->
-    <div ref="profileRef" class="flex items-center gap-x-4">
-      <div class="shrink-0">
-        <img
-          class="rounded-full shrink-0 size-16 object-cover ring-2 ring-gray-200 dark:ring-neutral-700"
-          :src="avatarUrl"
-          :alt="`${fullName} profile picture`"
-          loading="eager" />
-      </div>
+    <!-- Main Content -->
+    <div class="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+      <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+        <!-- Left Column: Text Content -->
+        <div ref="heroTextRef" class="flex-1 space-y-6 text-center lg:text-left">
+          <div class="space-y-4">
+            <h1 class="hero-line text-4xl md:text-5xl xl:text-6xl font-bold tracking-tight">
+              Hi, I'm <span class="text-primary">
+              {{ firstName }}!
+            </span>
+            </h1>
 
-      <div class="grow">
-        <h1 class="text-lg font-medium text-gray-800 dark:text-neutral-200">
-          {{ fullName }}
-        </h1>
+            <p class="hero-line text-xl md:text-2xl text-muted-foreground font-mono">
+              {{ userTitle }}
+            </p>
+          </div>
 
-        <p class="text-sm text-gray-600 dark:text-neutral-400">
-          Graphic Designer, Web Designer/Developer
-        </p>
+          <p class="hero-line text-base md:text-lg text-muted-foreground/90 max-w-2xl font-mono">
+            Passionate about creating stunning visuals and seamless digital experiences. With over a decade of
+            experience in digital arts and web development.
+          </p>
 
-        <div class="flex items-center gap-1 mt-1 text-xs text-gray-500 dark:text-neutral-500" v-if="userLocation">
-          <IconMapPin class="size-3" />
-          <span>{{ userLocation }}</span>
+          <div class="hero-line flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
+            <Button size="lg" class="gap-2 w-full lg:w-auto">
+              View Portfolio
+              <IconArrowRight class="w-4 h-4"/>
+            </Button>
+
+            <Button variant="outline" size="lg" class="gap-2 w-full lg:w-auto">
+              Download Resume
+              <IconDownload class="w-4 h-4"/>
+            </Button>
+          </div>
+
+          <!-- Social Links -->
+          <div class="hero-line flex items-center justify-center lg:justify-start gap-4 pt-2">
+            <Button
+              v-for="link in socialLinks"
+              :key="link.name"
+              variant="ghost"
+              size="icon"
+              as-child
+              :class="[
+                  'transition-all duration-300 hover:scale-110',
+                  link.color
+                ]"
+            >
+              <a
+                :href="link.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                :title="link.name"
+              >
+                <component :is="link.icon" class="w-5 h-5"/>
+              </a>
+            </Button>
+          </div>
+        </div>
+
+        <!-- Right Column: Profile & Stats -->
+        <div class="flex-1 w-full max-w-md lg:max-w-none">
+          <!-- Profile Card -->
+          <div ref="profileCardRef" class="relative">
+            <!-- Main Image -->
+            <div
+              class="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 p-1">
+              <img
+                :src="avatarUrl"
+                :alt="fullName"
+                class="w-full h-full object-cover rounded-[22px]"
+              />
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent rounded-[22px]"></div>
+            </div>
+
+            <!-- Floating Stats Cards -->
+            <div ref="statsRef" class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-full max-w-sm">
+              <div class="grid grid-cols-2 gap-4 px-4">
+                <div
+                  v-for="(stat, index) in animatedStats"
+                  :key="index"
+                  class="stat-item group relative bg-background/80 backdrop-blur-md border rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
+                >
+                  <div class="flex items-center gap-3">
+                    <div :class="['p-2 rounded-xl bg-primary/10', stat.color]">
+                      <component :is="stat.icon" class="w-5 h-5"/>
+                    </div>
+                    <div>
+                      <p class="font-bold text-xl tabular-nums">
+                        {{
+                          typeof stat.value === 'string' ? stat.value : Math.round(stat.animatedValue).toLocaleString()
+                        }}
+                      </p>
+                      <p class="text-xs text-muted-foreground font-mono">{{ stat.label }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <!-- End Profile Section -->
 
-    <!-- Headline -->
-    <h1
-      ref="headlineRef"
-      class="mt-8 text-3xl font-bold tracking-tight text-zinc-800 sm:text-4xl dark:text-zinc-100">
-      Hi, I'm {{ firstName }}, a creative graphic designer and front-end web developer based in {{ userLocation }}.
-    </h1>
-
-    <!-- About Section -->
-    <div ref="aboutRef" class="mt-8 text-base text-gray-600 dark:text-neutral-300">
-      <div v-if="user?.bio" v-html="user.bio.replace(/\n/g, '</p><p class=&quot;mt-3&quot;>')"></div>
-      <div v-else>
-        <p>
-          With more than a decade of experience, I have refined my abilities to produce visually appealing, user-centric designs that function seamlessly. I am enthusiastic about transforming creative concepts into digital realities, from the creation of intuitive user interface designs to the development of cohesive design systems and custom illustrations. My objective is to consistently generate designs that are not only visually compelling but also functional, thereby assisting clients in enhancing their brand and providing exceptional user experiences.
-        </p>
-
-        <p class="mt-3">
-          I have worked with a variety of clients to revitalize their products and services over the course of my career. I am of the opinion that exceptional design is a combination of strategy and creativity, and I approach each assignment with this perspective. Regardless of whether I am developing websites from the ground up or improving existing platforms, my primary objective is to produce tangible outcomes.
-        </p>
-
-        <p class="mt-3">
-          I am perpetually in the process of learning, adapting to new trends, and expanding the boundaries of what is feasible in both front-end development and design. Join me in the creation of something truly remarkable!
-        </p>
-      </div>
-
-      <!-- Social Links -->
-      <ul class="flex gap-3 mt-10 sm:gap-x-4" v-if="socialLinks.length > 0">
-        <li v-for="link in socialLinks" :key="link.name">
-          <a
-            class="flex items-center justify-center p-2 text-gray-500 transition-colors rounded-lg hover:text-gray-800 hover:bg-gray-100 dark:text-neutral-500 dark:hover:text-neutral-400 dark:hover:bg-neutral-800"
-            :href="link.url"
-            target="_blank"
-            rel="noopener noreferrer"
-            :title="link.name">
-            <component :is="link.icon" size="24" />
-          </a>
-        </li>
-      </ul>
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+      <Button
+        variant="ghost"
+        size="icon"
+        @click="document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })"
+      >
+        <IconArrowDown class="w-5 h-5"/>
+      </Button>
     </div>
-    <!-- End About Section -->
+  </section>
+
+  <!-- Content Sections -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-32 py-20">
 
     <!-- Featured Projects -->
-    <Projects
-      :projects="projects"
-      :small-columns="false"
-    />
-    <!-- End Featured Projects -->
+    <section ref="el => contentSections[0] = el as HTMLElement">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-sans font-bold text-foreground mb-6">
+          Featured Work
+        </h2>
+        <p class="text-xl text-muted-foreground max-w-3xl mx-auto font-mono">
+          A showcase of my recent projects and creative solutions
+        </p>
+      </div>
+      <Projects
+        :projects="projects"
+        :small-columns="false"
+      />
+    </section>
 
     <!-- Skills -->
-    <Skills />
-    <!-- End Skills -->
+    <section ref="el => contentSections[1] = el as HTMLElement">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-sans font-bold text-foreground mb-6">
+          Skills & Expertise
+        </h2>
+        <p class="text-xl text-muted-foreground max-w-3xl mx-auto font-mono">
+          The tools and technologies I use to bring ideas to life
+        </p>
+      </div>
+      <Skills/>
+    </section>
 
-    <!-- Work Experience -->
-    <Expertise />
-    <!-- End Work Experience -->
+    <!-- Experience -->
+    <section ref="el => contentSections[2] = el as HTMLElement">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-sans font-bold text-foreground mb-6">
+          Experience
+        </h2>
+        <p class="text-xl text-muted-foreground max-w-3xl mx-auto font-mono">
+          My journey and areas of expertise in design and development
+        </p>
+      </div>
+      <Expertise/>
+    </section>
 
-    <!-- Newsletter Subscription -->
-    <Subscription />
-    <!-- End Newsletter Subscription -->
+    <!-- Newsletter -->
+    <section ref="el => contentSections[3] = el as HTMLElement">
+      <Subscription/>
+    </section>
   </div>
 </template>
+
+<style scoped>
+/* Dot pattern background */
+.bg-dot-pattern {
+  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Enhanced hover effects */
+.group:hover .group-hover\:scale-110 {
+  transform: scale(1.1);
+}
+
+.group:hover .group-hover\:translate-x-1 {
+  transform: translateX(0.25rem);
+}
+
+.group:hover .group-hover\:animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+/* Backdrop blur support */
+@supports (backdrop-filter: blur(10px)) {
+  .backdrop-blur-sm {
+    backdrop-filter: blur(8px);
+  }
+}
+
+/* Enhanced focus states for accessibility */
+.focus\:ring-primary\/20:focus {
+  --tw-ring-color: hsl(var(--primary) / 0.2);
+}
+
+/* Hardware acceleration for better performance */
+.group {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Prose styling improvements */
+.prose {
+  color: hsl(var(--muted-foreground));
+}
+
+.prose p {
+  margin-bottom: 1rem;
+  line-height: 1.8;
+}
+
+.prose p:last-child {
+  margin-bottom: 0;
+}
+
+/* Dark mode adjustments */
+@media (prefers-color-scheme: dark) {
+  .bg-dot-pattern {
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  }
+}
+
+/* Keyframes for animations */
+@keyframes blob {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+  }
+  50% {
+    transform: scale(1.05) translateY(-10px);
+  }
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(10px);
+  }
+}
+
+/* Gradient animation for hero text */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Typewriter effect for subtitle */
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+</style>

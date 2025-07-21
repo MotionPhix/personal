@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { Head, Link, router } from "@inertiajs/vue3";
-import { ref, computed, onMounted, nextTick } from "vue";
+import {Head, Link, router} from "@inertiajs/vue3";
+import {ref, computed, onMounted, nextTick} from "vue";
 import AuthLayout from "@/layouts/AuthLayout.vue";
-import { gsap } from "gsap";
+import {gsap} from "gsap";
 
 // Icons
 import {
   ArrowLeft,
   Download as DownloadIcon,
-  Edit,
   Trash2,
   Star,
   Eye,
@@ -24,6 +23,7 @@ import {
   MoreHorizontal,
   Globe,
   Lock,
+  Pencil,
   Tag,
   Building,
   FolderOpen,
@@ -34,16 +34,17 @@ import {
   RefreshCw,
   BarChart3,
   Activity,
-  Zap
+  Zap,
+  TrendingDown
 } from "lucide-vue-next";
 
 // UI Components
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
+import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
+import {Button} from "@/components/ui/button";
+import {Badge} from "@/components/ui/badge";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import {Progress} from "@/components/ui/progress";
+import {Label} from "@/components/ui/label";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,32 +60,45 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {Alert, AlertDescription} from "@/components/ui/alert";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {useStorage} from "@vueuse/core";
 
 interface Download {
-  uuid: string;
   id: number;
+  uuid: string;
   title: string;
   description: string | null;
   brand: string | null;
   category: string | null;
-  is_featured: boolean;
-  is_public: boolean;
-  download_count: number;
+  file_type: string | null;
   file_size: number | null;
   formatted_file_size: string;
   file_extension: string | null;
-  file_type: string | null;
-  poster_url: string | null;
-  thumb_url: string | null;
-  download_url: string | null;
+  download_count: number;
+  is_featured: boolean;
+  is_public: boolean;
   sort_order: number;
   meta_title: string | null;
   meta_description: string | null;
   tags: string[];
+  poster_url: string | null;
+  thumb_url: string | null;
+  medium_url: string | null;
+  download_url: string | null;
+  public_url: string;
   created_at: string;
   updated_at: string;
+  created_at_human: string;
+  updated_at_human: string;
+  created_at_formatted: string;
+  updated_at_formatted: string;
+  has_poster: boolean;
+  has_file: boolean;
+  status: string;
+  status_color: string;
+  file_type_color: string;
+  completion_percentage: number;
 }
 
 interface DownloadStats {
@@ -99,13 +113,22 @@ interface DownloadStats {
   recent_downloads: Array<{
     date: string;
     count: number;
+    formatted_date: string;
   }>;
+  growth_data: {
+    labels: string[];
+    data: number[];
+  };
 }
 
 interface Props {
-  download: Download;
+  download: {
+    data: Download
+  };
   stats: DownloadStats;
-  related_downloads: Download[];
+  related_downloads: {
+    data: Download[]
+  };
 }
 
 const props = defineProps<Props>();
@@ -115,7 +138,7 @@ defineOptions({
 });
 
 // Reactive state
-const activeTab = ref('overview');
+const activeTab = useStorage('download_show_tabs', 'overview');
 const showDeleteDialog = ref(false);
 const isDeleting = ref(false);
 const copySuccess = ref(false);
@@ -127,50 +150,37 @@ const cardsRef = ref<HTMLElement[]>([]);
 
 // Computed
 const downloadUrl = computed(() => {
-  return props.download.download_url || '#';
+  return props.download.data.download_url || '#';
 });
 
 const publicUrl = computed(() => {
-  return `${window.location.origin}/downloads/${props.download.uuid}`;
-});
-
-const fileTypeColor = computed(() => {
-  const colors = {
-    'pdf': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-    'doc': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    'docx': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-    'xls': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    'xlsx': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-    'ppt': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-    'pptx': 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
-    'zip': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-    'rar': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-    'jpg': 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
-    'jpeg': 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
-    'png': 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
-    'gif': 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200',
-    'mp4': 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200',
-    'mp3': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-    'default': 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
-  };
-
-  return colors[props.download.file_type?.toLowerCase() as keyof typeof colors] || colors.default;
+  return props.download.data.public_url;
 });
 
 const trendIcon = computed(() => {
   switch (props.stats.download_trend) {
-    case 'up': return TrendingUp;
-    case 'down': return TrendingUp; // Will be rotated in template
-    default: return Activity;
+    case 'up':
+      return TrendingUp;
+    case 'down':
+      return TrendingDown;
+    default:
+      return Activity;
   }
 });
 
 const trendColor = computed(() => {
   switch (props.stats.download_trend) {
-    case 'up': return 'text-green-600 dark:text-green-400';
-    case 'down': return 'text-red-600 dark:text-red-400';
-    default: return 'text-blue-600 dark:text-blue-400';
+    case 'up':
+      return 'text-green-600 dark:text-green-400';
+    case 'down':
+      return 'text-red-600 dark:text-red-400';
+    default:
+      return 'text-blue-600 dark:text-blue-400';
   }
+});
+
+const maxDownloadsInWeek = computed(() => {
+  return Math.max(...props.stats.recent_downloads.map(d => d.count), 1);
 });
 
 // Methods
@@ -188,22 +198,20 @@ const copyToClipboard = async (text: string) => {
 };
 
 const downloadFile = () => {
-  if (props.download.download_url) {
-    window.open(props.download.download_url, '_blank');
-    // In a real app, you'd also increment the download count
+  if (props.download.data.download_url) {
+    window.open(props.download.data.download_url, '_blank');
     showNotification('Download started!', 'success');
   }
 };
 
 const toggleFeatured = () => {
-  // In a real app, this would make an API call
-  router.patch(route('admin.downloads.update', props.download.uuid), {
-    is_featured: !props.download.is_featured
+  router.patch(route('admin.downloads.update', props.download.data.uuid), {
+    is_featured: !props.download.data.is_featured
   }, {
     preserveScroll: true,
     onSuccess: () => {
       showNotification(
-        `Download ${props.download.is_featured ? 'unfeatured' : 'featured'} successfully!`,
+        `Download ${props.download.data.is_featured ? 'unfeatured' : 'featured'} successfully!`,
         'success'
       );
     }
@@ -211,14 +219,13 @@ const toggleFeatured = () => {
 };
 
 const toggleVisibility = () => {
-  // In a real app, this would make an API call
-  router.patch(route('admin.downloads.update', props.download.uuid), {
-    is_public: !props.download.is_public
+  router.patch(route('admin.downloads.update', props.download.data.uuid), {
+    is_public: !props.download.data.is_public
   }, {
     preserveScroll: true,
     onSuccess: () => {
       showNotification(
-        `Download ${props.download.is_public ? 'made private' : 'made public'} successfully!`,
+        `Download ${props.download.data.is_public ? 'made private' : 'made public'} successfully!`,
         'success'
       );
     }
@@ -232,7 +239,7 @@ const confirmDelete = () => {
 const deleteDownload = () => {
   isDeleting.value = true;
 
-  router.delete(route('admin.downloads.destroy', props.download.uuid), {
+  router.delete(route('admin.downloads.destroy', props.download.data.uuid), {
     onSuccess: () => {
       showNotification('Download deleted successfully!', 'success');
     },
@@ -247,8 +254,8 @@ const deleteDownload = () => {
 const shareDownload = () => {
   if (navigator.share) {
     navigator.share({
-      title: props.download.title,
-      text: props.download.description || '',
+      title: props.download.data.title,
+      text: props.download.data.description || '',
       url: publicUrl.value,
     });
   } else {
@@ -265,8 +272,8 @@ const showNotification = (message: string, type: 'success' | 'error') => {
 const animateHeader = () => {
   if (headerRef.value) {
     gsap.fromTo(headerRef.value,
-      { y: -30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
+      {y: -30, opacity: 0},
+      {y: 0, opacity: 1, duration: 0.8, ease: "power3.out"}
     );
   }
 };
@@ -274,8 +281,8 @@ const animateHeader = () => {
 const animateContent = () => {
   if (contentRef.value) {
     gsap.fromTo(contentRef.value,
-      { y: 20, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.6, delay: 0.2, ease: "power2.out" }
+      {y: 20, opacity: 0},
+      {y: 0, opacity: 1, duration: 0.6, delay: 0.2, ease: "power2.out"}
     );
   }
 };
@@ -283,7 +290,7 @@ const animateContent = () => {
 const animateCards = () => {
   if (cardsRef.value.length > 0) {
     gsap.fromTo(cardsRef.value,
-      { y: 30, opacity: 0, scale: 0.95 },
+      {y: 30, opacity: 0, scale: 0.95},
       {
         y: 0,
         opacity: 1,
@@ -307,49 +314,58 @@ onMounted(() => {
 </script>
 
 <template>
-  <Head :title="download.title" />
+  <Head :title="download.data.title"/>
 
   <div class="min-h-screen bg-background">
     <!-- Enhanced Header -->
-    <div ref="headerRef" class="bg-gradient-to-r from-background via-background to-background/95 border-b backdrop-blur-xl sticky top-0 z-40">
-      <div class="mx-auto max-w-4xl px-4 py-6">
-        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+    <div
+      ref="headerRef"
+      class="bg-gradient-to-r from-background via-background to-background/95 border-b backdrop-blur-xl sticky top-0 z-40">
+      <div class="mx-auto max-w-4xl px-4 py-2">
+        <div class="flex lg:flex-row lg:items-center justify-between gap-6">
           <!-- Navigation and Title -->
-          <div class="flex items-center gap-4">
-            <Link :href="route('admin.downloads.index')" as="button">
-              <Button variant="ghost" size="sm" class="gap-2">
-                <ArrowLeft class="h-4 w-4" />
-                <span class="hidden sm:inline">Back to Downloads</span>
-              </Button>
+          <div class="flex flex-col">
+
+            <Link
+              :href="route('admin.downloads.index')"
+              class="mb-2 flex items-center gap-x-2 text-muted-foreground text-sm"
+              as="button">
+              <ArrowLeft class="h-4 w-4"/>
+              <span class="hidden sm:inline">All downloadable files</span>
             </Link>
 
-            <div class="h-6 w-px bg-border hidden sm:block" />
-
             <div class="flex items-center gap-3">
-              <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 ring-1 ring-primary/20">
-                <DownloadIcon class="h-6 w-6 text-primary" />
+              <div
+                class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 ring-1 ring-primary/20">
+                <DownloadIcon class="h-6 w-6 text-primary"/>
               </div>
 
               <div class="min-w-0">
                 <h1 class="text-xl font-bold text-foreground truncate">
-                  {{ download.title }}
+                  {{ download.data.title }}
                 </h1>
+
                 <div class="flex items-center gap-2 mt-1">
-                  <Badge v-if="download.is_featured" class="bg-gradient-to-r from-amber-500 to-amber-600 text-white">
-                    <Star class="w-3 h-3 mr-1 fill-current" />
+                  <Badge
+                    v-if="download.data.is_featured"
+                    class="bg-gradient-to-r from-amber-500 to-amber-600 text-white">
+                    <Star class="w-3 h-3 mr-1 fill-current"/>
                     Featured
                   </Badge>
-                  <Badge :variant="download.is_public ? 'default' : 'secondary'" class="text-xs">
-                    <Globe v-if="download.is_public" class="w-3 h-3 mr-1" />
-                    <Lock v-else class="w-3 h-3 mr-1" />
-                    {{ download.is_public ? 'Public' : 'Private' }}
+
+                  <Badge :variant="download.data.status_color" class="text-xs">
+                    <Globe v-if="download.data.is_public" class="w-3 h-3 mr-1"/>
+                    <Lock v-else class="w-3 h-3 mr-1"/>
+                    {{ download.data.status }}
                   </Badge>
-                  <Badge :class="fileTypeColor" class="text-xs font-mono font-semibold">
-                    {{ download.file_extension?.toUpperCase() || 'FILE' }}
+
+                  <Badge :class="download.data.file_type_color" class="text-xs font-mono font-semibold">
+                    {{ download.data.file_extension || 'FILE' }}
                   </Badge>
                 </div>
               </div>
             </div>
+
           </div>
 
           <!-- Action Buttons -->
@@ -357,57 +373,58 @@ onMounted(() => {
             <!-- Quick Stats -->
             <div class="hidden lg:flex items-center gap-4 text-sm text-muted-foreground">
               <div class="flex items-center gap-1">
-                <DownloadIcon class="h-4 w-4" />
-                <span>{{ download.download_count }} downloads</span>
+                <DownloadIcon class="h-4 w-4"/>
+                <span>{{ download.data.download_count }} downloads</span>
               </div>
+
               <div class="flex items-center gap-1">
-                <Calendar class="h-4 w-4" />
-                <span>{{ new Date(download.created_at).toLocaleDateString() }}</span>
+                <Calendar class="h-4 w-4"/>
+                <span>{{ download.data.created_at_formatted }}</span>
               </div>
             </div>
 
-            <div class="h-6 w-px bg-border hidden lg:block" />
+            <div class="h-6 w-px bg-border hidden lg:block"/>
 
-            <!-- Primary Actions -->
-            <Button @click="downloadFile" class="gap-2">
-              <DownloadIcon class="w-4 h-4" />
-              <span class="hidden sm:inline">Download</span>
+            <Button
+              @click="() => router.visit(route('admin.downloads.edit', download.data.uuid))"
+              variant="outline" class="h-11">
+              <Pencil class="w-4 h-4"/>
+              <span class="hidden sm:inline">Edit</span>
             </Button>
-
-            <Link :href="route('admin.downloads.edit', download.uuid)" as="button">
-              <Button variant="outline" class="gap-2">
-                <Edit class="w-4 h-4" />
-                <span class="hidden sm:inline">Edit</span>
-              </Button>
-            </Link>
 
             <!-- More Actions -->
             <DropdownMenu>
-              <DropdownMenuTrigger as-child>
-                <Button variant="outline" size="icon">
-                  <MoreHorizontal class="w-4 h-4" />
+              <DropdownMenuTrigger>
+                <Button variant="outline" class="w-11" size="icon">
+                  <MoreHorizontal class="w-4 h-4"/>
                 </Button>
               </DropdownMenuTrigger>
+
               <DropdownMenuContent align="end" class="w-48">
+                <DropdownMenuItem  @click="downloadFile">
+                  <DownloadIcon class="w-4 h-4"/>
+                  <span class="hidden sm:inline">Download</span>
+                </DropdownMenuItem>
+
                 <DropdownMenuItem @click="shareDownload">
-                  <Share2 class="w-4 h-4 mr-2" />
+                  <Share2 class="w-4 h-4 mr-2"/>
                   Share
                 </DropdownMenuItem>
                 <DropdownMenuItem @click="copyToClipboard(publicUrl)">
-                  <Copy class="w-4 h-4 mr-2" />
+                  <Copy class="w-4 h-4 mr-2"/>
                   Copy Link
                 </DropdownMenuItem>
                 <DropdownMenuItem @click="toggleFeatured">
-                  <Star class="w-4 h-4 mr-2" />
-                  {{ download.is_featured ? 'Unfeature' : 'Feature' }}
+                  <Star class="w-4 h-4 mr-2"/>
+                  {{ download.data.is_featured ? 'Unfeature' : 'Feature' }}
                 </DropdownMenuItem>
                 <DropdownMenuItem @click="toggleVisibility">
-                  <component :is="download.is_public ? EyeOff : Eye" class="w-4 h-4 mr-2" />
-                  {{ download.is_public ? 'Make Private' : 'Make Public' }}
+                  <component :is="download.data.is_public ? EyeOff : Eye" class="w-4 h-4 mr-2"/>
+                  {{ download.data.is_public ? 'Make Private' : 'Make Public' }}
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator/>
                 <DropdownMenuItem @click="confirmDelete" class="text-destructive focus:text-destructive">
-                  <Trash2 class="w-4 h-4 mr-2" />
+                  <Trash2 class="w-4 h-4 mr-2"/>
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -420,7 +437,7 @@ onMounted(() => {
     <!-- Copy Success Alert -->
     <div v-if="copySuccess" class="fixed top-20 right-4 z-50">
       <Alert class="bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800">
-        <CheckCircle class="h-4 w-4 text-green-600 dark:text-green-400" />
+        <CheckCircle class="h-4 w-4 text-green-600 dark:text-green-400"/>
         <AlertDescription class="text-green-800 dark:text-green-200">
           Link copied to clipboard!
         </AlertDescription>
@@ -433,23 +450,26 @@ onMounted(() => {
       <!-- Enhanced Tabs -->
       <Tabs v-model="activeTab" class="space-y-6">
         <!-- Tab Navigation -->
-        <div class="border-b">
-          <TabsList class="grid w-full grid-cols-2 lg:grid-cols-4 h-auto p-1 bg-muted/50">
+        <div>
+          <TabsList class="max-w-md mx-auto grid w-full grid-cols-2 lg:grid-cols-4 h-auto p-1 bg-muted/50">
             <TabsTrigger value="overview" class="flex-col gap-1 py-3 data-[state=active]:bg-background">
-              <Eye class="h-4 w-4" />
-              <span class="text-xs">Overview</span>
+              <Eye class="size-8"/>
+              <span class="text-lg">Overview</span>
             </TabsTrigger>
+
             <TabsTrigger value="stats" class="flex-col gap-1 py-3 data-[state=active]:bg-background">
-              <BarChart3 class="h-4 w-4" />
-              <span class="text-xs">Analytics</span>
+              <BarChart3 class="size-8"/>
+              <span class="text-lg">Analytics</span>
             </TabsTrigger>
+
             <TabsTrigger value="details" class="flex-col gap-1 py-3 data-[state=active]:bg-background">
-              <FileText class="h-4 w-4" />
-              <span class="text-xs">Details</span>
+              <FileText class="size-8"/>
+              <span class="text-lg">Details</span>
             </TabsTrigger>
+
             <TabsTrigger value="related" class="flex-col gap-1 py-3 data-[state=active]:bg-background">
-              <Users class="h-4 w-4" />
-              <span class="text-xs">Related</span>
+              <Users class="size-8"/>
+              <span class="text-lg">Related</span>
             </TabsTrigger>
           </TabsList>
         </div>
@@ -463,9 +483,9 @@ onMounted(() => {
               <!-- Image Section -->
               <div class="aspect-video lg:aspect-square relative bg-gradient-to-br from-muted/50 to-muted">
                 <img
-                  v-if="download.poster_url"
-                  :src="download.poster_url"
-                  :alt="download.title"
+                  v-if="download.data.poster_url"
+                  :src="download.data.poster_url"
+                  :alt="download.data.title"
                   class="w-full h-full object-cover"
                 />
                 <div
@@ -473,7 +493,7 @@ onMounted(() => {
                   class="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted/80 to-muted"
                 >
                   <div class="text-center space-y-3">
-                    <DownloadIcon class="w-16 h-16 text-muted-foreground mx-auto" />
+                    <DownloadIcon class="w-16 h-16 text-muted-foreground mx-auto"/>
                     <p class="text-sm text-muted-foreground font-medium">No Preview Available</p>
                   </div>
                 </div>
@@ -482,13 +502,13 @@ onMounted(() => {
                 <div class="absolute bottom-4 left-4 right-4">
                   <div class="flex items-center justify-between">
                     <Badge variant="secondary" class="bg-background/90 backdrop-blur-sm">
-                      {{ download.formatted_file_size }}
+                      {{ download.data.formatted_file_size }}
                     </Badge>
                     <Button
                       @click="downloadFile"
                       class="bg-primary/90 hover:bg-primary backdrop-blur-sm"
                     >
-                      <DownloadIcon class="w-4 h-4 mr-2" />
+                      <DownloadIcon class="w-4 h-4 mr-2"/>
                       Download
                     </Button>
                   </div>
@@ -499,20 +519,20 @@ onMounted(() => {
               <CardContent class="p-6 space-y-6">
                 <div class="space-y-4">
                   <div>
-                    <h2 class="text-2xl font-bold mb-2">{{ download.title }}</h2>
-                    <p v-if="download.brand" class="text-lg text-muted-foreground font-medium">
-                      {{ download.brand }}
+                    <h2 class="text-2xl font-bold mb-2">{{ download.data.title }}</h2>
+                    <p v-if="download.data.brand" class="text-lg text-muted-foreground font-medium">
+                      {{ download.data.brand }}
                     </p>
                   </div>
 
-                  <div v-if="download.description" class="prose prose-sm dark:prose-invert max-w-none">
-                    <p>{{ download.description }}</p>
+                  <div v-if="download.data.description" class="prose prose-sm dark:prose-invert max-w-none">
+                    <p>{{ download.data.description }}</p>
                   </div>
 
                   <!-- Tags -->
-                  <div v-if="download.tags.length > 0" class="flex flex-wrap gap-2">
-                    <Badge v-for="tag in download.tags" :key="tag" variant="outline" class="text-xs">
-                      <Tag class="w-3 h-3 mr-1" />
+                  <div v-if="download.data.tags.length > 0" class="flex flex-wrap gap-2">
+                    <Badge v-for="tag in download.data.tags" :key="tag" variant="outline" class="text-xs">
+                      <Tag class="w-3 h-3 mr-1"/>
                       {{ tag }}
                     </Badge>
                   </div>
@@ -520,13 +540,28 @@ onMounted(() => {
                   <!-- Quick Stats -->
                   <div class="grid grid-cols-2 gap-4 pt-4 border-t">
                     <div class="text-center">
-                      <p class="text-2xl font-bold text-primary">{{ download.download_count }}</p>
+                      <p class="text-2xl font-bold text-primary">
+                        {{ download.data.download_count }}
+                      </p>
                       <p class="text-sm text-muted-foreground">Total Downloads</p>
                     </div>
                     <div class="text-center">
-                      <p class="text-2xl font-bold text-primary">{{ stats.downloads_today }}</p>
+                      <p class="text-2xl font-bold text-primary">
+                        {{ stats.downloads_today }}
+                      </p>
                       <p class="text-sm text-muted-foreground">Today</p>
                     </div>
+                  </div>
+
+                  <!-- Completion Progress -->
+                  <div class="space-y-2">
+                    <div class="flex justify-between text-sm">
+                      <span class="text-muted-foreground">Profile Completion</span>
+                      <span class="font-medium">
+                        {{ download.data.completion_percentage }}%
+                      </span>
+                    </div>
+                    <Progress v-model="download.data.completion_percentage" class="h-2"/>
                   </div>
                 </div>
               </CardContent>
@@ -537,40 +572,45 @@ onMounted(() => {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card ref="el => cardsRef[1] = el as HTMLElement">
               <CardContent class="p-4 text-center">
-                <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 mx-auto mb-3">
-                  <Calendar class="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                <div
+                  class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 mx-auto mb-3">
+                  <Calendar class="w-6 h-6 text-blue-600 dark:text-blue-400"/>
                 </div>
                 <h3 class="font-semibold mb-1">Created</h3>
                 <p class="text-sm text-muted-foreground">
-                  {{ new Date(download.created_at).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                }) }}
+                  {{ download.data.created_at_formatted }}
+                </p>
+                <p class="text-xs text-muted-foreground mt-1">
+                  {{ download.data.created_at_human }}
                 </p>
               </CardContent>
             </Card>
 
             <Card ref="el => cardsRef[2] = el as HTMLElement">
               <CardContent class="p-4 text-center">
-                <div class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 mx-auto mb-3">
-                  <FileText class="w-6 h-6 text-green-600 dark:text-green-400" />
+                <div
+                  class="flex items-center justify-center w-12 h-12 rounded-full bg-green-100 dark:bg-green-900 mx-auto mb-3">
+                  <FileText class="w-6 h-6 text-green-600 dark:text-green-400"/>
                 </div>
                 <h3 class="font-semibold mb-1">File Type</h3>
                 <p class="text-sm text-muted-foreground">
-                  {{ download.file_extension?.toUpperCase() || 'Unknown' }} File
+                  {{ download.data.file_extension || 'Unknown' }} File
+                </p>
+                <p class="text-xs text-muted-foreground mt-1">
+                  {{ download.data.formatted_file_size }}
                 </p>
               </CardContent>
             </Card>
 
             <Card ref="el => cardsRef[3] = el as HTMLElement">
               <CardContent class="p-4 text-center">
-                <div class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900 mx-auto mb-3">
-                  <FolderOpen class="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                <div
+                  class="flex items-center justify-center w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900 mx-auto mb-3">
+                  <FolderOpen class="w-6 h-6 text-purple-600 dark:text-purple-400"/>
                 </div>
                 <h3 class="font-semibold mb-1">Category</h3>
                 <p class="text-sm text-muted-foreground">
-                  {{ download.category || 'Uncategorized' }}
+                  {{ download.data.category || 'Uncategorized' }}
                 </p>
               </CardContent>
             </Card>
@@ -584,7 +624,7 @@ onMounted(() => {
           <Card ref="el => cardsRef[4] = el as HTMLElement">
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
-                <component :is="trendIcon" :class="[trendColor, 'w-5 h-5', stats.download_trend === 'down' && 'rotate-180']" />
+                <component :is="trendIcon" :class="[trendColor, 'w-5 h-5']"/>
                 Download Analytics
               </CardTitle>
               <CardDescription>
@@ -617,13 +657,15 @@ onMounted(() => {
               <div class="flex items-center justify-center p-4 rounded-lg border">
                 <div class="text-center">
                   <div class="flex items-center justify-center gap-2 mb-2">
-                    <component :is="trendIcon" :class="[trendColor, 'w-6 h-6', stats.download_trend === 'down' && 'rotate-180']" />
+                    <component :is="trendIcon" :class="[trendColor, 'w-6 h-6']"/>
                     <span :class="trendColor" class="text-lg font-semibold">
                       {{ stats.trend_percentage }}%
                     </span>
                   </div>
                   <p class="text-sm text-muted-foreground">
-                    {{ stats.download_trend === 'up' ? 'Increase' : stats.download_trend === 'down' ? 'Decrease' : 'Stable' }}
+                    {{
+                      stats.download_trend === 'up' ? 'Increase' : stats.download_trend === 'down' ? 'Decrease' : 'Stable'
+                    }}
                     compared to last period
                   </p>
                 </div>
@@ -633,12 +675,14 @@ onMounted(() => {
               <div class="text-center p-4 rounded-lg bg-gradient-to-r from-primary/10 to-primary/5">
                 <h4 class="font-semibold mb-1">Peak Download Day</h4>
                 <p class="text-sm text-muted-foreground">
-                  {{ new Date(stats.peak_download_day).toLocaleDateString('en-US', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                }) }}
+                  {{
+                    new Date(stats.peak_download_day).toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })
+                  }}
                 </p>
               </div>
             </CardContent>
@@ -648,22 +692,31 @@ onMounted(() => {
           <Card ref="el => cardsRef[5] = el as HTMLElement">
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
-                <Activity class="w-5 h-5" />
+                <Activity class="w-5 h-5"/>
                 Recent Download Activity
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div class="space-y-3">
-                <div v-for="(activity, index) in stats.recent_downloads" :key="index" class="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                <div v-for="(activity, index) in stats.recent_downloads" :key="index"
+                     class="flex items-center justify-between p-3 rounded-lg bg-muted/30">
                   <div class="flex items-center gap-3">
                     <div class="w-2 h-2 rounded-full bg-primary"></div>
                     <span class="text-sm font-medium">
-                      {{ new Date(activity.date).toLocaleDateString() }}
+                      {{ activity.formatted_date }}
                     </span>
                   </div>
-                  <Badge variant="outline">
-                    {{ activity.count }} downloads
-                  </Badge>
+                  <div class="flex items-center gap-3">
+                    <Badge variant="outline">
+                      {{ activity.count }} downloads
+                    </Badge>
+                    <div class="w-16 h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        class="h-full bg-primary transition-all duration-300"
+                        :style="{ width: `${(activity.count / maxDownloadsInWeek) * 100}%` }"
+                      ></div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </CardContent>
@@ -677,7 +730,7 @@ onMounted(() => {
           <Card ref="el => cardsRef[6] = el as HTMLElement">
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
-                <FileText class="w-5 h-5" />
+                <FileText class="w-5 h-5"/>
                 File Information
               </CardTitle>
             </CardHeader>
@@ -686,31 +739,33 @@ onMounted(() => {
                 <div class="space-y-3">
                   <div>
                     <Label class="text-sm font-medium text-muted-foreground">File Name</Label>
-                    <p class="font-medium">{{ download.title }}.{{ download.file_extension }}</p>
+                    <p class="font-medium">{{ download.data.title }}.{{
+                        download.data.file_extension?.toLowerCase()
+                      }}</p>
                   </div>
                   <div>
                     <Label class="text-sm font-medium text-muted-foreground">File Size</Label>
-                    <p class="font-medium">{{ download.formatted_file_size }}</p>
+                    <p class="font-medium">{{ download.data.formatted_file_size }}</p>
                   </div>
                   <div>
                     <Label class="text-sm font-medium text-muted-foreground">File Type</Label>
-                    <Badge :class="fileTypeColor" class="font-mono">
-                      {{ download.file_extension?.toUpperCase() || 'Unknown' }}
+                    <Badge :class="download.data.file_type_color" class="font-mono">
+                      {{ download.data.file_extension || 'Unknown' }}
                     </Badge>
                   </div>
                 </div>
                 <div class="space-y-3">
                   <div>
                     <Label class="text-sm font-medium text-muted-foreground">Category</Label>
-                    <p class="font-medium">{{ download.category || 'Uncategorized' }}</p>
+                    <p class="font-medium">{{ download.data.category || 'Uncategorized' }}</p>
                   </div>
                   <div>
                     <Label class="text-sm font-medium text-muted-foreground">Brand</Label>
-                    <p class="font-medium">{{ download.brand || 'No brand' }}</p>
+                    <p class="font-medium">{{ download.data.brand || 'No brand' }}</p>
                   </div>
                   <div>
                     <Label class="text-sm font-medium text-muted-foreground">Sort Order</Label>
-                    <p class="font-medium">{{ download.sort_order }}</p>
+                    <p class="font-medium">{{ download.data.sort_order }}</p>
                   </div>
                 </div>
               </div>
@@ -721,25 +776,27 @@ onMounted(() => {
           <Card ref="el => cardsRef[7] = el as HTMLElement">
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
-                <Globe class="w-5 h-5" />
+                <Globe class="w-5 h-5"/>
                 SEO & Meta Information
               </CardTitle>
             </CardHeader>
             <CardContent class="space-y-4">
               <div>
                 <Label class="text-sm font-medium text-muted-foreground">Meta Title</Label>
-                <p class="font-medium">{{ download.meta_title || download.title }}</p>
+                <p class="font-medium">{{ download.data.meta_title || download.data.title }}</p>
               </div>
               <div>
                 <Label class="text-sm font-medium text-muted-foreground">Meta Description</Label>
-                <p class="text-sm">{{ download.meta_description || download.description || 'No description provided' }}</p>
+                <p class="text-sm">
+                  {{ download.data.meta_description || download.data.description || 'No description provided' }}
+                </p>
               </div>
               <div>
                 <Label class="text-sm font-medium text-muted-foreground">Public URL</Label>
                 <div class="flex items-center gap-2 mt-1">
                   <code class="flex-1 p-2 bg-muted rounded text-sm">{{ publicUrl }}</code>
                   <Button variant="outline" size="sm" @click="copyToClipboard(publicUrl)">
-                    <Copy class="w-4 h-4" />
+                    <Copy class="w-4 h-4"/>
                   </Button>
                 </div>
               </div>
@@ -750,7 +807,7 @@ onMounted(() => {
           <Card ref="el => cardsRef[8] = el as HTMLElement">
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
-                <Clock class="w-5 h-5" />
+                <Clock class="w-5 w-5"/>
                 System Information
               </CardTitle>
             </CardHeader>
@@ -759,22 +816,24 @@ onMounted(() => {
                 <div>
                   <Label class="text-sm font-medium text-muted-foreground">Created</Label>
                   <p class="font-medium">
-                    {{ new Date(download.created_at).toLocaleString() }}
+                    {{ new Date(download.data.created_at).toLocaleString() }}
                   </p>
+                  <p class="text-xs text-muted-foreground">{{ download.data.created_at_human }}</p>
                 </div>
                 <div>
                   <Label class="text-sm font-medium text-muted-foreground">Last Updated</Label>
                   <p class="font-medium">
-                    {{ new Date(download.updated_at).toLocaleString() }}
+                    {{ new Date(download.data.updated_at).toLocaleString() }}
                   </p>
+                  <p class="text-xs text-muted-foreground">{{ download.data.updated_at_human }}</p>
                 </div>
                 <div>
                   <Label class="text-sm font-medium text-muted-foreground">UUID</Label>
-                  <code class="text-sm bg-muted px-2 py-1 rounded">{{ download.uuid }}</code>
+                  <code class="text-sm bg-muted px-2 py-1 rounded">{{ download.data.uuid }}</code>
                 </div>
                 <div>
                   <Label class="text-sm font-medium text-muted-foreground">ID</Label>
-                  <p class="font-medium">#{{ download.id }}</p>
+                  <p class="font-medium">#{{ download.data.id }}</p>
                 </div>
               </div>
             </CardContent>
@@ -787,7 +846,7 @@ onMounted(() => {
           <Card ref="el => cardsRef[9] = el as HTMLElement">
             <CardHeader>
               <CardTitle class="flex items-center gap-2">
-                <Users class="w-5 h-5" />
+                <Users class="w-5 h-5"/>
                 Related Downloads
               </CardTitle>
               <CardDescription>
@@ -795,17 +854,17 @@ onMounted(() => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div v-if="related_downloads.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div v-if="related_downloads.data.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div
-                  v-for="relatedDownload in related_downloads"
+                  v-for="relatedDownload in related_downloads.data"
                   :key="relatedDownload.uuid"
                   class="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors cursor-pointer"
                   @click="router.visit(route('admin.downloads.show', relatedDownload.uuid))"
                 >
                   <Avatar class="w-12 h-12 rounded-lg">
-                    <AvatarImage :src="relatedDownload.thumb_url" :alt="relatedDownload.title" />
+                    <AvatarImage :src="relatedDownload.thumb_url" :alt="relatedDownload.title"/>
                     <AvatarFallback class="rounded-lg">
-                      <DownloadIcon class="w-5 h-5" />
+                      <DownloadIcon class="w-5 h-5"/>
                     </AvatarFallback>
                   </Avatar>
                   <div class="flex-1 min-w-0">
@@ -813,12 +872,21 @@ onMounted(() => {
                     <p class="text-sm text-muted-foreground">
                       {{ relatedDownload.download_count }} downloads
                     </p>
+                    <div class="flex items-center gap-2 mt-1">
+                      <Badge v-if="relatedDownload.category" variant="outline" class="text-xs">
+                        {{ relatedDownload.category }}
+                      </Badge>
+                      <Badge v-if="relatedDownload.is_featured" variant="default" class="text-xs">
+                        <Star class="w-3 h-3 mr-1 fill-current"/>
+                        Featured
+                      </Badge>
+                    </div>
                   </div>
-                  <ExternalLink class="w-4 h-4 text-muted-foreground" />
+                  <ExternalLink class="w-4 h-4 text-muted-foreground"/>
                 </div>
               </div>
               <div v-else class="text-center py-8">
-                <Users class="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                <Users class="w-12 h-12 text-muted-foreground mx-auto mb-3"/>
                 <p class="text-muted-foreground">No related downloads found</p>
               </div>
             </CardContent>
@@ -832,17 +900,17 @@ onMounted(() => {
       <DialogContent class="sm:max-w-md">
         <DialogHeader>
           <DialogTitle class="flex items-center gap-2 text-destructive">
-            <AlertCircle class="h-5 w-5" />
+            <AlertCircle class="h-5 w-5"/>
             Delete Download
           </DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete "{{ download.title }}"? This action cannot be undone.
+            Are you sure you want to delete "{{ download.data.title }}"? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 
         <div class="py-4">
           <Alert variant="destructive">
-            <AlertCircle class="h-4 w-4" />
+            <AlertCircle class="h-4 w-4"/>
             <AlertDescription>
               This will permanently delete the download and all associated data.
             </AlertDescription>
@@ -854,8 +922,8 @@ onMounted(() => {
             Cancel
           </Button>
           <Button variant="destructive" @click="deleteDownload" :disabled="isDeleting" class="gap-2">
-            <Loader2 v-if="isDeleting" class="h-4 w-4 animate-spin" />
-            <Trash2 v-else class="h-4 w-4" />
+            <Loader2 v-if="isDeleting" class="h-4 w-4 animate-spin"/>
+            <Trash2 v-else class="h-4 w-4"/>
             {{ isDeleting ? 'Deleting...' : 'Delete' }}
           </Button>
         </DialogFooter>
