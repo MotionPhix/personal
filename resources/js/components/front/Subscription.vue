@@ -1,96 +1,149 @@
 <script setup lang="ts">
-import {useForm} from '@inertiajs/vue3'
+import { useForm } from '@inertiajs/vue3'
+import { ref } from 'vue'
+import { gsap } from 'gsap'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { IconSend } from '@tabler/icons-vue'
+
+gsap.registerPlugin(); // Register GSAP plugins
 
 const form = useForm({
   email: null,
 })
 
+const formRef = ref(null)
+const submitting = ref(false)
+
 function onSubmit() {
+  if (submitting.value) return;
+  submitting.value = true;
+
   form.post('/subscribe', {
     preserveScroll: true,
-    onSuccess: () => form.reset('email'),
+    onSuccess: () => {
+      form.reset('email');
+      gsap.fromTo(formRef.value,
+        { scale: 1 },
+        {
+          scale: 1.02,
+          duration: 0.2,
+          yoyo: true,
+          repeat: 1,
+          ease: 'back.out(1.7)',
+          onComplete: () => submitting.value = false
+        }
+      );
+    },
+    onError: () => {
+      submitting.value = false;
+    }
   })
 }
-
 </script>
 
 <template>
-  <section class="relative mx-auto max-w-7xl overflow-hidden rounded-lg shadow-lg">
-    <!-- Background image with overlay -->
+  <Card class="relative overflow-hidden bg-background/50 backdrop-blur-sm border-0">
     <div class="absolute inset-0">
-      <img
-        class="h-full w-full object-cover"
-        src="https://images.unsplash.com/photo-1665686377065-08ba896d16fd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=700&h=800&q=80"
-        alt="Subscribe Background">
-      <div
-        class="absolute inset-0 bg-gradient-to-b from-white/55 to-white/70 dark:from-neutral-900/65 dark:to-neutral-900/40"></div>
+      <!-- Background pattern -->
+      <div class="absolute inset-0 pattern-dots opacity-[0.05] dark:opacity-[0.08]"></div>
+      <!-- Gradient overlay -->
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-background/50 to-secondary/5"></div>
+      <!-- Decorative circles -->
+      <div class="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-secondary/10 rounded-full blur-3xl"></div>
     </div>
 
-    <!-- Content -->
-    <div class="relative z-10 px-4 py-12 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-3xl text-center">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-neutral-100 sm:text-3xl md:text-4xl">
-          Stay Updated
-        </h1>
-        <p class="mt-4 text-base text-gray-600 dark:text-neutral-400 sm:text-lg">
-          Join our mailing list to receive the latest news and updates.
-        </p>
-      </div>
+    <CardContent class="relative z-10 p-8 sm:p-12">
+      <div class="space-y-6">
+        <div class="text-center space-y-2">
+          <h3 class="text-2xl font-bold tracking-tight">Join Our Newsletter</h3>
+          <p class="text-muted-foreground">
+            Stay updated with our latest projects and insights
+          </p>
+        </div>
 
-      <div class="mx-auto mt-8 max-w-xl">
-        <form @submit.prevent="onSubmit" class="space-y-4">
-          <div
-            class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white/50 p-2 backdrop-blur-sm dark:border-neutral-700 dark:bg-neutral-900/50 sm:flex-row sm:gap-2">
-            <div class="relative flex-grow">
-              <label for="hero-input" class="sr-only">Subscribe</label>
-              <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
-                <svg
-                  class="size-4 text-gray-400 dark:text-neutral-600"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor">
-                  <rect width="20" height="16" x="2" y="4" rx="2"/>
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-                </svg>
-              </div>
-              <input
-                type="email"
-                id="hero-input"
-                name="hero-input"
-                v-model="form.email"
-                class="block w-full rounded-lg border-transparent bg-white px-3 py-2.5 ps-10 text-gray-900 placeholder-gray-500 transition-colors focus:border-blue-500 focus:ring-2 focus:ring-blue-500 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-400"
-                placeholder="Enter your email"
-                required>
-            </div>
-
-            <button
+        <form @submit.prevent="onSubmit" ref="formRef" class="space-y-4">
+          <div class="relative">
+            <Input
+              v-model="form.email"
+              type="email"
+              placeholder="Enter your email"
+              class="pr-12 py-6 text-lg bg-background/50"
+              :class="{ 'border-red-500': form.errors.email }"
+              required
+            />
+            <Button
               type="submit"
-              :disabled="form.processing"
-              class="inline-flex items-center justify-center gap-x-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-500">
-              <span>Subscribe</span>
-              <svg
-                class="size-4"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path d="M5 12h14"/>
-                <path d="m12 5 7 7-7 7"/>
-              </svg>
-            </button>
+              size="sm"
+              class="absolute right-2 top-1/2 -translate-y-1/2"
+              :disabled="submitting"
+            >
+              <IconSend :class="[
+                'size-4 transition-transform',
+                submitting ? 'animate-pulse' : 'group-hover:translate-x-1'
+              ]" />
+            </Button>
           </div>
 
-          <div class="text-center">
-            <div v-if="form.errors.email" class="text-sm text-red-600 dark:text-red-400">
+          <transition
+            enter-active-class="transition duration-300 ease-out"
+            enter-from-class="transform -translate-y-2 opacity-0"
+            enter-to-class="transform translate-y-0 opacity-100"
+            leave-active-class="transition duration-200 ease-in"
+            leave-from-class="transform translate-y-0 opacity-100"
+            leave-to-class="transform -translate-y-2 opacity-0"
+          >
+            <p v-if="form.errors.email" class="text-sm text-red-500">
               {{ form.errors.email }}
-            </div>
-            <p v-else class="text-sm text-gray-500 dark:text-neutral-400">
-              No spam, unsubscribe at any time.
             </p>
-          </div>
+          </transition>
+
+          <p class="text-sm text-center text-muted-foreground">
+            Join our community of {{ Math.floor(Math.random() * 900) + 100 }}+ subscribers
+          </p>
         </form>
       </div>
-    </div>
-  </section>
+    </CardContent>
+  </Card>
 </template>
+
+<style scoped>
+.pattern-dots {
+  background-image: radial-gradient(currentColor 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .pattern-dots {
+    opacity: 0.08;
+  }
+}
+
+/* Add a subtle shine effect on hover */
+.card {
+  position: relative;
+  overflow: hidden;
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: 0.5s;
+}
+
+.card:hover::after {
+  left: 100%;
+}
+</style>

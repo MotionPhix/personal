@@ -84,13 +84,11 @@ onUnmounted(() => {
 <template>
   <!-- projects -->
   <div class="mt-10 sm:mt-14">
-    <h2 class="mb-5 uppercase font-medium text-gray-800 dark:text-neutral-200">
-      Featured Projects
-    </h2>
 
     <!-- No projects message -->
-    <div v-if="!projects || projects.length === 0"
-         class="text-center py-12 text-gray-500 dark:text-neutral-400">
+    <div
+      v-if="!projects || projects.length === 0"
+      class="text-center py-12 text-gray-500 dark:text-neutral-400">
       <p>No featured projects available at the moment.</p>
     </div>
 

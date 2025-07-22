@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Head, router} from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import AppLayout from '@/layouts/AppLayout.vue';
 import {
   IconBrandBehance,
@@ -7,30 +7,31 @@ import {
   IconBrandX,
   IconMapPin,
   IconDownload,
-  IconExternalLink,
   IconArrowRight,
   IconStar,
   IconUsers,
   IconBriefcase,
-  IconMail,
-  IconPhone,
-  IconArrowDown
+  IconArrowDown,
+  IconCode,
+  IconPalette,
+  IconRocket,
+  IconEye
 } from '@tabler/icons-vue';
 import Projects from '@/components/front/Projects.vue';
 import Skills from '@/components/front/Skills.vue';
 import Expertise from '@/components/front/Expertise.vue';
 import Subscription from '@/components/front/Subscription.vue';
-import {Project, User} from '@/types';
-import {onMounted, ref, computed, nextTick, onUnmounted} from 'vue';
-import {gsap} from 'gsap';
-import {ScrollTrigger} from 'gsap/ScrollTrigger';
+import { Project, User } from '@/types';
+import { onMounted, ref, computed, onUnmounted } from 'vue';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import IconEmail from '@/components/icon/IconEmail.vue';
-import {Play as IconPlay} from 'lucide-vue-next'
 
 // Shadcn Vue Components
-import {Card, CardContent} from '@/components/ui/card';
-import {Button} from '@/components/ui/button';
-import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -40,15 +41,13 @@ const props = defineProps<{
   user?: User;
 }>();
 
-// Refs for elements to animate
-const heroRef = ref<HTMLElement>();
-const heroTextRef = ref<HTMLElement>();
-const profileCardRef = ref<HTMLElement>();
-const statsRef = ref<HTMLElement>();
-const aboutRef = ref<HTMLElement>();
+// Refs for animation and interactivity
+const containerRef = ref<HTMLElement>();
+const heroContentRef = ref<HTMLElement>();
 const contentSections = ref<HTMLElement[]>([]);
+const showQuickContact = ref(false);
 
-// Computed properties for user data
+// Computed properties
 const fullName = computed(() => {
   if (!props.user) return 'Portfolio Owner';
   return `${props.user.first_name || ''} ${props.user.last_name || ''}`.trim() || 'Portfolio Owner';
@@ -70,6 +69,14 @@ const userTitle = computed(() => {
   return props.user?.job_title || 'Graphic Designer, & Web Developer';
 });
 
+// Enhanced availability status
+const availabilityStatus = computed(() => ({
+  available: true,
+  status: 'Available for new projects',
+  responseTime: 'Usually responds within 2 hours',
+  nextAvailable: null
+}));
+
 // Social media links with proper URL handling
 const socialLinks = computed(() => {
   const socials = props.user?.socials || {};
@@ -79,28 +86,32 @@ const socialLinks = computed(() => {
       icon: IconBrandLinkedin,
       url: socials.linkedin?.startsWith('http') ? socials.linkedin : `https://linkedin.com/in/${socials.linkedin}`,
       show: !!socials.linkedin,
-      color: 'hover:text-blue-600'
+      color: 'hover:text-blue-600',
+      description: 'Professional Network'
     },
     {
       name: 'Twitter/X',
       icon: IconBrandX,
       url: socials.twitter?.startsWith('http') ? socials.twitter : `https://x.com/${socials.twitter}`,
       show: !!socials.twitter,
-      color: 'hover:text-gray-900 dark:hover:text-gray-100'
+      color: 'hover:text-gray-900 dark:hover:text-gray-100',
+      description: 'Latest Updates'
     },
     {
       name: 'Behance',
       icon: IconBrandBehance,
       url: socials.behance?.startsWith('http') ? socials.behance : `https://be.net/${socials.behance}`,
       show: !!socials.behance,
-      color: 'hover:text-blue-500'
+      color: 'hover:text-blue-500',
+      description: 'Creative Portfolio'
     },
     {
       name: 'Email',
       icon: IconEmail,
       url: `mailto:${props.user?.email}`,
       show: !!props.user?.email,
-      color: 'hover:text-green-600'
+      color: 'hover:text-green-600',
+      description: 'Get in Touch'
     }
   ].filter(link => link.show);
 });
@@ -110,216 +121,142 @@ const avatarUrl = computed(() => {
   return props.user?.avatar_url || '/assets/profile_400x400.jpg';
 });
 
-// Stats data
+// Enhanced stats data with animations
 const stats = computed(() => [
   {
     label: 'Years Experience',
     value: '10+',
     icon: IconStar,
-    color: 'text-amber-600'
+    color: 'text-amber-600',
+    bgColor: 'bg-amber-100 dark:bg-amber-900/20',
+    description: 'Professional experience in design'
   },
   {
     label: 'Happy Clients',
     value: '50+',
     icon: IconUsers,
+    color: 'text-green-600',
+    bgColor: 'bg-green-100 dark:bg-green-900/20',
+    description: 'Satisfied clients worldwide'
+  },
+  {
+    label: 'Projects',
+    value: '100+',
+    icon: IconBriefcase,
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-100 dark:bg-blue-900/20',
+    description: 'Completed projects'
+  },
+  {
+    label: 'Coffee Cups',
+    value: '∞',
+    icon: IconRocket,
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-100 dark:bg-purple-900/20',
+    description: 'Fuel for creativity'
+  }
+]);
+
+// Services/Specializations
+const services = computed(() => [
+  {
+    title: 'UI/UX Design',
+    description: 'Creating intuitive and beautiful user experiences',
+    icon: IconPalette,
+    color: 'text-pink-600'
+  },
+  {
+    title: 'Web Development',
+    description: 'Building responsive and modern web applications',
+    icon: IconCode,
+    color: 'text-blue-600'
+  },
+  {
+    title: 'Brand Identity',
+    description: 'Developing cohesive visual identity systems',
+    icon: IconEye,
     color: 'text-green-600'
   }
 ]);
 
-// Add intersection observer for reliable animations
-const isHeroVisible = ref(true);
-const heroObserver = ref<IntersectionObserver | null>(null);
+// Animation functions
+function initializeAnimations() {
+  const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
 
-// New computed property for stats animation
-const animatedStats = computed(() => stats.value.map(stat => ({
-  ...stat,
-  animatedValue: ref(0),
-  formattedValue: typeof stat.value === 'string' ? stat.value : new Intl.NumberFormat().format(stat.value)
-})));
-
-// Enhanced animation timeline
-const initHeroAnimations = () => {
-  if (!heroTextRef.value || !profileCardRef.value || !statsRef.value) return;
-
-  const tl = gsap.timeline({
-    defaults: {ease: 'expo.out'},
-    scrollTrigger: {
-      trigger: heroRef.value,
-      start: 'top center',
-      end: 'bottom center',
-      toggleActions: 'play none none reverse'
-    }
-  });
-
-  // Text reveal animations with better timing
-  tl.fromTo(heroTextRef.value.querySelectorAll('.hero-line'),
-    {
-      y: 100,
-      opacity: 0,
-      rotateX: -45,
-    },
-    {
-      y: 0,
-      opacity: 1,
-      rotateX: 0,
-      duration: 1.5,
-      stagger: 0.15,
-    }
-  )
-    .fromTo(profileCardRef.value,
+  if (heroContentRef.value) {
+    tl.fromTo(
+      heroContentRef.value.children,
       {
-        y: 50,
         opacity: 0,
-        scale: 0.9,
+        translateY: 20
       },
       {
-        y: 0,
         opacity: 1,
-        scale: 1,
-        duration: 1,
-        ease: 'elastic.out(1, 0.8)',
-      },
-      '-=0.8'
-    )
-    .fromTo(statsRef.value.querySelectorAll('.stat-item'),
+        translateY: 0,
+        duration: 0.7,
+        stagger: 0.15,
+      }
+    );
+  }
+
+  // Content sections animations
+  contentSections.value?.forEach((section) => {
+    gsap.fromTo(
+      section,
       {
-        y: 30,
         opacity: 0,
-        scale: 0.8,
+        translateY: 50
       },
       {
-        y: 0,
         opacity: 1,
-        scale: 1,
+        translateY: 0,
         duration: 0.8,
-        stagger: 0.1,
-        ease: 'back.out(1.7)',
-      },
-      '-=0.6'
-    );
-};
-
-// Setup intersection observer for reliable animation triggering
-onMounted(() => {
-  nextTick(() => {
-    heroObserver.value = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            isHeroVisible.value = true;
-            initHeroAnimations();
-            heroObserver.value?.disconnect();
-          }
-        });
-      },
-      {
-        threshold: 0.1
-      }
-    );
-
-    if (heroRef.value) {
-      heroObserver.value.observe(heroRef.value);
-    }
-  });
-});
-
-// Cleanup
-onUnmounted(() => {
-  heroObserver.value?.disconnect();
-});
-
-// Enhanced animations
-onMounted(() => {
-  // Hero section animation
-  const heroTl = gsap.timeline({defaults: {ease: 'power3.out'}});
-
-  heroTl
-    .from(heroTextRef.value?.querySelectorAll('.hero-line'), {
-      y: 100,
-      opacity: 0,
-      duration: 1.2,
-      stagger: 0.2,
-      ease: 'power2.out'
-    })
-    .from(profileCardRef.value, {
-      y: 50,
-      opacity: 0,
-      duration: 1,
-      ease: 'power2.out'
-    }, '-=0.8')
-    .from(statsRef.value?.querySelectorAll('.stat-item'), {
-      y: 30,
-      opacity: 0,
-      duration: 0.8,
-      stagger: 0.1,
-      ease: 'power2.out'
-    }, '-=0.6');
-
-  // About section animation
-  gsap.fromTo(aboutRef.value,
-    {
-      opacity: 0,
-      y: 100,
-      scale: 0.95
-    },
-    {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      duration: 1.4,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: aboutRef.value,
-        start: 'top bottom-=100',
-        toggleActions: 'play none none reverse',
-      }
-    }
-  );
-
-  // Content sections scroll animations
-  contentSections.value.forEach((section, index) => {
-    if (section) {
-      gsap.fromTo(section,
-        {
-          opacity: 0,
-          y: 80,
-          scale: 0.95
-        },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 1.2,
-          ease: 'power2.out',
-          scrollTrigger: {
-            trigger: section,
-            start: 'top bottom-=150',
-            toggleActions: 'play none none reverse',
-          },
-          delay: index * 0.1
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 80%',
+          end: 'bottom 20%',
+          toggleActions: 'play none none reverse'
         }
-      );
-    }
-  });
-
-  // Add number counter animation for stats
-  animatedStats.value.forEach((stat, index) => {
-    const targetValue = parseInt(stat.value) || 0;
-    gsap.to(stat.animatedValue, {
-      value: targetValue,
-      duration: 2,
-      delay: index * 0.2,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: statsRef.value,
-        start: 'top bottom-=100',
-        toggleActions: 'play none none reverse'
       }
-    });
+    );
   });
+}
+
+// Mouse parallax effect
+function handleMouseMove(e: MouseEvent) {
+  if (!containerRef.value) return;
+
+  const { clientX, clientY } = e;
+  const { innerWidth, innerHeight } = window;
+
+  const moveX = (clientX - innerWidth / 2) * 0.01;
+  const moveY = (clientY - innerHeight / 2) * 0.01;
+
+  gsap.to(containerRef.value.querySelector('.hero-pattern'), {
+    x: moveX,
+    y: moveY,
+    duration: 1,
+    ease: 'power3.out'
+  });
+}
+
+// Toggle quick contact panel
+function toggleQuickContact() {
+  showQuickContact.value = !showQuickContact.value;
+}
+
+// Lifecycle hooks
+onMounted(() => {
+  initializeAnimations();
+  window.addEventListener('mousemove', handleMouseMove);
 });
 
-defineOptions({layout: AppLayout})
+onUnmounted(() => {
+  window.removeEventListener('mousemove', handleMouseMove);
+  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+});
+
+defineOptions({layout: AppLayout});
 </script>
 
 <template>
@@ -334,111 +271,144 @@ defineOptions({layout: AppLayout})
 
   <!-- Hero Section -->
   <section
-    ref="heroRef"
-    class="relative min-h-[100svh] flex items-center justify-center bg-background/80 backdrop-blur-sm overflow-hidden"
+    ref="containerRef"
+    class="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
   >
-    <!-- Animated gradient background -->
-    <div class="absolute inset-0 bg-grid-pattern opacity-[0.03]"></div>
+    <!-- Subtle background -->
     <div class="absolute inset-0">
-      <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-secondary/10"></div>
-      <div class="absolute inset-0 bg-gradient-to-br from-transparent via-accent/5 to-transparent"></div>
+      <div class="absolute inset-0 bg-grid-pattern opacity-[0.03] dark:opacity-[0.05]"></div>
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent"></div>
     </div>
 
-    <!-- Main Content -->
-    <div class="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
-      <div class="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
-        <!-- Left Column: Text Content -->
-        <div ref="heroTextRef" class="flex-1 space-y-6 text-center lg:text-left">
-          <div class="space-y-4">
-            <h1 class="hero-line text-4xl md:text-5xl xl:text-6xl font-bold tracking-tight">
-              Hi, I'm <span class="text-primary">
-              {{ firstName }}!
-            </span>
-            </h1>
+    <!-- Main content -->
+    <div class="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div
+        ref="heroContentRef"
+        class="flex flex-col items-center md:flex-row md:items-center md:justify-between md:gap-12 text-center md:text-left"
+      >
+        <!-- Content Side -->
+        <div class="flex flex-col items-center md:items-start space-y-8 flex-1 order-2 md:order-1">
+          <!-- Availability badge -->
+          <Badge
+            variant="secondary"
+            class="animate-fade-in"
+          >
+            {{ availabilityStatus.status }}
+          </Badge>
 
-            <p class="hero-line text-xl md:text-2xl text-muted-foreground font-mono">
+          <!-- Main heading -->
+          <div class="space-y-3">
+            <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">
+              Hi, I'm <span class="text-primary">{{ firstName }}</span>
+            </h1>
+            <p class="text-xl sm:text-2xl text-muted-foreground font-light">
               {{ userTitle }}
+            </p>
+            <p class="flex items-center justify-center md:justify-start gap-2 text-sm text-muted-foreground/80">
+              <IconMapPin class="size-4" />
+              {{ userLocation }}
             </p>
           </div>
 
-          <p class="hero-line text-base md:text-lg text-muted-foreground/90 max-w-2xl font-mono">
-            Passionate about creating stunning visuals and seamless digital experiences. With over a decade of
-            experience in digital arts and web development.
-          </p>
+          <!-- Action buttons -->
+          <div class="flex flex-col sm:flex-row items-center md:items-start gap-4 sm:gap-6 w-full max-w-xl pt-6">
+            <Link
+              :href="route('projects.index')"
+              class="group relative w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 text-lg font-semibold text-white transition-all duration-300 bg-primary hover:bg-primary/90 rounded overflow-hidden"
+            >
+              <span class="relative z-10 flex items-center gap-2">
+                View My Work
+                <IconArrowRight class="size-5 transition-transform group-hover:translate-x-1" />
+              </span>
+              <div class="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </Link>
 
-          <div class="hero-line flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
-            <Button size="lg" class="gap-2 w-full lg:w-auto">
-              View Portfolio
-              <IconArrowRight class="w-4 h-4"/>
-            </Button>
-
-            <Button variant="outline" size="lg" class="gap-2 w-full lg:w-auto">
-              Download Resume
-              <IconDownload class="w-4 h-4"/>
-            </Button>
+            <a
+              href="#"
+              class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 text-lg font-semibold transition-all duration-300 border-2 border-primary/20 hover:border-primary/30 rounded bg-background hover:bg-primary/5"
+            >
+              <IconDownload class="size-5 transition-transform group-hover:-translate-y-1" />
+              Download CV
+            </a>
           </div>
 
-          <!-- Social Links -->
-          <div class="hero-line flex items-center justify-center lg:justify-start gap-4 pt-2">
-            <Button
+          <!-- Social links -->
+          <div class="flex items-center justify-center md:justify-start gap-4">
+            <a
               v-for="link in socialLinks"
               :key="link.name"
-              variant="ghost"
-              size="icon"
-              as-child
-              :class="[
-                  'transition-all duration-300 hover:scale-110',
-                  link.color
-                ]"
+              :href="link.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              :title="link.name"
+              class="p-2.5 rounded-lg transition-all duration-300 hover:bg-primary/10 hover:scale-105"
+              :class="link.color"
             >
-              <a
-                :href="link.url"
-                target="_blank"
-                rel="noopener noreferrer"
-                :title="link.name"
-              >
-                <component :is="link.icon" class="w-5 h-5"/>
-              </a>
-            </Button>
+              <component :is="link.icon" class="size-5" />
+            </a>
           </div>
         </div>
 
-        <!-- Right Column: Profile & Stats -->
-        <div class="flex-1 w-full max-w-md lg:max-w-none">
-          <!-- Profile Card -->
-          <div ref="profileCardRef" class="relative">
-            <!-- Main Image -->
-            <div
-              class="relative aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 p-1">
-              <img
-                :src="avatarUrl"
-                :alt="fullName"
-                class="w-full h-full object-cover rounded-[22px]"
-              />
-              <div
-                class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent rounded-[22px]"></div>
-            </div>
+        <!-- Profile Image Side -->
+        <div class="relative mb-8 md:mb-0 order-1 md:order-2">
+          <div class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-2xl"></div>
+          <Avatar class="relative size-28 sm:size-32 md:size-40 ring-4 ring-background shadow-2xl">
+            <AvatarImage :src="avatarUrl" :alt="fullName" />
+            <AvatarFallback>{{ firstName.charAt(0) }}</AvatarFallback>
+          </Avatar>
+        </div>
+      </div>
+    </div>
+  </section>
 
-            <!-- Floating Stats Cards -->
-            <div ref="statsRef" class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-full max-w-sm">
-              <div class="grid grid-cols-2 gap-4 px-4">
-                <div
-                  v-for="(stat, index) in animatedStats"
-                  :key="index"
-                  class="stat-item group relative bg-background/80 backdrop-blur-md border rounded-2xl p-4 shadow-lg hover:shadow-xl transition-all duration-500 hover:-translate-y-1"
-                >
-                  <div class="flex items-center gap-3">
-                    <div :class="['p-2 rounded-xl bg-primary/10', stat.color]">
-                      <component :is="stat.icon" class="w-5 h-5"/>
-                    </div>
-                    <div>
-                      <p class="font-bold text-xl tabular-nums">
-                        {{
-                          typeof stat.value === 'string' ? stat.value : Math.round(stat.animatedValue).toLocaleString()
-                        }}
-                      </p>
-                      <p class="text-xs text-muted-foreground font-mono">{{ stat.label }}</p>
-                    </div>
+  <!-- About Section -->
+  <section class="py-20 bg-muted/30">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid gap-12 md:grid-cols-[1fr,2fr] items-start">
+        <!-- Stats -->
+        <div class="grid grid-cols-2 gap-4">
+          <div
+            v-for="stat in stats"
+            :key="stat.label"
+            class="relative group p-4 rounded-lg bg-background border hover:border-primary/20 transition-colors"
+          >
+            <div class="flex flex-col gap-1">
+              <span :class="['text-2xl font-bold', stat.color]">{{ stat.value }}</span>
+              <span class="text-sm text-muted-foreground">{{ stat.label }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- About Content -->
+        <div class="space-y-6">
+          <div class="space-y-2">
+            <h2 class="text-2xl font-semibold tracking-tight">About Me</h2>
+            <p class="text-muted-foreground leading-relaxed">
+              {{ userBio }}
+            </p>
+          </div>
+
+          <!-- Services/Specializations -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-medium">What I Do</h3>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div
+                v-for="service in services"
+                :key="service.title"
+                class="p-4 rounded-lg border bg-background/50 hover:bg-background transition-colors"
+              >
+                <div class="flex items-start gap-4">
+                  <div :class="['p-2 rounded-md', service.color.replace('text', 'bg') + '/10']">
+                    <component
+                      :is="service.icon"
+                      :class="['size-5', service.color]"
+                    />
+                  </div>
+                  <div class="space-y-1">
+                    <h4 class="text-sm font-medium">{{ service.title }}</h4>
+                    <p class="text-sm text-muted-foreground">
+                      {{ service.description }}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -447,29 +417,22 @@ defineOptions({layout: AppLayout})
         </div>
       </div>
     </div>
-
-    <!-- Scroll Indicator -->
-    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-      <Button
-        variant="ghost"
-        size="icon"
-        @click="document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })"
-      >
-        <IconArrowDown class="w-5 h-5"/>
-      </Button>
-    </div>
   </section>
 
-  <!-- Content Sections -->
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-32 py-20">
-
+  <!-- Enhanced Content Sections -->
+  <div id="content" class="space-y-24 pt-20">
     <!-- Featured Projects -->
-    <section ref="el => contentSections[0] = el as HTMLElement">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-sans font-bold text-foreground mb-6">
-          Featured Work
+    <section
+      id="projects"
+      ref="el => contentSections[0] = el as HTMLElement"
+      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
+      <div class="space-y-4 mb-12">
+        <Badge variant="outline">Featured Work</Badge>
+        <h2 class="text-2xl font-semibold tracking-tight">
+          My Latest Projects
         </h2>
-        <p class="text-xl text-muted-foreground max-w-3xl mx-auto font-mono">
+        <p class="text-lg text-muted-foreground max-w-2xl">
           A showcase of my recent projects and creative solutions
         </p>
       </div>
@@ -479,141 +442,164 @@ defineOptions({layout: AppLayout})
       />
     </section>
 
-    <!-- Skills -->
-    <section ref="el => contentSections[1] = el as HTMLElement">
-      <div class="text-center mb-16">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-sans font-bold text-foreground mb-6">
-          Skills & Expertise
-        </h2>
-        <p class="text-xl text-muted-foreground max-w-3xl mx-auto font-mono">
-          The tools and technologies I use to bring ideas to life
-        </p>
+    <!-- Skills section -->
+    <section
+      ref="el => contentSections[1] = el as HTMLElement"
+      class="bg-muted/30 py-20"
+    >
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="space-y-4 mb-12">
+          <Badge variant="outline">Expertise</Badge>
+          <h2 class="text-2xl font-semibold tracking-tight">
+            Skills & Technologies
+          </h2>
+          <p class="text-lg text-muted-foreground max-w-2xl">
+            Tools and technologies I use to bring ideas to life
+          </p>
+        </div>
+        <Skills/>
       </div>
-      <Skills/>
     </section>
 
-    <!-- Experience -->
-    <section ref="el => contentSections[2] = el as HTMLElement">
-      <div class="text-center mb-12">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-sans font-bold text-foreground mb-6">
-          Experience
+    <!-- Experience section -->
+    <section
+      ref="el => contentSections[2] = el as HTMLElement"
+      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
+    >
+      <div class="space-y-4 mb-12">
+        <Badge variant="outline">Journey</Badge>
+        <h2 class="text-2xl font-semibold tracking-tight">
+          Professional Experience
         </h2>
-        <p class="text-xl text-muted-foreground max-w-3xl mx-auto font-mono">
-          My journey and areas of expertise in design and development
+        <p class="text-lg text-muted-foreground max-w-2xl">
+          My journey through design and development
         </p>
       </div>
       <Expertise/>
     </section>
 
     <!-- Newsletter -->
-    <section ref="el => contentSections[3] = el as HTMLElement">
-      <Subscription/>
+    <section
+      ref="el => contentSections[3] = el as HTMLElement"
+      class="bg-muted/30 py-20"
+    >
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8">
+          <Badge variant="outline" class="mb-4">Stay Connected</Badge>
+        </div>
+        <Subscription/>
+      </div>
     </section>
   </div>
+
+  <!-- Quick Contact Modal/Panel -->
+  <Transition
+    enter-active-class="transition-all duration-300 ease-out"
+    enter-from-class="opacity-0 scale-95"
+    enter-to-class="opacity-100 scale-100"
+    leave-active-class="transition-all duration-200 ease-in"
+    leave-from-class="opacity-100 scale-100"
+    leave-to-class="opacity-0 scale-95"
+  >
+    <div
+      v-if="showQuickContact"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
+      @click.self="toggleQuickContact"
+    >
+      <Card class="w-full max-w-md">
+        <CardContent class="p-6 space-y-4">
+          <div class="text-center">
+            <h3 class="text-xl font-semibold">Get in Touch</h3>
+            <p class="text-muted-foreground">Let's discuss your next project</p>
+          </div>
+
+          <div class="space-y-3">
+            <Button
+              v-for="link in socialLinks.filter(l => ['Email', 'LinkedIn'].includes(l.name))"
+              :key="link.name"
+              variant="outline"
+              class="w-full justify-start gap-3"
+              as-child
+            >
+              <a :href="link.url" target="_blank" rel="noopener noreferrer">
+                <component :is="link.icon" class="w-4 h-4"/>
+                {{ link.name }}
+              </a>
+            </Button>
+          </div>
+
+          <Button
+            variant="ghost"
+            class="w-full"
+            @click="toggleQuickContact"
+          >
+            Close
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  </Transition>
 </template>
 
 <style scoped>
-/* Dot pattern background */
-.bg-dot-pattern {
-  background-image: radial-gradient(circle, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
-  background-size: 20px 20px;
+.bg-grid-pattern {
+  background-image: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
 }
 
-/* Smooth transitions for all interactive elements */
-* {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 200ms;
-}
-
-/* Enhanced hover effects */
-.group:hover .group-hover\:scale-110 {
-  transform: scale(1.1);
-}
-
-.group:hover .group-hover\:translate-x-1 {
-  transform: translateX(0.25rem);
-}
-
-.group:hover .group-hover\:animate-bounce {
-  animation: bounce 1s infinite;
-}
-
-/* Backdrop blur support */
-@supports (backdrop-filter: blur(10px)) {
-  .backdrop-blur-sm {
-    backdrop-filter: blur(8px);
-  }
-}
-
-/* Enhanced focus states for accessibility */
-.focus\:ring-primary\/20:focus {
-  --tw-ring-color: hsl(var(--primary) / 0.2);
-}
-
-/* Hardware acceleration for better performance */
-.group {
-  transform: translateZ(0);
-  will-change: transform;
-}
-
-/* Prose styling improvements */
-.prose {
-  color: hsl(var(--muted-foreground));
-}
-
-.prose p {
-  margin-bottom: 1rem;
-  line-height: 1.8;
-}
-
-.prose p:last-child {
-  margin-bottom: 0;
-}
-
-/* Dark mode adjustments */
 @media (prefers-color-scheme: dark) {
-  .bg-dot-pattern {
-    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  .bg-grid-pattern {
+    background-image: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 1px
+    );
   }
 }
 
-/* Keyframes for animations */
-@keyframes blob {
-  0%, 100% {
-    transform: scale(1) translateY(0);
-  }
-  50% {
-    transform: scale(1.05) translateY(-10px);
-  }
-}
-
-@keyframes scroll {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
+@keyframes fade-in {
+  from {
+    opacity: 0;
     transform: translateY(10px);
   }
-}
-
-/* Gradient animation for hero text */
-@keyframes gradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 100% 50%;
-  }
-}
-
-/* Typewriter effect for subtitle */
-@keyframes typewriter {
-  from {
-    width: 0;
-  }
   to {
-    width: 100%;
+    opacity: 1;
+    transform: translateY(0);
   }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+/* Add smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom button hover effect */
+.custom-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.custom-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+
+.custom-button:hover::after {
+  transform: translateX(100%);
 }
 </style>
