@@ -20,7 +20,8 @@ import BetterLink from '../BetterLink.vue';
       <!-- Logo -->
       <Link
         as="button"
-        class="flex-none inline-block dark:text-neutral-100 focus:outline-none focus:opacity-80" :href="route('home')" aria-label="Ultrashots">
+        class="flex-none inline-block dark:text-neutral-100 focus:outline-none focus:opacity-80"
+        :href="route('home')" aria-label="Ultrashots">
         <div class="flex items-center gap-2">
           <ApplicationLogo class="size-8" />
           <span class="text-2xl font-semibold">ultrashots</span>

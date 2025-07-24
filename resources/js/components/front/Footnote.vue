@@ -5,8 +5,8 @@ import {IconMoon, IconSun} from "@tabler/icons-vue";
 
 <template>
   <!-- ========== FOOTER ========== -->
-  <footer class="w-full max-w-2xl px-4 mx-auto sm:px-6 lg:px-8 pt-12">
-    <div class="py-6 border-t border-gray-200 dark:border-neutral-700">
+  <footer class="w-full max-w-2xl px-4 mx-auto sm:px-6 lg:px-8">
+    <div class="py-6">
       <div class="flex flex-wrap items-center justify-between gap-2">
 
         <div>

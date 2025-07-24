@@ -59,13 +59,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 
   // Customer Management
   Route::prefix('customers')->name('customers.')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Customer\CustomerController::class, 'index'])->name('index');
-    Route::get('/create', [\App\Http\Controllers\Customer\CustomerController::class, 'create'])->name('create');
-    Route::post('/', [\App\Http\Controllers\Customer\CustomerController::class, 'store'])->name('store');
-    Route::get('/s/{customer:uuid}', [\App\Http\Controllers\Customer\CustomerController::class, 'show'])->name('show');
-    Route::get('/e/{customer:uuid}', [\App\Http\Controllers\Customer\CustomerController::class, 'edit'])->name('edit');
-    Route::patch('/{customer:uuid}', [\App\Http\Controllers\Customer\CustomerController::class, 'update'])->name('update');
-    Route::delete('/{customer:uuid}', [\App\Http\Controllers\Customer\CustomerController::class, 'destroy'])->name('destroy');
+    Route::get('/', [\App\Http\Controllers\Prospect\CustomerController::class, 'index'])->name('index');
+    Route::get('/create', [\App\Http\Controllers\Prospect\CustomerController::class, 'create'])->name('create');
+    Route::post('/', [\App\Http\Controllers\Prospect\CustomerController::class, 'store'])->name('store');
+    Route::get('/s/{customer:uuid}', [\App\Http\Controllers\Prospect\CustomerController::class, 'show'])->name('show');
+    Route::get('/e/{customer:uuid}', [\App\Http\Controllers\Prospect\CustomerController::class, 'edit'])->name('edit');
+    Route::patch('/{customer:uuid}', [\App\Http\Controllers\Prospect\CustomerController::class, 'update'])->name('update');
+    Route::delete('/{customer:uuid}', [\App\Http\Controllers\Prospect\CustomerController::class, 'destroy'])->name('destroy');
   });
 
   // Project Management

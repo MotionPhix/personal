@@ -27,6 +27,44 @@ class DownloadController extends Controller
   }
 
   /**
+   * Display a listing of downloads for public view.
+   */
+  public function publicIndex(Request $request): Response
+  {
+    $downloads = $this->downloadService->getPublicDownloads($request);
+    $categories = $this->downloadService->getCategories(true);
+    $fileTypes = $this->downloadService->getFileTypes(true);
+    $brands = $this->downloadService->getBrands(true);
+    $featuredDownloads = $this->downloadService->getFeaturedDownloads();
+    $popularDownloads = $this->downloadService->getPopularDownloads();
+    $recentDownloads = $this->downloadService->getRecentDownloads();
+
+    return Inertia::render('downloads/Index', [
+      'downloads' => DownloadResource::collection($downloads),
+      'featured_downloads' => DownloadResource::collection($featuredDownloads),
+      'popular_downloads' => DownloadResource::collection($popularDownloads),
+      'recent_downloads' => DownloadResource::collection($recentDownloads),
+      'filters' => [
+        'search' => $request->get('search', ''),
+        'category' => $request->get('category', ''),
+        'file_type' => $request->get('file_type', ''),
+        'brand' => $request->get('brand', ''),
+        'sort_by' => $request->get('sort_by', 'sort_order'),
+        'sort_direction' => $request->get('sort_direction', 'asc'),
+      ],
+      'options' => [
+        'categories' => $categories,
+        'file_types' => $fileTypes,
+        'brands' => $brands,
+      ],
+      'stats' => [
+        'total_downloads' => $downloads->total(),
+        'total_files' => $featuredDownloads->count() + $popularDownloads->count() + $recentDownloads->count(),
+      ]
+    ]);
+  }
+
+  /**
    * Display a listing of downloads.
    */
   public function index(Request $request): Response
@@ -217,6 +255,57 @@ class DownloadController extends Controller
           'title' => 'Error',
           'message' => 'Failed to delete download: ' . $e->getMessage()
         ]);
+    }
+  }
+
+  /**
+   * Show the request fix form.
+   */
+  public function publicRequestFix(): Response
+  {
+    return Inertia::render('downloads/RequestFix');
+  }
+
+  /**
+   * Handle file upload for fixing.
+   */
+  public function publicUploadFile(Request $request): JsonResponse
+  {
+    $request->validate([
+      'file' => 'required|file|max:10240', // 10MB max
+      'description' => 'required|string|max:1000',
+      'contact_email' => 'required|email',
+    ]);
+
+    try {
+      // Store the uploaded file temporarily
+      $file = $request->file('file');
+      $filename = time() . '_' . $file->getClientOriginalName();
+      $path = $file->storeAs('fix-requests', $filename, 'public');
+
+      // Log the request
+      Log::info('Fix request uploaded', [
+        'filename' => $filename,
+        'description' => $request->description,
+        'contact_email' => $request->contact_email,
+        'ip_address' => $request->ip(),
+      ]);
+
+      return response()->json([
+        'success' => true,
+        'message' => 'File uploaded successfully! We will review your request and get back to you.',
+      ]);
+
+    } catch (\Exception $e) {
+      Log::error('Fix request upload failed', [
+        'error' => $e->getMessage(),
+        'request_data' => $request->all()
+      ]);
+
+      return response()->json([
+        'success' => false,
+        'message' => 'Upload failed: ' . $e->getMessage()
+      ], 500);
     }
   }
 

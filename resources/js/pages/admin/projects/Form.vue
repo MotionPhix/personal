@@ -1,44 +1,37 @@
 <script setup lang="ts">
-import { Head, Link, useForm } from "@inertiajs/vue3";
-import { computed, onMounted, ref, watch } from "vue";
-import { Customer, Project, GalleryImage } from "@/types";
+import {Head, Link, useForm} from "@inertiajs/vue3";
+import {computed, onMounted, ref, watch} from "vue";
+import {Customer, GalleryImage, Project} from "@/types";
 import AuthLayout from "@/layouts/AuthLayout.vue";
 import InputError from "@/components/InputError.vue";
 
 // Icons
 import {
+  ArrowLeft,
+  Calendar,
+  Code,
+  Eye,
+  Figma,
+  FileText,
+  Github,
+  Globe,
+  Image as ImageIcon,
+  Link as LinkIcon,
+  Loader2,
   Plus,
   Save,
-  X,
-  Calendar,
-  User,
-  Tag,
-  Code,
-  DollarSign,
-  Clock,
-  Star,
-  Eye,
-  Link as LinkIcon,
-  Github,
-  Figma,
-  Image as ImageIcon,
-  Trash2,
-  Building2,
-  FileText,
   Settings,
-  Globe,
+  Star,
+  Tag,
   Target,
-  Zap,
-  ArrowLeft,
-  Loader2,
-  Upload,
-  AlertCircle,
-  CheckCircle2
+  Trash2,
+  X,
+  Zap
 } from "lucide-vue-next";
 
 // UI Components
 import DatePicker from '@/components/DatePicker.vue';
-import { ModalLink } from '@inertiaui/modal-vue';
+import {ModalLink} from '@inertiaui/modal-vue';
 import ImageUploader from '@/components/ImageUploader.vue';
 
 // Rich text editor
@@ -51,10 +44,12 @@ import {
   NumberField,
   NumberFieldContent,
   NumberFieldDecrement,
-  NumberFieldIncrement, NumberFieldInput
+  NumberFieldIncrement,
+  NumberFieldInput
 } from "@/components/ui/number-field";
 import {Button} from "@/components/ui/button";
 import {Switch} from "@/components/ui/switch";
+import {toast} from "vue-sonner";
 
 interface FormProps {
   project: Partial<Project>;
@@ -220,44 +215,30 @@ const handleGalleryChange = (files: File[]) => {
 
 // Handle poster uploader file changes (includes existing files tracking)
 const handlePosterFilesChanged = (files: any[]) => {
-  console.log('Poster files changed:', files);
-
   // Update existing poster images list
   const existingFiles = files.filter(f => f.isExisting).map(f => f.url);
   form.existing_poster_image = existingFiles.length > 0 ? existingFiles[0] : null;
-
-  console.log('Updated existing poster:', form.existing_poster_image);
 };
 
 // Handle gallery uploader file changes (includes existing files tracking)
 const handleGalleryFilesChanged = (files: any[]) => {
-  console.log('Gallery files changed:', files);
-
-  // Update existing gallery images list
-  const existingFiles = files.filter(f => f.isExisting).map(f => f.url);
-  form.existing_gallery_images = existingFiles;
-
-  console.log('Updated existing gallery:', form.existing_gallery_images);
+  form.existing_gallery_images = files.filter(f => f.isExisting).map(f => f.url);
 };
 
 // Handle upload errors
 const handleUploadError = (message: string) => {
   console.error('Upload error:', message);
-  // You can show a toast notification here
+
+  toast.error('Upload Error', {
+    description: message
+  })
 };
 
-// Form submission
-const onSubmit = () => {
-  console.log('=== FORM SUBMISSION DEBUG ===');
 
+const onSubmit = () => {
   // Get files from uploaders
   const newGalleryFiles = form.captured_media;
   const newPosterFile = form.poster_image;
-
-  console.log('New gallery files:', newGalleryFiles);
-  console.log('New poster file:', newPosterFile);
-  console.log('Existing gallery images:', form.existing_gallery_images);
-  console.log('Existing poster image:', form.existing_poster_image);
 
   // Build the form data object
   const formData = {
@@ -293,10 +274,15 @@ const onSubmit = () => {
       .post(route("admin.projects.update", props.project.uuid), {
         preserveScroll: true,
         onSuccess: () => {
-          console.log('Project updated successfully');
+          toast.success('Project updated successfully')
         },
+
         onError: (errors) => {
           console.error('Update errors:', errors);
+
+          toast.error('Update errors', {
+            description: errors
+          })
         }
       });
   } else {
@@ -307,7 +293,8 @@ const onSubmit = () => {
       .post(route('admin.projects.store'), {
         preserveScroll: true,
         onSuccess: () => {
-          console.log('Project created successfully');
+          toast.success('Project created successfully')
+
           form.reset();
 
           // Reset uploaders
@@ -317,6 +304,10 @@ const onSubmit = () => {
         },
         onError: (errors) => {
           console.error('Create errors:', errors);
+
+          toast.error('Create errors', {
+            description: errors
+          })
         }
       });
   }
@@ -352,19 +343,22 @@ defineOptions({
   <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Header -->
     <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
-      <div class="px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between py-2">
           <div>
             <Link
               v-if="isEditing && project.uuid"
               :href="route('admin.projects.show', project.uuid)"
-              class="py-1 flex items-center gap-x-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
+              class="text-sm py-1 inline-flex items-center gap-x-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
               <ArrowLeft class="size-4" /> Project details
             </Link>
 
             <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
-              {{ isEditing ? 'Edit Project' : 'Create New Project' }}
+              <span v-if="isEditing">
+                {{ `Edit ${project.name}` }}
+              </span>
+
+              <span v-else>Create New Project</span>
             </h1>
 
             <p class="text-sm text-gray-500 dark:text-gray-400" v-if="isEditing">

@@ -7,9 +7,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Queue\SerializesModels;
 
-class ContactMe extends Mailable
+class ContactMe extends Mailable implements ShouldQueue
 {
   use Queueable, SerializesModels;
 
@@ -21,8 +22,11 @@ class ContactMe extends Mailable
     private string $email,
     private string $phone,
     private string $user_query,
-    private string $company,
-  ) {}
+    private ?string $company = null,
+  ) {
+    // Set queue connection and delay if needed
+    $this->onQueue('emails');
+  }
 
   /**
    * Get the message envelope.
@@ -30,7 +34,18 @@ class ContactMe extends Mailable
   public function envelope(): Envelope
   {
     return new Envelope(
-      subject: 'You have a new query',
+      from: new Address($this->email, $this->name),
+      replyTo: [
+        new Address($this->email, $this->name),
+      ],
+      subject: "New Contact Form Submission from {$this->name}",
+      tags: ['contact-form', 'inquiry'],
+      metadata: [
+        'sender_email' => $this->email,
+        'sender_name' => $this->name,
+        'has_company' => !empty($this->company),
+        'timestamp' => now()->toISOString(),
+      ],
     );
   }
 
@@ -39,24 +54,24 @@ class ContactMe extends Mailable
    */
   public function content(): Content
   {
-    // Embed the image and get the CID
-    $logo = public_path('ultrashots_logo.png');
+    // Get logo path with fallback
+    $logoPath = public_path('ultrashots_logo.png');
+    if (!file_exists($logoPath)) {
+      $logoPath = public_path('images/logo.png'); // Fallback
+    }
 
     return new Content(
       view: 'emails.contact-me',
-
       with: [
         'name' => $this->name,
-
         'phone' => $this->phone,
-
         'email' => $this->email,
-
         'user_query' => $this->user_query,
-
         'company' => $this->company,
-
-        'logo' => $logo,
+        'logo' => $logoPath,
+        'timestamp' => now(),
+        'app_name' => config('app.name'),
+        'app_url' => config('app.url'),
       ],
     );
   }
@@ -69,5 +84,21 @@ class ContactMe extends Mailable
   public function attachments(): array
   {
     return [];
+  }
+
+  /**
+   * Determine the time at which the job should timeout.
+   */
+  public function retryUntil(): \DateTime
+  {
+    return now()->addMinutes(5);
+  }
+
+  /**
+   * Calculate the number of seconds to wait before retrying the job.
+   */
+  public function backoff(): array
+  {
+    return [1, 5, 10];
   }
 }

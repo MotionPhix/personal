@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {Head, Link} from "@inertiajs/vue3";
+import {Head, Link, router} from "@inertiajs/vue3";
 import {computed, ref} from "vue";
 import {Project} from "@/types";
 import AuthLayout from "@/layouts/AuthLayout.vue";
@@ -184,7 +184,7 @@ const getCustomerInitials = (customer: any) => {
   <div class="min-h-screen bg-background">
     <!-- Header -->
     <div class="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
-      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between py-2">
           <div>
             <Button variant="link" class="px-0" asChild>
@@ -201,7 +201,9 @@ const getCustomerInitials = (customer: any) => {
                 {{ project.data.status?.replace('_', ' ') }}
               </Badge>
 
-              <Badge v-if="project.data.is_featured" variant="secondary" class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+              <Badge
+                v-if="project.data.is_featured" variant="secondary"
+                class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
                 <Star class="h-3 w-3 mr-1" />
                 Featured
               </Badge>
@@ -255,21 +257,23 @@ const getCustomerInitials = (customer: any) => {
                   <MoreVertical class="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
+
               <DropdownMenuContent align="end">
                 <DropdownMenuItem>
-                  <Share2 class="h-4 w-4 mr-2" />
+                  <Share2 class="h-4 w-4" />
                   Share Project
                 </DropdownMenuItem>
+
                 <DropdownMenuItem>
-                  <Bookmark class="h-4 w-4 mr-2" />
+                  <Bookmark class="h-4 w-4" />
                   Add to Collection
                 </DropdownMenuItem>
+
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link :href="route('admin.projects.destroy', project.data.uuid)" method="delete" as="button" class="text-destructive">
-                    <Trash2 class="h-4 w-4 mr-2" />
-                    Delete Project
-                  </Link>
+
+                <DropdownMenuItem
+                  @click="() => router.delete(route('admin.projects.destroy', project.data.uuid))">
+                  <Trash2 class="h-4 w-4" /> Delete Project
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -279,7 +283,7 @@ const getCustomerInitials = (customer: any) => {
     </div>
 
     <!-- Content -->
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
         <!-- Main Content -->

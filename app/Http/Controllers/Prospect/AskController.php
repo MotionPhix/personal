@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\Customer;
+namespace App\Http\Controllers\Prospect;
 
 use App\Http\Controllers\Controller;
 use App\Mail\ContactMe;
 use App\Mail\FeedbackMail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Propaganistas\LaravelPhone\PhoneNumber;
 
@@ -19,7 +20,7 @@ class AskController extends Controller
     $request->validate([
       'name' => 'required',
       'email' => 'required|email:rfc,dns',
-      'phone' => 'required|phone:INTERNATIONAL,MW',
+      'phone' => 'required|phone:AUTO',
       'message' => 'required|not_equal',
       'company' => 'nullable',
     ], [
@@ -45,28 +46,30 @@ class AskController extends Controller
       'company' => $request->company,
     ];
 
-    // Send email
-    if (Mail::to('hello@ultrashots.net', 'Kingsley')->send(new ContactMe(
-      $data['name'],
-      $data['email'],
-      $data['phone'],
-      $data['user_query'],
-      $data['company']
-    ))) {
+    try {
+      // Send email to yourself
+      Mail::to('hello@ultrashots.net', 'Kingsley')->send(new ContactMe(
+        $data['name'],
+        $data['email'],
+        $data['phone'],
+        $data['user_query'],
+        $data['company']
+      ));
 
+      // Send confirmation email to the prospect/client
       Mail::to($data['email'], $data['name'])->send(new FeedbackMail($data));
 
-      return back('notify', [
-        'type' => 'success',
-        'title' => 'Thank you',
-        'message' => 'Your message was successfully delivered.'
-      ]);
-    };
+      return back()->with('success', 'Your message was successfully delivered. Thank you for reaching out!');
 
-    return back()->with('notify', [
-      'type' => 'danger',
-      'title' => 'Oops!',
-      'message' => 'Message could not be sent.'
-    ]);
+    } catch (\Exception $e) {
+      Log::error('Contact form submission failed', [
+        'error' => $e->getMessage(),
+        'data' => $data
+      ]);
+
+      return back()->withErrors([
+        'form' => 'Sorry, there was an error sending your message. Please try again or contact me directly.'
+      ]);
+    }
   }
 }

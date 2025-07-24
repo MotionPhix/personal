@@ -261,8 +261,11 @@ defineOptions({layout: AppLayout});
 
 <template>
   <Head :title="`${fullName} - Portfolio`">
-    <meta name="description"
-          :content="`Portfolio of ${fullName}, a creative professional specializing in design and development.`"/>
+    <meta
+      name="description"
+      :content="`Portfolio of ${fullName}, a creative professional specializing in design and development.`"
+    />
+
     <meta property="og:title" :content="`${fullName} - Portfolio`"/>
     <meta property="og:description" :content="userBio.substring(0, 160)"/>
     <meta property="og:type" content="website"/>
@@ -272,8 +275,8 @@ defineOptions({layout: AppLayout});
   <!-- Hero Section -->
   <section
     ref="containerRef"
-    class="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
-  >
+    class="relative flex items-center justify-center overflow-x-hidden">
+
     <!-- Subtle background -->
     <div class="absolute inset-0">
       <div class="absolute inset-0 bg-grid-pattern opacity-[0.03] dark:opacity-[0.05]"></div>
@@ -284,26 +287,27 @@ defineOptions({layout: AppLayout});
     <div class="relative z-10 w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div
         ref="heroContentRef"
-        class="flex flex-col items-center md:flex-row md:items-center md:justify-between md:gap-12 text-center md:text-left"
-      >
+        class="flex flex-col items-center md:flex-row md:items-center md:justify-between md:gap-12 text-center md:text-left">
+
         <!-- Content Side -->
-        <div class="flex flex-col items-center md:items-start space-y-8 flex-1 order-2 md:order-1">
+        <div class="flex flex-col items-center md:items-start space-y-8 flex-1 order-2 sm:order-1">
+
           <!-- Availability badge -->
-          <Badge
-            variant="secondary"
-            class="animate-fade-in"
-          >
+          <div
+            class="animate-fade-in font-mono">
             {{ availabilityStatus.status }}
-          </Badge>
+          </div>
 
           <!-- Main heading -->
           <div class="space-y-3">
             <h1 class="text-3xl sm:text-4xl font-bold tracking-tight">
               Hi, I'm <span class="text-primary">{{ firstName }}</span>
             </h1>
-            <p class="text-xl sm:text-2xl text-muted-foreground font-light">
+
+            <p class="text-xl sm:text-2xl text-muted-foreground font-light font-mono">
               {{ userTitle }}
             </p>
+
             <p class="flex items-center justify-center md:justify-start gap-2 text-sm text-muted-foreground/80">
               <IconMapPin class="size-4" />
               {{ userLocation }}
@@ -314,21 +318,21 @@ defineOptions({layout: AppLayout});
           <div class="flex flex-col sm:flex-row items-center md:items-start gap-4 sm:gap-6 w-full max-w-xl pt-6">
             <Link
               :href="route('projects.index')"
-              class="group relative w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 text-lg font-semibold text-white transition-all duration-300 bg-primary hover:bg-primary/90 rounded overflow-hidden"
-            >
+              class="group relative w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 text-lg font-semibold text-white transition-all duration-300 bg-primary hover:bg-primary/90 rounded overflow-hidden">
+
               <span class="relative z-10 flex items-center gap-2">
-                View My Work
+                My Work
                 <IconArrowRight class="size-5 transition-transform group-hover:translate-x-1" />
               </span>
+
               <div class="absolute inset-0 bg-gradient-to-r from-primary to-primary/80 opacity-0 group-hover:opacity-100 transition-opacity" />
             </Link>
 
             <a
               href="#"
-              class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 text-lg font-semibold transition-all duration-300 border-2 border-primary/20 hover:border-primary/30 rounded bg-background hover:bg-primary/5"
-            >
+              class="group w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2.5 text-lg font-semibold transition-all duration-300 border-2 border-primary/20 hover:border-primary/30 rounded bg-background hover:bg-primary/5">
               <IconDownload class="size-5 transition-transform group-hover:-translate-y-1" />
-              Download CV
+              My CV
             </a>
           </div>
 
@@ -342,17 +346,17 @@ defineOptions({layout: AppLayout});
               rel="noopener noreferrer"
               :title="link.name"
               class="p-2.5 rounded-lg transition-all duration-300 hover:bg-primary/10 hover:scale-105"
-              :class="link.color"
-            >
+              :class="link.color">
               <component :is="link.icon" class="size-5" />
             </a>
           </div>
         </div>
 
         <!-- Profile Image Side -->
-        <div class="relative mb-8 md:mb-0 order-1 md:order-2">
+        <div class="relative mb-8 md:mb-0 order-1 sm:order-2">
           <div class="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-2xl"></div>
-          <Avatar class="relative size-28 sm:size-32 md:size-40 ring-4 ring-background shadow-2xl">
+          <Avatar
+            class="relative rounded-2xl sm:rounded-3xl size-32 sm:size-64 md:size-72 ring-4 ring-background shadow-2xl">
             <AvatarImage :src="avatarUrl" :alt="fullName" />
             <AvatarFallback>{{ firstName.charAt(0) }}</AvatarFallback>
           </Avatar>
@@ -362,7 +366,7 @@ defineOptions({layout: AppLayout});
   </section>
 
   <!-- About Section -->
-  <section class="py-20 bg-muted/30">
+  <section class="py-20 bg-muted/30 overflow-x-hidden">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid gap-12 md:grid-cols-[1fr,2fr] items-start">
         <!-- Stats -->
@@ -370,8 +374,7 @@ defineOptions({layout: AppLayout});
           <div
             v-for="stat in stats"
             :key="stat.label"
-            class="relative group p-4 rounded-lg bg-background border hover:border-primary/20 transition-colors"
-          >
+            class="relative group p-4 rounded-lg bg-background border hover:border-primary/20 transition-colors">
             <div class="flex flex-col gap-1">
               <span :class="['text-2xl font-bold', stat.color]">{{ stat.value }}</span>
               <span class="text-sm text-muted-foreground">{{ stat.label }}</span>
@@ -382,7 +385,7 @@ defineOptions({layout: AppLayout});
         <!-- About Content -->
         <div class="space-y-6">
           <div class="space-y-2">
-            <h2 class="text-2xl font-semibold tracking-tight">About Me</h2>
+            <h2 class="text-3xl font-semibold tracking-tight">About Me</h2>
             <p class="text-muted-foreground leading-relaxed">
               {{ userBio }}
             </p>
@@ -390,13 +393,12 @@ defineOptions({layout: AppLayout});
 
           <!-- Services/Specializations -->
           <div class="space-y-4">
-            <h3 class="text-lg font-medium">What I Do</h3>
+            <h3 class="text-xl font-medium font-mono">What I Do</h3>
             <div class="grid gap-4 sm:grid-cols-2">
               <div
                 v-for="service in services"
                 :key="service.title"
-                class="p-4 rounded-lg border bg-background/50 hover:bg-background transition-colors"
-              >
+                class="p-4 rounded-lg border bg-background/50 hover:bg-background transition-colors">
                 <div class="flex items-start gap-4">
                   <div :class="['p-2 rounded-md', service.color.replace('text', 'bg') + '/10']">
                     <component
@@ -420,7 +422,7 @@ defineOptions({layout: AppLayout});
   </section>
 
   <!-- Enhanced Content Sections -->
-  <div id="content" class="space-y-24 pt-20">
+  <div id="content" class="space-y-24 pt-20 overflow-x-hidden">
     <!-- Featured Projects -->
     <section
       id="projects"
