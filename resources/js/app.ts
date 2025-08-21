@@ -1,6 +1,5 @@
 import './bootstrap';
 import './echo'
-import 'maz-ui/styles'
 import 'lenis/dist/lenis.css'
 import '../css/app.css';
 
@@ -8,7 +7,6 @@ import { createApp, h, DefineComponent } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
-import "preline/preline";
 import Lenis from 'lenis'
 
 import { createPinia } from 'pinia'

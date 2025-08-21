@@ -5,7 +5,7 @@ import { gsap } from 'gsap'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { IconSend } from '@tabler/icons-vue'
+import { IconMailFast as IconSend } from '@tabler/icons-vue'
 
 gsap.registerPlugin(); // Register GSAP plugins
 
@@ -58,13 +58,17 @@ function onSubmit() {
     <CardContent class="relative z-10 p-8 sm:p-12">
       <div class="space-y-6">
         <div class="text-center space-y-2">
-          <h3 class="text-2xl font-bold tracking-tight">Join Our Newsletter</h3>
+          <h3 class="text-2xl font-bold tracking-tight">
+            Join Our Newsletter
+          </h3>
+
           <p class="text-muted-foreground">
             Stay updated with our latest projects and insights
           </p>
         </div>
 
-        <form @submit.prevent="onSubmit" ref="formRef" class="space-y-4">
+        <form
+          @submit.prevent="onSubmit" ref="formRef" class="space-y-4">
           <div class="relative">
             <Input
               v-model="form.email"
@@ -74,14 +78,14 @@ function onSubmit() {
               :class="{ 'border-red-500': form.errors.email }"
               required
             />
+
             <Button
               type="submit"
-              size="sm"
+              size="icon"
               class="absolute right-2 top-1/2 -translate-y-1/2"
-              :disabled="submitting"
-            >
+              :disabled="submitting">
               <IconSend :class="[
-                'size-4 transition-transform',
+                'size-6 transition-transform',
                 submitting ? 'animate-pulse' : 'group-hover:translate-x-1'
               ]" />
             </Button>
@@ -93,8 +97,7 @@ function onSubmit() {
             enter-to-class="transform translate-y-0 opacity-100"
             leave-active-class="transition duration-200 ease-in"
             leave-from-class="transform translate-y-0 opacity-100"
-            leave-to-class="transform -translate-y-2 opacity-0"
-          >
+            leave-to-class="transform -translate-y-2 opacity-0">
             <p v-if="form.errors.email" class="text-sm text-red-500">
               {{ form.errors.email }}
             </p>

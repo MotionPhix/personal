@@ -25,6 +25,19 @@ Route::prefix('get-in-touch')->group(function () {
   )->name('contact.send');
 });
 
+// Quote Routes
+Route::prefix('quote')->name('quote.')->group(function () {
+  Route::get(
+    '/',
+    [\App\Http\Controllers\QuoteController::class, 'index']
+  )->name('index');
+
+  Route::post(
+    '/',
+    [\App\Http\Controllers\QuoteController::class, 'store']
+  )->name('store');
+});
+
 // Newsletter Subscription Routes
 Route::prefix('subscribe')->group(function () {
   Route::post(

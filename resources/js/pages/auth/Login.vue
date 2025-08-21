@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import MazCheckbox from 'maz-ui/components/MazCheckbox'
 import GuestLayout from '@/layouts/GuestLayout.vue';
 import InputError from '@/components/InputError.vue';
-import InputLabel from '@/components/InputLabel.vue';
-import MazBtn from 'maz-ui/components/MazBtn'
-import MazInput from 'maz-ui/components/MazInput'
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 
 defineProps<{
   canResetPassword?: boolean;
@@ -38,95 +38,62 @@ defineOptions({
 </script>
 
 <template>
-
   <Head title="Log in" />
 
-  <form
-    @submit.prevent="submit"
-    class="space-y-6">
-    <div class="grid gap-y-2">
-      <InputLabel
-        for="email"
-        value="Email"
-      />
-
-      <MazInput
+  <form @submit.prevent="submit" class="space-y-6">
+    <div class="space-y-2">
+      <Label for="email">Email</Label>
+      <Input
         id="email"
-        type="email"
-        block
-        autocomplete="username"
-        placeholder="Enter your login email"
         v-model="form.email"
-        rounded-size="md"
-        color="success"
+        type="email"
+        placeholder="Enter your login email"
+        autocomplete="username"
+        required
         autofocus
-        size="lg"
+      />
+      <InputError :message="form.errors.email" />
+    </div>
+
+    <div class="space-y-2">
+      <Label for="password">Password</Label>
+      <Input
+        id="password"
+        v-model="form.password"
+        type="password"
+        placeholder="Enter your password"
         required
       />
-
-      <InputError
-        :message="form.errors.email"
-      />
+      <InputError :message="form.errors.password" />
     </div>
 
-    <div class="grid gap-y-2">
-      <InputLabel
-        for="password"
-        value="Password"
-      />
-
-      <MazInput
-        id="password"
-        type="password"
-        block
-        placeholder="Enter your password"
-        v-model="form.password"
-        rounded-size="md"
-        color="success"
-        size="lg"
-        required />
-
-      <InputError
-        class="mt-2"
-        :message="form.errors.password"
-      />
-    </div>
-
-    <div class="flex mt-4 justify-between items-center">
-
-      <MazCheckbox
-        name="remember"
-        color="success"
-        v-model="form.remember">
-        <span class="dark:text-neutral-400">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <Checkbox
+          id="remember"
+          v-model:checked="form.remember"
+        />
+        <Label for="remember" class="text-sm font-normal">
           Keep me signed in
-        </span>
-      </MazCheckbox>
+        </Label>
+      </div>
 
-      <Link v-if="canResetPassword"
+      <Link
+        v-if="canResetPassword"
         :href="route('password.request')"
-        class="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+        class="text-sm text-primary hover:text-primary/80 underline"
+      >
         Forgot your password?
       </Link>
-
     </div>
 
-    <div class="flex items-center justify-end mt-10">
-
-      <MazBtn
-        class="ms-4m"
-        color="success"
-        rounded-size="md"
-        :loading="form.processing"
-        :class="{ 'opacity-25': form.processing }"
-        :disabled="form.processing"
-        type="submit"
-        block>
-        Log in
-      </MazBtn>
-
-    </div>
-
+    <Button
+      type="submit"
+      class="w-full"
+      :disabled="form.processing"
+    >
+      <span v-if="form.processing">Signing in...</span>
+      <span v-else>Log in</span>
+    </Button>
   </form>
-
 </template>

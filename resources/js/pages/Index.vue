@@ -232,12 +232,15 @@ function handleMouseMove(e: MouseEvent) {
   const moveX = (clientX - innerWidth / 2) * 0.01;
   const moveY = (clientY - innerHeight / 2) * 0.01;
 
-  gsap.to(containerRef.value.querySelector('.hero-pattern'), {
-    x: moveX,
-    y: moveY,
-    duration: 1,
-    ease: 'power3.out'
-  });
+  const heroPattern = containerRef.value.querySelector('.bg-grid-pattern');
+  if (heroPattern) {
+    gsap.to(heroPattern, {
+      x: moveX,
+      y: moveY,
+      duration: 1,
+      ease: 'power3.out'
+    });
+  }
 }
 
 // Toggle quick contact panel
@@ -427,8 +430,7 @@ defineOptions({layout: AppLayout});
     <section
       id="projects"
       ref="el => contentSections[0] = el as HTMLElement"
-      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
-    >
+      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="space-y-4 mb-12">
         <Badge variant="outline">Featured Work</Badge>
         <h2 class="text-2xl font-semibold tracking-tight">
@@ -447,8 +449,7 @@ defineOptions({layout: AppLayout});
     <!-- Skills section -->
     <section
       ref="el => contentSections[1] = el as HTMLElement"
-      class="bg-muted/30 py-20"
-    >
+      class="bg-muted/30 py-20">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="space-y-4 mb-12">
           <Badge variant="outline">Expertise</Badge>
@@ -466,8 +467,7 @@ defineOptions({layout: AppLayout});
     <!-- Experience section -->
     <section
       ref="el => contentSections[2] = el as HTMLElement"
-      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
-    >
+      class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="space-y-4 mb-12">
         <Badge variant="outline">Journey</Badge>
         <h2 class="text-2xl font-semibold tracking-tight">
@@ -483,11 +483,12 @@ defineOptions({layout: AppLayout});
     <!-- Newsletter -->
     <section
       ref="el => contentSections[3] = el as HTMLElement"
-      class="bg-muted/30 py-20"
-    >
+      class="bg-muted/30 py-20">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-8">
-          <Badge variant="outline" class="mb-4">Stay Connected</Badge>
+          <Badge variant="outline" class="mb-4">
+            Stay Connected
+          </Badge>
         </div>
         <Subscription/>
       </div>
@@ -501,13 +502,11 @@ defineOptions({layout: AppLayout});
     enter-to-class="opacity-100 scale-100"
     leave-active-class="transition-all duration-200 ease-in"
     leave-from-class="opacity-100 scale-100"
-    leave-to-class="opacity-0 scale-95"
-  >
+    leave-to-class="opacity-0 scale-95">
     <div
       v-if="showQuickContact"
       class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
-      @click.self="toggleQuickContact"
-    >
+      @click.self="toggleQuickContact">
       <Card class="w-full max-w-md">
         <CardContent class="p-6 space-y-4">
           <div class="text-center">
@@ -521,8 +520,7 @@ defineOptions({layout: AppLayout});
               :key="link.name"
               variant="outline"
               class="w-full justify-start gap-3"
-              as-child
-            >
+              as-child>
               <a :href="link.url" target="_blank" rel="noopener noreferrer">
                 <component :is="link.icon" class="w-4 h-4"/>
                 {{ link.name }}
@@ -533,8 +531,7 @@ defineOptions({layout: AppLayout});
           <Button
             variant="ghost"
             class="w-full"
-            @click="toggleQuickContact"
-          >
+            @click="toggleQuickContact">
             Close
           </Button>
         </CardContent>

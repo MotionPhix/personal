@@ -1,23 +1,15 @@
 <script setup lang="ts">
-import InputLabel from '@/components/InputLabel.vue';
-
-import MazPhoneNumberInput, { CountryCode } from 'maz-ui/components/MazPhoneNumberInput';
-
-import MazInput from 'maz-ui/components/MazInput'
-
 import PreTap from '@/components/PreTap.vue';
-
 import AppLayout from '@/layouts/AppLayout.vue';
-
 import { Head, useForm } from '@inertiajs/vue3';
-
 import { onMounted, ref } from 'vue';
-
 import InputError from '@/components/InputError.vue';
-
 import { gsap } from 'gsap';
-
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ArrowRight } from 'lucide-vue-next';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -29,7 +21,7 @@ const contactForm = useForm({
   message: '',
 })
 
-const countryCode = ref<CountryCode>('MW')
+const countryCode = ref('MW')
 
 const onSubmit = () => {
 
@@ -113,131 +105,70 @@ defineOptions({
     </div>
     <!-- End Title -->
 
-    <form
-      @submit.prevent="onSubmit"
-      class="flex flex-col gap-6">
-
-      <div>
-        <InputLabel
-          value="Full name"
-          for="name" />
-
-        <MazInput
-          placeholder="Enter your full name"
-          v-model="contactForm.name"
-          rounded-size="md"
-          color="success"
-          class="my-2"
-          name="name"
+    <form @submit.prevent="onSubmit" class="space-y-6">
+      <div class="space-y-2">
+        <Label for="name">Full name</Label>
+        <Input
           id="name"
-          size="lg"
-          block />
-
+          v-model="contactForm.name"
+          placeholder="Enter your full name"
+          required
+        />
         <InputError :message="contactForm.errors.name" />
-
       </div>
 
-      <div>
-
-        <InputLabel
-          for="email"
-          value="Email address" />
-
-        <MazInput
-          placeholder="Enter your email address"
-          v-model="contactForm.email"
-          rounded-size="md"
-          color="success"
-          name="email"
-          class="my-2"
+      <div class="space-y-2">
+        <Label for="email">Email address</Label>
+        <Input
           id="email"
-          size="lg"
-          block />
-
+          v-model="contactForm.email"
+          type="email"
+          placeholder="Enter your email address"
+          required
+        />
         <InputError :message="contactForm.errors.email" />
-
       </div>
 
-      <div>
-
-        <InputLabel
-          for="phone"
-          value="Phone" />
-
-        <MazPhoneNumberInput
-          class="w-full my-2"
-          :show-code-on-list="false"
+      <div class="space-y-2">
+        <Label for="phone">Phone</Label>
+        <Input
+          id="phone"
           v-model="contactForm.phone"
-          v-model:country-code="countryCode"
+          type="tel"
           placeholder="Enter your phone number"
-          orientation="responsive"
-          :preferred-countries="['MW', 'ZM', 'ZA', 'ZW', 'GB', 'US']"
-          no-country-selector
-          rounded-size="md"
-          no-example
-          size="lg"
-          block
         />
-
         <InputError :message="contactForm.errors.phone" />
-
       </div>
 
-      <div>
-        <InputLabel
-          for="company"
-          value="Company" />
-
-        <MazInput
+      <div class="space-y-2">
+        <Label for="company">Company</Label>
+        <Input
           id="company"
-          class="w-full my-2"
-          placeholder="Enter your company name"
           v-model="contactForm.company"
-          rounded-size="md"
-          color="success"
-          size="lg"
-          block
+          placeholder="Enter your company name"
         />
-
       </div>
 
-      <div class="flex flex-col gap-4">
-        <InputLabel
-          for="message"
-          value="Message"
-          class="mb-1" />
-
+      <div class="space-y-2">
+        <Label for="message">Message</Label>
         <PreTap
           v-model="contactForm.message"
-          placeholder="How can I assist you? Be a bit verbose" />
-
-        <p
-          class="text-sm text-red-500"
-          v-if="contactForm.errors.message">
-          {{ contactForm.errors.message }}
-        </p>
+          placeholder="How can I assist you? Be a bit verbose"
+        />
+        <InputError :message="contactForm.errors.message" />
       </div>
 
-      <div>
-
-        <button
-          type="submit"
-          class="inline-flex items-center px-4 py-3 text-sm font-medium text-gray-800 bg-white border border-gray-200 rounded-lg shadow-sm gap-x-2 hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700">
+      <Button
+        type="submit"
+        class="w-full"
+        :disabled="contactForm.processing"
+      >
+        <span v-if="contactForm.processing">Sending...</span>
+        <span v-else class="flex items-center gap-2">
           Send Message
-          <svg
-            class="shrink-0 size-4"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24" height="24" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round">
-            <path d="M5 12h14"></path>
-            <path d="m12 5 7 7-7 7"></path>
-          </svg>
-        </button>
-
-      </div>
-
+          <ArrowRight class="h-4 w-4" />
+        </span>
+      </Button>
     </form>
 
   </article>

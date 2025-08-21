@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue';
-import InputLabel from '@/components/InputLabel.vue';
-import MazBtn from 'maz-ui/components/MazBtn'
-import MazInput from 'maz-ui/components/MazInput'
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const passwordInput = ref<HTMLInputElement | null>(null);
 const currentPasswordInput = ref<HTMLInputElement | null>(null);
@@ -46,63 +46,42 @@ const updatePassword = () => {
         </header>
 
         <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
-            <div>
-                <InputLabel for="current_password" value="Current Password" />
-
-                <MazInput
-                  id="current_password"
-                  ref="currentPasswordInput"
-                  v-model="form.current_password"
-                  rounded-size="md"
-                  type="password"
-                  size="lg"
-                  class="mt-1"
-                  block
+            <div class="space-y-2">
+                <Label for="current_password">Current Password</Label>
+                <Input
+                    id="current_password"
+                    ref="currentPasswordInput"
+                    v-model="form.current_password"
+                    type="password"
                 />
-
-                <InputError :message="form.errors.current_password" class="mt-2" />
+                <InputError :message="form.errors.current_password" />
             </div>
 
-            <div>
-                <InputLabel for="password" value="New Password" />
-
-                <MazInput
-                  id="password"
-                  ref="passwordInput"
-                  v-model="form.password"
-                  rounded-size="md"
-                  type="password"
-                  size="lg"
-                  class="mt-1"
-                  block
+            <div class="space-y-2">
+                <Label for="password">New Password</Label>
+                <Input
+                    id="password"
+                    ref="passwordInput"
+                    v-model="form.password"
+                    type="password"
                 />
-
-                <InputError :message="form.errors.password" class="mt-2" />
+                <InputError :message="form.errors.password" />
             </div>
 
-            <div>
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-
-                <MazInput
+            <div class="space-y-2">
+                <Label for="password_confirmation">Confirm Password</Label>
+                <Input
                     id="password_confirmation"
                     v-model="form.password_confirmation"
-                    rounded-size="md"
                     type="password"
-                    size="lg"
-                    class="mt-1"
-                    block
                 />
-
-                <InputError :message="form.errors.password_confirmation" class="mt-2" />
+                <InputError :message="form.errors.password_confirmation" />
             </div>
 
             <div class="flex items-center gap-4">
-                <MazBtn
-                  :disabled="form.processing"
-                  rounded-size="md"
-                  color="success">
-                  Save
-                </MazBtn>
+                <Button type="submit" :disabled="form.processing">
+                    Save
+                </Button>
 
                 <Transition
                     enter-active-class="transition ease-in-out"
@@ -110,7 +89,9 @@ const updatePassword = () => {
                     leave-active-class="transition ease-in-out"
                     leave-to-class="opacity-0"
                 >
-                    <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Saved.</p>
+                    <p v-if="form.recentlySuccessful" class="text-sm text-muted-foreground">
+                        Saved.
+                    </p>
                 </Transition>
             </div>
         </form>
